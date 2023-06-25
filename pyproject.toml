@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prompttools"
+version = "0.0.1"
+authors = [
+  { name="Hegel AI", email="team@hegel-ai.com" },
+]
+description = "Tools for LLM prompting"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/hegelai/prompttools"
+"Bug Tracker" = "https://github.com/hegelai/prompttools"
