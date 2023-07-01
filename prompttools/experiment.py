@@ -12,6 +12,8 @@ def extract_chat_responses(output) -> str:
 
 # TODO: Create one for regular OpenAI completions
 # TODO: Create one for function calls, or modify this to support function calls
+# TODO: Create one that accepts a list of system prompts and human messages
+# TODO: Create one that accepts a list of prompt templates and inputs
 class OpenAIChatExperiment:
     """
     This class defines an experiment for OpenAI's chat completion API.
