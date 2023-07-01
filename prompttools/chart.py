@@ -1,3 +1,0 @@
-
-
-# matplotlib of the results
