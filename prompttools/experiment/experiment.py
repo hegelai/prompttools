@@ -1,11 +1,16 @@
 import itertools
 import logging
-from utils import is_interactive
 from IPython import display
 from tabulate import tabulate
 
 
 class Experiment:
+    @staticmethod
+    def _is_interactive():
+        import __main__ as main
+
+        return not hasattr(main, "__file__")
+
     def prepare(self):
         """
         Creates argument combinations by taking the cartesian product of all inputs.
@@ -21,7 +26,7 @@ class Experiment:
         if not self.scores:
             logging.warning("Please run `evaluate` first.")
         table = self.get_table()
-        if is_interactive():
+        if self._is_interactive():
             display(table)
         else:
             logging.getLogger().setLevel(logging.INFO)
