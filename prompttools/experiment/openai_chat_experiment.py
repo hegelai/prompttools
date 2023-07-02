@@ -1,8 +1,9 @@
-from typing import Callable, Dict, List, Optional
+from typing import Dict, List, Optional
 import openai
-import pandas as pd
+
 import logging
 
+from prompttools.requests.request_queue import RequestQueue
 from prompttools.experiment.experiment import Experiment
 
 
@@ -27,6 +28,7 @@ class OpenAIChatExperiment(Experiment):
         frequency_penalty: Optional[List[float]] = [0],
         logit_bias: Optional[Dict] = [None],
     ):
+        self.queue = RequestQueue()
         self.completion_fn = openai.ChatCompletion.create
         self.all_args = []
         self.all_args.append(model)
@@ -40,74 +42,25 @@ class OpenAIChatExperiment(Experiment):
         self.all_args.append(presence_penalty)
         self.all_args.append(frequency_penalty)
         self.all_args.append(logit_bias)
+        super().__init__()
 
     @staticmethod
-    def _extract_chat_responses(output) -> str:
+    def _extract_responses(output) -> str:
         return [choice.message.content for choice in output.choices]
 
     @staticmethod
     def _create_args_dict(args) -> Dict[str, object]:
-        return {
-            "temperature": args[0],
-            "top_p": args[1],
-            "n": args[2],
-            "stream": args[3],
-            "stop": args[4],
-            "max_tokens": args[5],
-            "presence_penalty": args[6],
-            "frequency_penalty": args[7],
-            "logit_bias": args[8],
+        args = {
+            "model": args[0],
+            "messages": args[1],
+            "temperature": args[2],
+            "top_p": args[3],
+            "n": args[4],
+            "stream": args[5],
+            "stop": args[6],
+            "max_tokens": args[7],
+            "presence_penalty": args[8],
+            "frequency_penalty": args[9],
+            "logit_bias": args[10],
         }
-
-    def run(self):
-        """
-        Create tuples of input and output for every possible combination of arguments.
-        """
-        if not self.argument_combos:
-            logging.warning("Please run `prepare` first.")
-        self.results = []
-        for combo in self.argument_combos:
-            self.result.append(
-                openai.ChatCompletion.create(
-                    model=combo[0],
-                    messages=combo[1],
-                    temperature=combo[2],
-                    top_p=combo[3],
-                    n=combo[4],
-                    stream=combo[5],
-                    stop=combo[6],
-                    max_tokens=combo[7],
-                    presence_penalty=combo[8],
-                    frequency_penalty=combo[9],
-                    logit_bias=combo[10],
-                )
-            )
-
-    def evaluate(self, eval_fn: Callable):
-        """
-        Using the given evaluation function, all input/response pairs are evaluated.
-        """
-        if not self.results:
-            logging.warning("Please run `run` first.")
-        self.scores = []
-        for i, result in enumerate(self.results):
-            # Pass the messages and results into the eval function
-            self.scores.append(
-                eval_fn(
-                    self.argument_combos[i][1], self._extract_chat_responses(result)
-                )
-            )
-
-    def get_table(self):
-        return pd.DataFrame(
-            {
-                "messages": [combo[1] for combo in self.argument_combos],
-                "response(s)": [
-                    self._extract_chat_responses(result) for result in self.results
-                ],
-                "score": self.scores,
-                "other": [
-                    self._create_args_dict(combo[2:]) for combo in self.argument_combos
-                ],
-            }
-        )
+        return {name: arg for name, arg in args.items() if arg and arg != float("inf")}

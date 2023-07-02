@@ -1,6 +1,6 @@
 from typing import Dict, List
-from prompttools.experiment.experiment import OpenAIChatExperiment
-from prompttools.harness.harness import ChatHistoryExperimentationHarness
+from prompttools.experiment.openai_chat_experiment import OpenAIChatExperiment
+from prompttools.harness.chat_history_harness import ChatHistoryExperimentationHarness
 
 # Define a list of chat histories over which to run your experiment
 chat_histories: List[List[Dict[str, str]]] = [
@@ -35,4 +35,3 @@ harness.run()
 harness.evaluate(eval_fn)
 harness.visualize()
 
-# TODO: How to extract and work with scores?
