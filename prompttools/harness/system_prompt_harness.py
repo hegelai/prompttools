@@ -25,10 +25,6 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
     def _create_human_message(content):
         return ({"role": "user", "content": content},)
 
-    @staticmethod
-    def _prepare_arguments(arguments):
-        return {name: [arg] for name, arg in arguments}
-
     def prepare(self):
         messages_to_try = []
         for system_prompt in self.system_prompts:

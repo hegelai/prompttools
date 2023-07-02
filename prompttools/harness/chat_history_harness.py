@@ -15,10 +15,6 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
         self.model_arguments = model_arguments
         self.chat_histories = chat_histories
 
-    @staticmethod
-    def _prepare_arguments(arguments):
-        return {name: [arg] for name, arg in arguments}
-
     def prepare(self):
         self.experiment = self.experiment_classname(
             [self.model_name],
