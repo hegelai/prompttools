@@ -1,4 +1,3 @@
-# TODO: Create one for regular OpenAI completions
 from typing import Dict, List, Optional
 import openai
 import logging
@@ -70,4 +69,4 @@ class OpenAICompletionExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output) -> str:
-        return [choice.text for choice in output.choices]
+        return [choice["text"] for choice in output["choices"]]

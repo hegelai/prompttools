@@ -1,3 +1,4 @@
+import os
 from typing import Callable, Dict
 import itertools
 import logging
@@ -5,12 +6,16 @@ from IPython import display
 from tabulate import tabulate
 import pandas as pd
 
+from prompttools.test.fake import fake_complete_fn
+
 
 class Experiment:
     def __init__(self):
         self.argument_combos = None
         self.results = None
         self.scores = None
+        if os.getenv("DEBUG", default=False):
+            self.completion_fn = fake_complete_fn
 
     @staticmethod
     def _is_interactive():

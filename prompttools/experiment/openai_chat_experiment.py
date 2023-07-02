@@ -60,4 +60,4 @@ class OpenAIChatExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output) -> str:
-        return [choice.message.content for choice in output.choices]
+        return [choice["message"]["content"] for choice in output["choices"]]

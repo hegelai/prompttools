@@ -20,16 +20,19 @@ class RequestQueue:
         while self.is_running:
             try:
                 fn, args = self.data_queue.get(timeout=0.2)
-                try:
-                    res = self._run(fn, args)
-                    self.request_results.append(res[0])
-                    self.request_latencies.append(res[1])
-                # TODO: If we get an unexpected error here, the queue will hang
-                except openai.error.AuthenticationError as e:
-                    logging.error("Authentication error. Skipping request.")
+                self._do_task(fn, args)
                 self.data_queue.task_done()
             except Empty:
                 continue
+
+    def _do_task(self, fn, args):
+        try:
+            res = self._run(fn, args)
+            self.request_results.append(res[0])
+            self.request_latencies.append(res[1])
+        # TODO: If we get an unexpected error here, the queue will hang
+        except openai.error.AuthenticationError as e:
+            logging.error("Authentication error. Skipping request.")
 
     @retry_decorator
     def _run(self, fn, args):
