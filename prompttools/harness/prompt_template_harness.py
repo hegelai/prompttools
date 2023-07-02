@@ -4,6 +4,11 @@ from prompttools.harness.harness import ExperimentationHarness
 
 
 class PromptTemplateExperimentationHarness(ExperimentationHarness):
+    r"""
+    An experimentation harness used for prompt templates.
+    We use jinja templates, e.g. "Answer the following question: {{input}}".
+    """
+
     def __init__(
         self,
         experiment_classname,

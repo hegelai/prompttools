@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Dict
 import itertools
 import logging
 from IPython import display
@@ -17,6 +17,10 @@ class Experiment:
         import __main__ as main
 
         return not hasattr(main, "__file__")
+
+    def _create_args_dict(self, args) -> Dict[str, object]:
+        args = {self.PARAMETER_NAMES[i]: arg for i, arg in enumerate(args)}
+        return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
 
     def prepare(self):
         """
@@ -49,26 +53,26 @@ class Experiment:
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
             self.scores.append(
-                eval_fn(
-                    self.argument_combos[i][1], self._extract_responses(result)
-                )
+                eval_fn(self.argument_combos[i][1], self._extract_responses(result))
             )
 
     def get_table(self):
         if not self.scores:
             logging.warning("Please run `evaluate` first.")
             return None
-        return pd.DataFrame(
-            {
-                "messages": [combo[1] for combo in self.argument_combos],
-                "response(s)": [
-                    self._extract_responses(result) for result in self.results
-                ],
-                "score": self.scores,
-                "latencies": self.latencies,
-                # TODO: Add other args as cols if there was more than 1 inpu 
-            }
-        )
+        data = {
+            "messages": [combo[1] for combo in self.argument_combos],
+            "response(s)": [self._extract_responses(result) for result in self.results],
+            "score": self.scores,
+            "latencies": self.latencies,
+        }
+        # Add other args as cols if there was more than 1 input
+        for i, args in enumerate([self.all_args[0]] + self.all_args[2:]):
+            if len(args) > 1:
+                data[self.PARAMETER_NAMES[i]] = (
+                    [combo[i] for combo in self.argument_combos],
+                )
+        return pd.DataFrame(data)
 
     def visualize(self):
         """

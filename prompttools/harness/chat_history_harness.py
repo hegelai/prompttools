@@ -3,6 +3,10 @@ from prompttools.harness.harness import ExperimentationHarness
 
 
 class ChatHistoryExperimentationHarness(ExperimentationHarness):
+    r"""
+    An experimentation harness used for chat histories.
+    """
+
     def __init__(
         self,
         experiment_classname,

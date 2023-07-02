@@ -13,6 +13,24 @@ class OpenAICompletionExperiment(Experiment):
     a cartesian product of those arguments, and gets results for each.
     """
 
+    PARAMETER_NAMES = (
+        "model",
+        "prompt",
+        "suffix",
+        "max_tokens",
+        "temperature",
+        "top_p",
+        "n",
+        "stream",
+        "logprobs",
+        "echo",
+        "stop",
+        "presence_penalty",
+        "frequency_penalty",
+        "best_of",
+        "logit_bias",
+    )
+
     def __init__(
         self,
         model: List[str],
@@ -53,24 +71,3 @@ class OpenAICompletionExperiment(Experiment):
     @staticmethod
     def _extract_responses(output) -> str:
         return [choice.text for choice in output.choices]
-
-    @staticmethod
-    def _create_args_dict(args) -> Dict[str, object]:
-        args = {
-            "model": args[0],
-            "prompt": args[1],
-            "suffix": args[2],
-            "max_tokens": args[2],
-            "temperature": args[3],
-            "top_p": args[4],
-            "n": args[5],
-            "stream": args[6],
-            "logprobs": args[7],
-            "echo": args[8],
-            "stop": args[9],
-            "presence_penalty": args[10],
-            "frequency_penalty": args[11],
-            "best_of": args[12],
-            "logit_bias": args[13],
-        }
-        return {name: arg for name, arg in args.items() if arg and arg != float("inf")}

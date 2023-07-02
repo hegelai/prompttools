@@ -3,6 +3,10 @@ from prompttools.harness.harness import ExperimentationHarness
 
 
 class SystemPromptExperimentationHarness(ExperimentationHarness):
+    r"""
+    An experimentation harness used for system prompts.
+    """
+
     def __init__(
         self,
         experiment_classname,

@@ -14,6 +14,20 @@ class OpenAIChatExperiment(Experiment):
     a cartesian product of those arguments, and gets results for each.
     """
 
+    PARAMETER_NAMES = (
+        "model",
+        "messages",
+        "temperature",
+        "top_p",
+        "n",
+        "stream",
+        "stop",
+        "max_tokens",
+        "presence_penalty",
+        "frequency_penalty",
+        "logit_bias",
+    )
+
     def __init__(
         self,
         model: List[str],
@@ -47,20 +61,3 @@ class OpenAIChatExperiment(Experiment):
     @staticmethod
     def _extract_responses(output) -> str:
         return [choice.message.content for choice in output.choices]
-
-    @staticmethod
-    def _create_args_dict(args) -> Dict[str, object]:
-        args = {
-            "model": args[0],
-            "messages": args[1],
-            "temperature": args[2],
-            "top_p": args[3],
-            "n": args[4],
-            "stream": args[5],
-            "stop": args[6],
-            "max_tokens": args[7],
-            "presence_penalty": args[8],
-            "frequency_penalty": args[9],
-            "logit_bias": args[10],
-        }
-        return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
