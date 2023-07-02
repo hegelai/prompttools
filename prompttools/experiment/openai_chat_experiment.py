@@ -5,10 +5,11 @@ import pandas as pd
 import logging
 from utils import is_interactive
 from IPython import display
+from tabulate import tabulate
+
+logging.getLogger().setLevel(logging.INFO)
 
 
-# TODO: Create one for regular OpenAI completions
-# TODO: Create one for function calls, or modify this to support function calls
 class OpenAIChatExperiment:
     """
     This class defines an experiment for OpenAI's chat completion API.
@@ -89,7 +90,11 @@ class OpenAIChatExperiment:
         self.scores = []
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
-            self.scores.append(eval_fn(self.argument_combos[i][1], result))
+            self.scores.append(
+                eval_fn(
+                    self.argument_combos[i][1], self._extract_chat_responses(result)
+                )
+            )
 
     def visualize(self):
         """
@@ -110,3 +115,5 @@ class OpenAIChatExperiment:
         )
         if is_interactive():
             display(table)
+        else:
+            logging.info(tabulate(table, headers="keys", tablefmt="psql"))

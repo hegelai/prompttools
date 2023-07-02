@@ -15,6 +15,7 @@ chat_histories: List[List[Dict[str, str]]] = [
     ]
 ]
 
+
 # Define an evaluation function that assigns scores to each inference
 def eval_fn(messages: List[Dict[str, str]], results: List[str]) -> float:
     for result in results:
