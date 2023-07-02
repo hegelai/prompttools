@@ -2,13 +2,14 @@ from typing import Dict, List, Optional
 import jinja2
 from prompttools.harness.harness import ExperimentationHarness
 
-class PromptTemplateEvaluationHarness(ExperimentationHarness):
+
+class PromptTemplateExperimentationHarness(ExperimentationHarness):
     def __init__(
         self,
         experiment_classname,
         model_name: str,
         prompt_templates: List[str],
-        user_inputs: List[Dict[str,str]],
+        user_inputs: List[Dict[str, str]],
         model_arguments: Optional[Dict[str, object]] = {},
     ):
         self.environment = jinja2.Environment()
@@ -17,7 +18,6 @@ class PromptTemplateEvaluationHarness(ExperimentationHarness):
         self.model_arguments = model_arguments
         self.prompt_templates = prompt_templates
         self.user_inputs = user_inputs
-
 
     def prepare(self):
         rendered_inputs = []
