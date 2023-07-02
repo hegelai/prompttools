@@ -12,8 +12,10 @@ class ExperimentationHarness:
     def evaluate(self, eval_fn):
         self.experiment.evaluate(eval_fn)
 
-    def visualize(self, pivot=False):
-        if pivot:
-            self.experiment.visualize(self.input_pairs_dict, self.PIVOT_COLUMNS)
+    def visualize(self, pivot=False, feedback=False):
+        if pivot or feedback:
+            self.experiment.visualize(
+                self.input_pairs_dict, self.PIVOT_COLUMNS, feedback
+            )
         else:
             self.experiment.visualize()

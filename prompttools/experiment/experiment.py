@@ -4,6 +4,7 @@ import logging
 from IPython import display
 from tabulate import tabulate
 import pandas as pd
+import ipywidgets as widgets
 
 from prompttools.requests.request_queue import RequestQueue
 
@@ -59,7 +60,7 @@ class Experiment:
                 eval_fn(self.argument_combos[i][1], self._extract_responses(result))
             )
 
-    def get_table(self, pivot_data, pivot_columns):
+    def get_table(self, pivot_data, pivot_columns, gather_feedback):
         if not self.scores:
             logging.warning("Please run `evaluate` first.")
             return None
@@ -84,26 +85,70 @@ class Experiment:
                 pivot_data[str(combo[1])][1] for combo in self.argument_combos
             ]
             df = pd.DataFrame(data)
-            df = pd.pivot_table(
-                df,
-                values="response(s)",
-                index=[pivot_columns[1]],
-                columns=[pivot_columns[0]],
-                aggfunc=lambda x: x[0],
-            )
+            if not gather_feedback:
+                df = pd.pivot_table(
+                    df,
+                    values="response(s)",
+                    index=[pivot_columns[1]],
+                    columns=[pivot_columns[0]],
+                    aggfunc=lambda x: x.iloc[0],
+                )
         else:
             df = pd.DataFrame(data)
         return df
 
-    def visualize(self, pivot_data=None, pivot_columns=None):
+    def visualize(self, pivot_data=None, pivot_columns=None, gather_feedback=False):
         """
         Creates and shows a table using the results produced.
         """
-        table = self.get_table(pivot_data, pivot_columns)
+        table = self.get_table(pivot_data, pivot_columns, gather_feedback)
         if table is None:
             return
+
         if self._is_interactive():
-            display(table)
+            if gather_feedback:
+                items = [
+                    widgets.Label(pivot_columns[0]),
+                    widgets.Label(pivot_columns[1]),
+                    widgets.Label("response(s)"),
+                    widgets.Label("Feedback"),
+                ]
+                for _, row in table.iterrows():
+                    items += [
+                        widgets.HTML(
+                            value="<style>p{word-wrap: break-word}</style> <p>"
+                            + row[pivot_columns[0]]
+                            + " </p>"
+                        )
+                    ]
+                    items += [
+                        widgets.HTML(
+                            value="<style>p{word-wrap: break-word}</style> <p>"
+                            + row[pivot_columns[1]]
+                            + " </p>"
+                        )
+                    ]
+                    items += [
+                        widgets.HTML(
+                            value="<style>p{word-wrap: break-word}</style> <p>"
+                            + ", ".join(row["response(s)"])
+                            + " </p>"
+                        )
+                    ]
+                    items += [
+                        widgets.Dropdown(
+                            options=[("\U0001F44D", 1), ("\U0001F44E", 2)],
+                            value=1,
+                            description="Feedback:",
+                        )
+                    ]
+                grid = widgets.GridBox(
+                    items,
+                    layout=widgets.Layout(grid_template_columns="repeat(4, 250px)"),
+                )
+                display.display(grid)
+            else:
+                display.display(table)
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
