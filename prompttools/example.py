@@ -1,6 +1,6 @@
 from typing import Dict, List
-from prompttools.experiment import OpenAIChatExperiment
-from prompttools.harness import ChatHistoryExperimentationHarness
+from prompttools.experiment.experiment import OpenAIChatExperiment
+from prompttools.harness.harness import ChatHistoryExperimentationHarness
 
 # Define a list of chat histories over which to run your experiment
 chat_histories: List[List[Dict[str, str]]] = [

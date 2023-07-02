@@ -1,16 +1,12 @@
 from typing import Callable, Dict, List, Optional
-import itertools
 import openai
 import pandas as pd
 import logging
-from utils import is_interactive
-from IPython import display
-from tabulate import tabulate
 
-logging.getLogger().setLevel(logging.INFO)
+from prompttools.experiment.experiment import Experiment
 
 
-class OpenAIChatExperiment:
+class OpenAIChatExperiment(Experiment):
     """
     This class defines an experiment for OpenAI's chat completion API.
     It accepts lists for each argument passed into OpenAI's API, then creates
@@ -49,13 +45,19 @@ class OpenAIChatExperiment:
     def _extract_chat_responses(output) -> str:
         return [choice.message.content for choice in output.choices]
 
-    def prepare(self):
-        """
-        Creates argument combinations by taking the cartesian product of all inputs.
-        """
-        self.argument_combos = []
-        for combo in itertools.product(*self.all_args):
-            self.argument_combos.append(combo)
+    @staticmethod
+    def _create_args_dict(args) -> Dict[str, object]:
+        return {
+            "temperature": args[0],
+            "top_p": args[1],
+            "n": args[2],
+            "stream": args[3],
+            "stop": args[4],
+            "max_tokens": args[5],
+            "presence_penalty": args[6],
+            "frequency_penalty": args[7],
+            "logit_bias": args[8],
+        }
 
     def run(self):
         """
@@ -96,13 +98,8 @@ class OpenAIChatExperiment:
                 )
             )
 
-    def visualize(self):
-        """
-        Creates and shows a table using the results produced.
-        """
-        if not self.scores:
-            logging.warning("Please run `evaluate` first.")
-        table = pd.DataFrame(
+    def get_table(self):
+        return pd.DataFrame(
             {
                 "model": [combo[0] for combo in self.argument_combos],
                 "messages": [combo[1] for combo in self.argument_combos],
@@ -110,10 +107,8 @@ class OpenAIChatExperiment:
                     self._extract_chat_responses(result) for result in self.results
                 ],
                 "score": self.scores,
-                "other": [combo[2:] for combo in self.argument_combos],
+                "other": [
+                    self._create_args_dict(combo[2:]) for combo in self.argument_combos
+                ],
             }
         )
-        if is_interactive():
-            display(table)
-        else:
-            logging.info(tabulate(table, headers="keys", tablefmt="psql"))
