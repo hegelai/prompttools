@@ -48,6 +48,3 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()
-
-    def visualize(self):
-        self.experiment.visualize(self.input_pairs_dict, self.PIVOT_COLUMNS)

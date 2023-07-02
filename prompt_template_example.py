@@ -28,4 +28,4 @@ harness = PromptTemplateExperimentationHarness(
 harness.prepare()
 harness.run()
 harness.evaluate(eval_fn)
-harness.visualize()
+harness.visualize(pivot=True)
