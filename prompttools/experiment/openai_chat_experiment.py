@@ -1,9 +1,10 @@
+import os
 from typing import Dict, List, Optional
 import openai
 
 import logging
 
-from prompttools.requests.request_queue import RequestQueue
+from prompttools.test.fake import fake_chat_completion_fn
 from prompttools.experiment.experiment import Experiment
 
 
@@ -42,8 +43,9 @@ class OpenAIChatExperiment(Experiment):
         frequency_penalty: Optional[List[float]] = [0],
         logit_bias: Optional[Dict] = [None],
     ):
-        self.queue = RequestQueue()
         self.completion_fn = openai.ChatCompletion.create
+        if os.getenv("DEBUG", default=False):
+            self.completion_fn = fake_chat_completion_fn
         self.all_args = []
         self.all_args.append(model)
         self.all_args.append(messages)

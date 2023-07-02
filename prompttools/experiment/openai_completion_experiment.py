@@ -1,7 +1,9 @@
+import os
 from typing import Dict, List, Optional
 import openai
 import logging
 
+from prompttools.test.fake import fake_completion_fn
 from prompttools.experiment.experiment import Experiment
 
 
@@ -49,6 +51,9 @@ class OpenAICompletionExperiment(Experiment):
         logit_bias: Optional[Dict] = [None],
     ):
         self.completion_fn = openai.Completion.create
+
+        if os.getenv("DEBUG", default=False):
+            self.completion_fn = fake_completion_fn
         self.all_args = []
         self.all_args.append(model)
         self.all_args.append(prompt)

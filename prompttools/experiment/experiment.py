@@ -1,4 +1,3 @@
-import os
 from typing import Callable, Dict
 import itertools
 import logging
@@ -6,16 +5,15 @@ from IPython import display
 from tabulate import tabulate
 import pandas as pd
 
-from prompttools.test.fake import fake_complete_fn
+from prompttools.requests.request_queue import RequestQueue
 
 
 class Experiment:
     def __init__(self):
+        self.queue = RequestQueue()
         self.argument_combos = None
         self.results = None
         self.scores = None
-        if os.getenv("DEBUG", default=False):
-            self.completion_fn = fake_complete_fn
 
     @staticmethod
     def _is_interactive():
@@ -61,7 +59,7 @@ class Experiment:
                 eval_fn(self.argument_combos[i][1], self._extract_responses(result))
             )
 
-    def get_table(self):
+    def get_table(self, pivot_data, pivot_columns):
         if not self.scores:
             logging.warning("Please run `evaluate` first.")
             return None
@@ -69,21 +67,39 @@ class Experiment:
             "messages": [combo[1] for combo in self.argument_combos],
             "response(s)": [self._extract_responses(result) for result in self.results],
             "score": self.scores,
-            "latencies": self.latencies,
+            "latency": self.latencies,
         }
         # Add other args as cols if there was more than 1 input
         for i, args in enumerate([self.all_args[0]] + self.all_args[2:]):
             if len(args) > 1:
-                data[self.PARAMETER_NAMES[i]] = (
-                    [combo[i] for combo in self.argument_combos],
-                )
-        return pd.DataFrame(data)
+                data[self.PARAMETER_NAMES[i]] = [
+                    combo[i] for combo in self.argument_combos
+                ]
+        df = None
+        if pivot_data:
+            data[pivot_columns[0]] = [
+                pivot_data[str(combo[1])][0] for combo in self.argument_combos
+            ]
+            data[pivot_columns[1]] = [
+                pivot_data[str(combo[1])][1] for combo in self.argument_combos
+            ]
+            df = pd.DataFrame(data)
+            df = pd.pivot_table(
+                df,
+                values="response(s)",
+                index=[pivot_columns[1]],
+                columns=[pivot_columns[0]],
+                aggfunc=lambda x: x[0],
+            )
+        else:
+            df = pd.DataFrame(data)
+        return df
 
-    def visualize(self):
+    def visualize(self, pivot_data=None, pivot_columns=None):
         """
         Creates and shows a table using the results produced.
         """
-        table = self.get_table()
+        table = self.get_table(pivot_data, pivot_columns)
         if table is None:
             return
         if self._is_interactive():

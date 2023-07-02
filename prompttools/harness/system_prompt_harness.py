@@ -7,6 +7,8 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
     An experimentation harness used for system prompts.
     """
 
+    PIVOT_COLUMNS = ["system_prompt", "user_input"]
+
     def __init__(
         self,
         experiment_classname,
@@ -23,25 +25,29 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
 
     @staticmethod
     def _create_system_prompt(content):
-        return ({"role": "system", "content": content},)
+        return {"role": "system", "content": content}
 
     @staticmethod
     def _create_human_message(content):
-        return ({"role": "user", "content": content},)
+        return {"role": "user", "content": content}
 
     def prepare(self):
+        self.input_pairs_dict = {}
         messages_to_try = []
         for system_prompt in self.system_prompts:
             for message in self.human_messages:
-                messages_to_try.append(
-                    [
-                        self._create_system_prompt(system_prompt),
-                        self._create_human_message(message),
-                    ]
-                )
+                history = [
+                    self._create_system_prompt(system_prompt),
+                    self._create_human_message(message),
+                ]
+                messages_to_try.append(history)
+                self.input_pairs_dict[str(history)] = (system_prompt, message)
         self.experiment = self.experiment_classname(
             [self.model_name],
             messages_to_try,
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()
+
+    def visualize(self):
+        self.experiment.visualize(self.input_pairs_dict, self.PIVOT_COLUMNS)

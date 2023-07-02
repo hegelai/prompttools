@@ -13,4 +13,4 @@ class ExperimentationHarness:
         self.experiment.evaluate(eval_fn)
 
     def visualize(self):
-        return self.experiment.visualize()
+        self.experiment.visualize()
