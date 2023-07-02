@@ -116,7 +116,6 @@ class OpenAICompletionExperiment(Experiment):
     def get_table(self):
         return pd.DataFrame(
             {
-                "model": [combo[0] for combo in self.argument_combos],
                 "prompt": [combo[1] for combo in self.argument_combos],
                 "response(s)": [
                     self._extract_responses(result) for result in self.results

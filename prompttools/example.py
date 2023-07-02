@@ -33,5 +33,6 @@ harness = ChatHistoryExperimentationHarness(
 harness.prepare()
 harness.run()
 harness.evaluate(eval_fn)
+harness.visualize()
 
 # TODO: How to extract and work with scores?

@@ -101,7 +101,6 @@ class OpenAIChatExperiment(Experiment):
     def get_table(self):
         return pd.DataFrame(
             {
-                "model": [combo[0] for combo in self.argument_combos],
                 "messages": [combo[1] for combo in self.argument_combos],
                 "response(s)": [
                     self._extract_chat_responses(result) for result in self.results
