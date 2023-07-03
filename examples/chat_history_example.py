@@ -3,7 +3,7 @@ from prompttools.experiment.openai_chat_experiment import OpenAIChatExperiment
 from prompttools.harness.chat_history_harness import ChatHistoryExperimentationHarness
 
 
-def extract_responses(output) -> str:
+def extract_responses(output) -> list:
     return [choice["message"]["content"] for choice in output["choices"]]
 
 
