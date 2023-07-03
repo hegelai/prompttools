@@ -2,6 +2,10 @@ from typing import Dict, List
 from prompttools.experiment.openai_chat_experiment import OpenAIChatExperiment
 from prompttools.harness.chat_history_harness import ChatHistoryExperimentationHarness
 
+
+def extract_responses(output) -> str:
+    return [choice["message"]["content"] for choice in output["choices"]]
+
 # Define a list of chat histories over which to run your experiment
 chat_histories: List[List[Dict[str, str]]] = [
     [
@@ -17,9 +21,10 @@ chat_histories: List[List[Dict[str, str]]] = [
 
 
 # Define an evaluation function that assigns scores to each inference
-def eval_fn(messages: List[Dict[str, str]], results: List[str]) -> float:
-    for result in results:
-        if "Arlington" in result:
+def eval_fn(messages: List[Dict[str, str]], results: Dict) -> float:
+    responses = extract_responses(results)
+    for response in responses:
+        if "Arlington" in response:
             return 1.0
     return 0.0
 

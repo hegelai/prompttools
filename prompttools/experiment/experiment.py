@@ -85,7 +85,7 @@ class Experiment:
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
             self.scores[metric_name].append(
-                eval_fn(self.argument_combos[i][1], self._extract_responses(result))
+                eval_fn(self.argument_combos[i][1], result)
             )
 
     def get_table(self, pivot_data, pivot_columns, gather_feedback):
