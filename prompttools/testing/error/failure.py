@@ -1,0 +1,2 @@
+class PromptTestFailure(Exception):
+    pass
