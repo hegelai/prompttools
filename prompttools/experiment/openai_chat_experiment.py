@@ -4,7 +4,7 @@ import openai
 
 import logging
 
-from prompttools.test.fake import fake_chat_completion_fn
+from prompttools.mock.fake import fake_chat_completion_fn
 from prompttools.experiment.experiment import Experiment
 
 

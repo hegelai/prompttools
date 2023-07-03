@@ -20,3 +20,8 @@ class ExperimentationHarness:
             self.experiment.visualize(self.input_pairs_dict, self.PIVOT_COLUMNS)
         else:
             self.experiment.visualize()
+
+    def rank(self, metric_name, is_average=False):
+        return self.experiment.rank(
+            self.input_pairs_dict, self.PIVOT_COLUMNS, metric_name, is_average
+        )

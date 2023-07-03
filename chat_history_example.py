@@ -6,6 +6,7 @@ from prompttools.harness.chat_history_harness import ChatHistoryExperimentationH
 def extract_responses(output) -> str:
     return [choice["message"]["content"] for choice in output["choices"]]
 
+
 # Define a list of chat histories over which to run your experiment
 chat_histories: List[List[Dict[str, str]]] = [
     [
@@ -21,7 +22,7 @@ chat_histories: List[List[Dict[str, str]]] = [
 
 
 # Define an evaluation function that assigns scores to each inference
-def eval_fn(messages: List[Dict[str, str]], results: Dict) -> float:
+def eval_fn(messages: List[Dict[str, str]], results: Dict, metadata: Dict) -> float:
     responses = extract_responses(results)
     for response in responses:
         if "Arlington" in response:

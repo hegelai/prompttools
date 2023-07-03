@@ -2,8 +2,10 @@ from typing import Dict, List
 from prompttools.experiment.openai_chat_experiment import OpenAIChatExperiment
 from prompttools.harness.system_prompt_harness import SystemPromptExperimentationHarness
 
+
 def extract_responses(output) -> str:
     return [choice["message"]["content"] for choice in output["choices"]]
+
 
 # Define a list of chat histories over which to run your experiment
 system_prompts = ["You are a helpful assistant."]
@@ -11,7 +13,7 @@ user_inputs = ["Who won the world series in 2020?"]
 
 
 # Define an evaluation function that assigns scores to each inference
-def eval_fn(messages: List[Dict[str, str]], results: Dict) -> float:
+def eval_fn(messages: List[Dict[str, str]], results: Dict, metadata: Dict) -> float:
     responses = extract_responses(results)
     for response in responses:
         if "Dodgers" in response:

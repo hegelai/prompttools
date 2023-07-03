@@ -18,44 +18,52 @@ class Experiment:
         self.argument_combos = []
         self.results = []
         self.scores = defaultdict(list)
-        self.human_evals = []
 
     @staticmethod
-    def _is_interactive():
+    def _is_interactive() -> bool:
         import __main__ as main
 
         return not hasattr(main, "__file__")
 
-    def _get_human_eval_listener(self, i):
+    def _aggregrate_metric(
+        self, table, metric_name: str, agg_column, is_average=False
+    ) -> pd.DataFrame:
+        # TODO: This could be a group by
+        prompt_scores = defaultdict(int)
+        prompt_counts = defaultdict(int)
+        for index, row in table.iterrows():
+            prompt_scores[row[agg_column]] += self.scores[metric_name][index]
+            prompt_counts[row[agg_column]] += 1
+        if is_average:
+            prompt_scores[row[agg_column]] /= prompt_counts[row[agg_column]]
+        sorted_scores = dict(
+            sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True)
+        )
+        return sorted_scores
+
+    def _get_human_eval_listener(self, i) -> Callable:
         def listener(change):
-            self.human_evals[i] = change["new"]
+            self.scores["feedback"][i] = change["new"]
 
         return listener
 
-    def _get_feedback_submission_listener(self, table, pivot_columns):
+    def _get_feedback_submission_listener(self, table, pivot_columns) -> Callable:
         def on_click(b):
-            prompt_scores = defaultdict(int)
-            for index, row in table.iterrows():
-                prompt_scores[row[pivot_columns[0]]] += self.human_evals[index]
-            sorted_scores = dict(
-                sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True)
-            )
+            sorted_scores = self._aggregrate_metric(table, "feedback", pivot_columns[0])
             data = {
                 pivot_columns[0]: sorted_scores.keys(),
-                "feedback_score": sorted_scores.values(),
+                "feedback": sorted_scores.values(),
             }
             df = pd.DataFrame(data)
             display.display(df)
 
         return on_click
 
-    # TODO: Agg function for eval scores
-
     def _create_args_dict(self, args) -> Dict[str, object]:
         args = {self.PARAMETER_NAMES[i]: arg for i, arg in enumerate(args)}
         return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
 
-    def prepare(self):
+    def prepare(self) -> None:
         """
         Creates argument combinations by taking the cartesian product of all inputs.
         """
@@ -63,7 +71,7 @@ class Experiment:
         for combo in itertools.product(*self.all_args):
             self.argument_combos.append(combo)
 
-    def run(self):
+    def run(self) -> None:
         """
         Create tuples of input and output for every possible combination of arguments.
         """
@@ -73,9 +81,9 @@ class Experiment:
         for combo in self.argument_combos:
             self.queue.enqueue(self.completion_fn, self._create_args_dict(combo))
         self.results = self.queue.results()
-        self.latencies = self.queue.latencies()
+        self.scores["latency"] = self.queue.latencies()
 
-    def evaluate(self, metric_name: str, eval_fn: Callable):
+    def evaluate(self, metric_name: str, eval_fn: Callable) -> None:
         """
         Using the given evaluation function, all input/response pairs are evaluated.
         """
@@ -85,10 +93,14 @@ class Experiment:
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
             self.scores[metric_name].append(
-                eval_fn(self.argument_combos[i][1], result)
+                eval_fn(
+                    self.argument_combos[i][1],
+                    result,
+                    {"latency": self.scores["latency"][i]},
+                )
             )
 
-    def get_table(self, pivot_data, pivot_columns, gather_feedback):
+    def get_table(self, pivot_data, pivot_columns, pivot) -> pd.DataFrame:
         """
         This method creates a table of the experiment data. It can also be used
         to create a pivot table, or a table for gathering human feedback.
@@ -96,13 +108,11 @@ class Experiment:
         data = {
             "messages": [combo[1] for combo in self.argument_combos],
             "response(s)": [self._extract_responses(result) for result in self.results],
-            "latency": self.latencies,
+            "latency": self.scores["latency"],
         }
-        # Add scores for each eval fn
+        # Add scores for each eval fn, including feedback
         for metric_name, evals in self.scores.items():
             data[metric_name] = evals
-        if self.human_evals:
-            data["feedback"] = self.human_evals
         # Add other args as cols if there was more than 1 input
         for i, args in enumerate([self.all_args[0]] + self.all_args[2:]):
             if len(args) > 1:
@@ -118,7 +128,7 @@ class Experiment:
                 pivot_data[str(combo[1])][1] for combo in self.argument_combos
             ]
             df = pd.DataFrame(data)
-            if not gather_feedback:
+            if pivot:
                 df = pd.pivot_table(
                     df,
                     values="response(s)",
@@ -130,15 +140,15 @@ class Experiment:
             df = pd.DataFrame(data)
         return df
 
-    def gather_feedback(self, pivot_data, pivot_columns):
+    def gather_feedback(self, pivot_data, pivot_columns) -> None:
         """
         This method creates a table to gather human feedback from a notebook interface.
         """
         if not self.results:
             logging.warning("Please run `run` first.")
             return
-        self.human_evals = [1] * len(self.results)
-        table = self.get_table(pivot_data, pivot_columns, gather_feedback=True)
+        self.scores["feedback"] = [1] * len(self.results)
+        table = self.get_table(pivot_data, pivot_columns, pivot=False)
         items = [
             widgets.Label(pivot_columns[0]),
             widgets.Label(pivot_columns[1]),
@@ -198,16 +208,34 @@ class Experiment:
         )
         display.display(grid)
 
-    def visualize(self, pivot_data=None, pivot_columns=None):
+    def visualize(self, pivot_data=None, pivot_columns=None) -> None:
         """
         Creates and shows a table using the results produced.
         """
         if not self.scores:
             logging.warning("Please run `evaluate` first.")
             return
-        table = self.get_table(pivot_data, pivot_columns, gather_feedback=False)
+        table = self.get_table(pivot_data, pivot_columns, pivot=True)
         if self._is_interactive():
             display.display(table)
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
+
+    def rank(self, pivot_data, pivot_columns, metric_name, is_average):
+        """
+        Using pivot data, groups the data by the first pivot column to
+        get scores, and sorts descending. For example, using pivot data of
+        (prompt_template, user_input), a metric of latency, and is_average=True,
+        we rank prompt templates by their average latency in the test set.
+        """
+        if metric_name not in self.scores:
+            logging.warning(
+                "Can't find " + metric_name + " in scores. Did you run `evaluate`?"
+            )
+            return
+        table = self.get_table(pivot_data, pivot_columns, pivot=False)
+        sorted_scores = self._aggregrate_metric(
+            table, metric_name, pivot_columns[0], is_average
+        )
+        return sorted_scores
