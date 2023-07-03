@@ -9,13 +9,17 @@ class ExperimentationHarness:
     def run(self):
         self.experiment.run()
 
-    def evaluate(self, eval_fn):
-        self.experiment.evaluate(eval_fn)
+    def evaluate(self, metric_name, eval_fn):
+        self.experiment.evaluate(metric_name, eval_fn)
 
-    def visualize(self, pivot=False, feedback=False):
-        if pivot or feedback:
+    
+    def gather_feedback(self):
+        self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)
+
+    def visualize(self, pivot=False):
+        if pivot:
             self.experiment.visualize(
-                self.input_pairs_dict, self.PIVOT_COLUMNS, feedback
+                self.input_pairs_dict, self.PIVOT_COLUMNS
             )
         else:
             self.experiment.visualize()

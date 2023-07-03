@@ -32,5 +32,5 @@ harness = ChatHistoryExperimentationHarness(
 # Run the evaluation
 harness.prepare()
 harness.run()
-harness.evaluate(eval_fn)
+harness.evaluate("names_arlington", eval_fn)
 harness.visualize()

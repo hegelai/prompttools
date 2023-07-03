@@ -27,5 +27,5 @@ harness = PromptTemplateExperimentationHarness(
 # Run the evaluation
 harness.prepare()
 harness.run()
-harness.evaluate(eval_fn)
+harness.evaluate("names_dodgers", eval_fn)
 harness.visualize(pivot=True)
