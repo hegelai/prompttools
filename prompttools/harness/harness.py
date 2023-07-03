@@ -12,14 +12,11 @@ class ExperimentationHarness:
     def evaluate(self, metric_name, eval_fn):
         self.experiment.evaluate(metric_name, eval_fn)
 
-    
     def gather_feedback(self):
         self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)
 
     def visualize(self, pivot=False):
         if pivot:
-            self.experiment.visualize(
-                self.input_pairs_dict, self.PIVOT_COLUMNS
-            )
+            self.experiment.visualize(self.input_pairs_dict, self.PIVOT_COLUMNS)
         else:
             self.experiment.visualize()

@@ -9,7 +9,8 @@ import ipywidgets as widgets
 
 from prompttools.requests.request_queue import RequestQueue
 
-pd.set_option('display.max_colwidth', 0)
+pd.set_option("display.max_colwidth", 0)
+
 
 class Experiment:
     def __init__(self):
@@ -24,22 +25,28 @@ class Experiment:
         import __main__ as main
 
         return not hasattr(main, "__file__")
-    
+
     def _get_human_eval_listener(self, i):
         def listener(change):
-            self.human_evals[i] = change['new']
+            self.human_evals[i] = change["new"]
+
         return listener
-    
+
     def _get_feedback_submission_listener(self, table, pivot_columns):
         def on_click(b):
             prompt_scores = defaultdict(int)
             for index, row in table.iterrows():
                 prompt_scores[row[pivot_columns[0]]] += self.human_evals[index]
-            sorted_scores = dict(sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True))
-            data = {pivot_columns[0]: sorted_scores.keys(),
-                    "feedback_score": sorted_scores.values()}
+            sorted_scores = dict(
+                sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True)
+            )
+            data = {
+                pivot_columns[0]: sorted_scores.keys(),
+                "feedback_score": sorted_scores.values(),
+            }
             df = pd.DataFrame(data)
             display.display(df)
+
         return on_click
 
     # TODO: Agg function for eval scores
@@ -95,7 +102,7 @@ class Experiment:
         for metric_name, evals in self.scores.items():
             data[metric_name] = evals
         if self.human_evals:
-            data['feedback'] = self.human_evals
+            data["feedback"] = self.human_evals
         # Add other args as cols if there was more than 1 input
         for i, args in enumerate([self.all_args[0]] + self.all_args[2:]):
             if len(args) > 1:
@@ -166,16 +173,25 @@ class Experiment:
                 value=1,
                 description="Feedback:",
             )
-            feedback_dropdown.observe(self._get_human_eval_listener(index), names='value')
+            feedback_dropdown.observe(
+                self._get_human_eval_listener(index), names="value"
+            )
             items += [feedback_dropdown]
         submit_button = widgets.Button(
-            description='Submit',
+            description="Submit",
             disabled=False,
-            button_style='success',
-            tooltip='Submit',
+            button_style="success",
+            tooltip="Submit",
         )
-        submit_button.on_click(self._get_feedback_submission_listener(table, pivot_columns))
-        items += [widgets.Label(""), widgets.Label(""), widgets.Label(""), submit_button]
+        submit_button.on_click(
+            self._get_feedback_submission_listener(table, pivot_columns)
+        )
+        items += [
+            widgets.Label(""),
+            widgets.Label(""),
+            widgets.Label(""),
+            submit_button,
+        ]
         grid = widgets.GridBox(
             items,
             layout=widgets.Layout(grid_template_columns="repeat(4, 250px)"),
@@ -195,4 +211,3 @@ class Experiment:
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
-
