@@ -3,3 +3,5 @@ tenacity
 tabulate
 pandas
 jinja2
+jupyterlab
+ipywidgets
