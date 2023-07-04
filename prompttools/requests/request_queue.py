@@ -31,7 +31,7 @@ class RequestQueue:
             except Empty:
                 continue
 
-    def _do_task(self, fn, args) -> None:
+    def _do_task(self, fn: Callable, args: Dict[str, object]) -> None:
         try:
             res = self._run(fn, args)
             self.request_results.append(res[0])
@@ -41,7 +41,9 @@ class RequestQueue:
             logging.error("Authentication error. Skipping request.")
 
     @retry_decorator
-    def _run(self, fn, args) -> Tuple[Dict[str, object], float]:
+    def _run(
+        self, fn: Callable, args: Dict[str, object]
+    ) -> Tuple[Dict[str, object], float]:
         start = perf_counter()
         result = fn(**args)
         return result, perf_counter() - start

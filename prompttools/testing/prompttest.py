@@ -1,3 +1,4 @@
+from typing import Callable, Dict
 from functools import wraps
 import logging
 
@@ -16,28 +17,28 @@ TESTS_TO_RUN = []
 
 
 def prompttest(
-    model_name,
-    metric_name,
-    threshold,
-    prompt_template_file=None,
-    user_input_file=None,
-    system_prompt_file=None,
-    human_messages_file=None,
-    prompt_template=None,
-    user_input=None,
-    system_prompt=None,
-    human_messages=None,
-    is_average=None,
-    use_input_pairs=False,
-    threshold_type=ThresholdType.MINIMUM,
-    model_arguments={},
+    model_name: str,
+    metric_name: str,
+    threshold: float,
+    prompt_template_file: str = None,
+    user_input_file: str = None,
+    system_prompt_file: str = None,
+    human_messages_file: str = None,
+    prompt_template: str = None,
+    user_input: Dict[str, str] = None,
+    system_prompt: str = None,
+    human_messages: str = None,
+    is_average: bool = False,
+    use_input_pairs: bool = False,
+    threshold_type: ThresholdType = ThresholdType.MINIMUM,
+    model_arguments: Dict[str, object] = {},
 ):
     """
     Creates a decorator for prompt tests, which can annotate evaluation functions.
     This enables developers to create a prompt test suite from their evaluations.
     """
 
-    def prompttest_decorator(eval_fn):
+    def prompttest_decorator(eval_fn: Callable):
         @wraps(eval_fn)
         def runs_test():
             if prompt_template_file and user_input_file:

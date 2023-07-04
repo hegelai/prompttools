@@ -84,5 +84,5 @@ class OpenAICompletionExperiment(Experiment):
         super().__init__()
 
     @staticmethod
-    def _extract_responses(output) -> str:
+    def _extract_responses(output: Dict[str, object]) -> str:
         return [choice["text"] for choice in output["choices"]]

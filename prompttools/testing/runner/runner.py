@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Callable, Dict, Tuple
 
 
 class PromptTestRunner:
@@ -10,7 +11,7 @@ class PromptTestRunner:
         self.ran = defaultdict(bool)
         self.harnesses = dict()
 
-    def run(self, *args, **kwargs):
+    def run(self, *args, **kwargs) -> str:
         """
         Runs the test if it has not already been run.
         """
@@ -23,13 +24,19 @@ class PromptTestRunner:
         self.ran[key] = True
         return key
 
-    def evaluate(self, key, metric_name, eval_fn, use_input_pairs):
+    def evaluate(
+        self,
+        key: str,
+        metric_name: str,
+        eval_fn: Callable,
+        use_input_pairs: Dict[str, Tuple[str, Dict[str, str]]],
+    ):
         """
         Evaluates the test results.
         """
         self.harnesses[key].evaluate(metric_name, eval_fn, use_input_pairs)
 
-    def rank(self, key, metric_name, is_average):
+    def rank(self, key: str, metric_name: str, is_average: bool) -> Dict[str, float]:
         """
         Uses evaluations to "rank" the template or system prompt.
         This creates an overall score (sum or average) across all

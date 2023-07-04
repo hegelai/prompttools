@@ -28,14 +28,14 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         self.model_arguments = model_arguments
 
     @staticmethod
-    def _create_system_prompt(content):
+    def _create_system_prompt(content: str) -> Dict[str, str]:
         return {"role": "system", "content": content}
 
     @staticmethod
-    def _create_human_message(content):
+    def _create_human_message(content: str) -> Dict[str, str]:
         return {"role": "user", "content": content}
 
-    def prepare(self):
+    def prepare(self) -> None:
         """
         Creates messages to use for the experiment, and then initializes and prepares the experiment.
         """

@@ -23,7 +23,7 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
         self.dialectic_scribe_name = dialectic_scribe_name
         self.model_arguments = model_arguments
 
-    def prepare(self):
+    def prepare(self) -> None:
         """
         Initializes and prepares the experiment.
         """

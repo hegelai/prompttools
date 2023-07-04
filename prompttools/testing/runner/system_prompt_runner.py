@@ -1,3 +1,4 @@
+from typing import Callable, Dict, List, Tuple
 import csv
 
 from prompttools.testing.threshold_type import ThresholdType
@@ -16,7 +17,9 @@ class SystemPromptTestRunner(PromptTestRunner):
         self.human_messages = {}
         super().__init__()
 
-    def read(self, system_prompt_file, human_messages_file):
+    def read(
+        self, system_prompt_file: str, human_messages_file: str
+    ) -> Tuple[str, List[str]]:
         """
         Reads data from files and parses it into a system prompt and human messages.
         """
@@ -38,7 +41,13 @@ class SystemPromptTestRunner(PromptTestRunner):
         self.human_messages[human_messages_file] = human_messages
         return system_prompt, human_messages
 
-    def _get_harness(self, model_name, system_prompt, human_messages, model_args):
+    def _get_harness(
+        self,
+        model_name: str,
+        system_prompt: str,
+        human_messages: List[str],
+        model_args: Dict[str, str],
+    ) -> SystemPromptExperimentationHarness:
         return SystemPromptExperimentationHarness(
             model_name, [system_prompt], human_messages, model_arguments=model_args
         )
@@ -48,17 +57,17 @@ system_prompt_test_runner = SystemPromptTestRunner()
 
 
 def run_system_prompt_test(
-    model_name,
-    metric_name,
-    eval_fn,
-    threshold,
-    threshold_type,
-    is_average,
-    system_prompt,
-    human_messages,
-    use_input_pairs,
-    model_args,
-):
+    model_name: str,
+    metric_name: str,
+    eval_fn: Callable,
+    threshold: float,
+    threshold_type: ThresholdType,
+    is_average: bool,
+    system_prompt: str,
+    human_messages: List[str],
+    use_input_pairs: bool,
+    model_args: Dict[str, str],
+) -> int:
     """
     Runs the prompt test.
     """
@@ -93,17 +102,17 @@ def run_system_prompt_test(
 
 
 def run_system_prompt_test_from_files(
-    model_name,
-    metric_name,
-    eval_fn,
-    threshold,
-    threshold_type,
-    is_average,
-    system_prompt_file,
-    human_messages_file,
-    use_input_pairs,
-    model_args,
-):
+    model_name: str,
+    metric_name: str,
+    eval_fn: Callable,
+    threshold: float,
+    threshold_type: ThresholdType,
+    is_average: bool,
+    system_prompt_file: str,
+    human_messages_file: str,
+    use_input_pairs: bool,
+    model_args: Dict[str, str],
+) -> int:
     """
     Reads data in from files and runs the prompt test.
     """

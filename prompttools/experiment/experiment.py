@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 from collections import defaultdict
 import itertools
 import logging
@@ -21,12 +21,20 @@ class Experiment:
 
     @staticmethod
     def _is_interactive() -> bool:
+        """
+        Used to determine if we are in a jupyter notebook, which
+        determines how we present the visualizations.
+        """
         import __main__ as main
 
         return not hasattr(main, "__file__")
 
     def _aggregrate_metric(
-        self, table, metric_name: str, agg_column, is_average=False
+        self,
+        table: pd.DataFrame,
+        metric_name: str,
+        agg_column: str,
+        is_average: bool = False,
     ) -> pd.DataFrame:
         # TODO: This could be a group by
         prompt_scores = defaultdict(int)
@@ -41,7 +49,7 @@ class Experiment:
         )
         return sorted_scores
 
-    def _get_human_eval_listener(self, i) -> Callable:
+    def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
             self.scores["feedback"][i] = change["new"]
             if self.use_dialectic_scribe:
@@ -52,7 +60,9 @@ class Experiment:
 
         return listener
 
-    def _get_feedback_submission_listener(self, table, pivot_columns) -> Callable:
+    def _get_feedback_submission_listener(
+        self, table: pd.DataFrame, pivot_columns: List[str]
+    ) -> Callable:
         def on_click(b):
             sorted_scores = self._aggregrate_metric(table, "feedback", pivot_columns[0])
             data = {
@@ -64,7 +74,9 @@ class Experiment:
 
         return on_click
 
-    def _create_args_dict(self, args, tagname, input_pairs) -> Dict[str, object]:
+    def _create_args_dict(
+        self, args: Dict[str, object], tagname: str, input_pairs: Dict[str, object]
+    ) -> Dict[str, object]:
         args = {self.PARAMETER_NAMES[i]: arg for i, arg in enumerate(args)}
         if self.use_dialectic_scribe:
             args["hegel_tags"] = {tagname: input_pairs[args[1]]}
@@ -129,7 +141,9 @@ class Experiment:
                     self.results[i]["hegel_id"], {metric_name: score}
                 )
 
-    def get_table(self, pivot_data, pivot_columns, pivot) -> pd.DataFrame:
+    def get_table(
+        self, pivot_data: Dict[str, object], pivot_columns: List[str], pivot: bool
+    ) -> pd.DataFrame:
         """
         This method creates a table of the experiment data. It can also be used
         to create a pivot table, or a table for gathering human feedback.
@@ -169,7 +183,9 @@ class Experiment:
             df = pd.DataFrame(data)
         return df
 
-    def gather_feedback(self, pivot_data, pivot_columns) -> None:
+    def gather_feedback(
+        self, pivot_data: Dict[str, object], pivot_columns: List[str]
+    ) -> None:
         """
         This method creates a table to gather human feedback from a notebook interface.
         """
@@ -237,7 +253,11 @@ class Experiment:
         )
         display.display(grid)
 
-    def visualize(self, pivot_data=None, pivot_columns=None) -> None:
+    def visualize(
+        self,
+        pivot_data: Optional[Dict[str, object]] = None,
+        pivot_columns: Optional[List[str]] = None,
+    ) -> None:
         """
         Creates and shows a table using the results produced.
         """
@@ -251,7 +271,13 @@ class Experiment:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
 
-    def rank(self, pivot_data, pivot_columns, metric_name, is_average):
+    def rank(
+        self,
+        pivot_data: Dict[str, object],
+        pivot_columns: List[str],
+        metric_name: str,
+        is_average: bool,
+    ) -> Dict[str, float]:
         """
         Using pivot data, groups the data by the first pivot column to
         get scores, and sorts descending. For example, using pivot data of

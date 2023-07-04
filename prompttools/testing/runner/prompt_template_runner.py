@@ -1,3 +1,4 @@
+from typing import Callable, Dict, List, Tuple
 import csv
 
 from prompttools.testing.threshold_type import ThresholdType
@@ -18,7 +19,9 @@ class PromptTemplateTestRunner(PromptTestRunner):
         self.user_inputs = {}
         super().__init__()
 
-    def read(self, prompt_template_file, user_input_file):
+    def read(
+        self, prompt_template_file: str, user_input_file: str
+    ) -> Tuple[str, List[Dict[str, str]]]:
         """
         Reads data from files and parses it into a prompt template and user input.
         """
@@ -40,7 +43,13 @@ class PromptTemplateTestRunner(PromptTestRunner):
         self.user_inputs[user_input_file] = user_inputs
         return prompt_template, user_inputs
 
-    def _get_harness(self, model_name, prompt_template, user_inputs, model_args):
+    def _get_harness(
+        self,
+        model_name: str,
+        prompt_template: str,
+        user_inputs: List[Dict[str, str]],
+        model_args: Dict[str, object],
+    ) -> PromptTemplateExperimentationHarness:
         return PromptTemplateExperimentationHarness(
             model_name, [prompt_template], user_inputs, model_arguments=model_args
         )
@@ -50,17 +59,17 @@ prompt_template_test_runner = PromptTemplateTestRunner()
 
 
 def run_prompt_template_test(
-    model_name,
-    metric_name,
-    eval_fn,
-    threshold,
-    threshold_type,
-    is_average,
-    prompt_template,
-    user_inputs,
-    use_input_pairs,
-    model_args,
-):
+    model_name: str,
+    metric_name: str,
+    eval_fn: Callable,
+    threshold: float,
+    threshold_type: ThresholdType,
+    is_average: bool,
+    prompt_template: str,
+    user_inputs: List[Dict[str, str]],
+    use_input_pairs: bool,
+    model_args: Dict[str, object],
+) -> int:
     """
     Runs the prompt test.
     """
@@ -95,17 +104,17 @@ def run_prompt_template_test(
 
 
 def run_prompt_template_test_from_files(
-    model_name,
-    metric_name,
-    eval_fn,
-    threshold,
-    threshold_type,
-    is_average,
-    prompt_template_file,
-    user_input_file,
-    use_input_pairs,
-    model_args,
-):
+    model_name: str,
+    metric_name: str,
+    eval_fn: Callable,
+    threshold: float,
+    threshold_type: ThresholdType,
+    is_average: bool,
+    prompt_template_file: str,
+    user_input_file: str,
+    use_input_pairs: bool,
+    model_args: Dict[str, object],
+) -> int:
     """
     Reads data in from files and runs the prompt test.
     """
