@@ -6,6 +6,7 @@ import logging
 
 from prompttools.mock.fake import fake_chat_completion_fn
 from prompttools.experiment.experiment import Experiment
+from dialectic.api.client_api.dialectic_scribe import DialecticScribe  # TODO: Switch to `hegel`
 
 
 class OpenAIChatExperiment(Experiment):
@@ -42,8 +43,13 @@ class OpenAIChatExperiment(Experiment):
         presence_penalty: Optional[List[float]] = [0],
         frequency_penalty: Optional[List[float]] = [0],
         logit_bias: Optional[Dict] = [None],
+        use_dialectic_scribe: bool = False,
     ):
-        self.completion_fn = openai.ChatCompletion.create
+        if use_dialectic_scribe:
+            # TODO: Perhaps we should accept a name for the experiment
+            self.completion_fn = DialecticScribe(name="Chat Experiment", completion_fn=openai.ChatCompletion.create)
+        else:
+            self.completion_fn = openai.ChatCompletion.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = fake_chat_completion_fn
         self.all_args = []

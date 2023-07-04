@@ -5,3 +5,4 @@ pandas
 jinja2
 jupyterlab
 ipywidgets
+# hegel  # This can be used once client package is released
