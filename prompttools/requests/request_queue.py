@@ -1,3 +1,4 @@
+from typing import Callable, Dict, List, Tuple
 from queue import Queue, Empty
 from time import perf_counter
 import threading
@@ -8,6 +9,11 @@ from prompttools.requests.retries import retry_decorator
 
 
 class RequestQueue:
+    """
+    A generic queue for processing requests in the prompttools library.
+    It can be used to handle and time requests to any LLM asynchronously.
+    """
+
     def __init__(self):
         self.data_queue = Queue()
         self.is_running = True
@@ -25,7 +31,7 @@ class RequestQueue:
             except Empty:
                 continue
 
-    def _do_task(self, fn, args):
+    def _do_task(self, fn, args) -> None:
         try:
             res = self._run(fn, args)
             self.request_results.append(res[0])
@@ -35,7 +41,7 @@ class RequestQueue:
             logging.error("Authentication error. Skipping request.")
 
     @retry_decorator
-    def _run(self, fn, args):
+    def _run(self, fn, args) -> Tuple[Dict[str, object], float]:
         start = perf_counter()
         result = fn(**args)
         return result, perf_counter() - start
@@ -53,13 +59,22 @@ class RequestQueue:
     def __del__(self) -> None:
         self.shutdown()
 
-    def enqueue(self, callable, args):
+    def enqueue(self, callable: Callable, args: Dict[str, object]) -> None:
+        """
+        Adds another request to the queue.
+        """
         self.data_queue.put((callable, args))
 
-    def results(self):
+    def results(self) -> List[Dict[str, object]]:
+        """
+        Joins the queue and gets results.
+        """
         self.data_queue.join()
         return self.request_results
 
-    def latencies(self):
+    def latencies(self) -> List[float]:
+        """
+        Joins the queue and gets latencies.
+        """
         self.data_queue.join()
         return self.request_latencies

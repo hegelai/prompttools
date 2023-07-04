@@ -1,4 +1,8 @@
 class ExperimentationHarness:
+    """
+    Base class for experimentation harnesses.
+    """
+
     @staticmethod
     def _prepare_arguments(arguments):
         return {name: [arg] for name, arg in arguments.items()}

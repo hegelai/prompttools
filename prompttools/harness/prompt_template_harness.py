@@ -33,6 +33,9 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         self.model_arguments = model_arguments
 
     def prepare(self):
+        """
+        Creates prompts from templates to use for the experiment, and then initializes and prepares the experiment.
+        """
         self.input_pairs_dict = {}
         rendered_inputs = []
         for pt in self.prompt_templates:

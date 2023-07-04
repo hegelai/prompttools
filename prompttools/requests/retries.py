@@ -10,6 +10,10 @@ import logging
 
 
 def create_retry_decorator():
+    """
+    This method creates a retry decorator that can be used for requests.
+    This improves the reliability of the request queue.
+    """
     min_seconds = 4
     max_seconds = 10
     max_attempts = 5

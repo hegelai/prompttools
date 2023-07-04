@@ -9,12 +9,19 @@ from prompttools.testing.runner.runner import PromptTestRunner
 
 
 class PromptTemplateTestRunner(PromptTestRunner):
+    """
+    A prompt test runner for tests based on prompt templates.
+    """
+
     def __init__(self):
         self.prompt_templates = {}
         self.user_inputs = {}
         super().__init__()
 
     def read(self, prompt_template_file, user_input_file):
+        """
+        Reads data from files and parses it into a prompt template and user input.
+        """
         if (
             prompt_template_file in self.prompt_templates
             and user_input_file in self.user_inputs
@@ -54,7 +61,12 @@ def run_prompt_template_test(
     use_input_pairs,
     model_args,
 ):
-    key = prompt_template_test_runner.run(model_name, prompt_template, user_inputs, model_args)
+    """
+    Runs the prompt test.
+    """
+    key = prompt_template_test_runner.run(
+        model_name, prompt_template, user_inputs, model_args
+    )
     prompt_template_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = prompt_template_test_runner.rank(key, metric_name, is_average)
     if (
@@ -94,6 +106,9 @@ def run_prompt_template_test_from_files(
     use_input_pairs,
     model_args,
 ):
+    """
+    Reads data in from files and runs the prompt test.
+    """
     prompt_template, user_inputs = prompt_template_test_runner.read(
         prompt_template_file, user_input_file
     )

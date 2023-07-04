@@ -7,12 +7,19 @@ from prompttools.testing.runner.runner import PromptTestRunner
 
 
 class SystemPromptTestRunner(PromptTestRunner):
+    """
+    A prompt test runner for tests based on system prompts.
+    """
+
     def __init__(self):
         self.system_prompts = {}
         self.human_messages = {}
         super().__init__()
 
     def read(self, system_prompt_file, human_messages_file):
+        """
+        Reads data from files and parses it into a system prompt and human messages.
+        """
         if (
             system_prompt_file in self.system_prompts
             and human_messages_file in self.human_messages
@@ -52,7 +59,12 @@ def run_system_prompt_test(
     use_input_pairs,
     model_args,
 ):
-    key = system_prompt_test_runner.run(model_name, system_prompt, human_messages, model_args)
+    """
+    Runs the prompt test.
+    """
+    key = system_prompt_test_runner.run(
+        model_name, system_prompt, human_messages, model_args
+    )
     system_prompt_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
     if (
@@ -92,6 +104,9 @@ def run_system_prompt_test_from_files(
     use_input_pairs,
     model_args,
 ):
+    """
+    Reads data in from files and runs the prompt test.
+    """
     system_prompt, human_messages = system_prompt_test_runner.read(
         system_prompt_file, human_messages_file
     )

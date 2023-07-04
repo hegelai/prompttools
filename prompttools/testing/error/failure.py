@@ -1,11 +1,18 @@
 from prompttools.testing.threshold_type import ThresholdType
 
 
-class PromptTestFailure(Exception):
+class PromptTestSetupException(Exception):
+    """
+    An exception to throw when something goes wrong with the prompt test setup
+    """
+
     pass
 
 
 def log_failure(metric_name, threshold, actual, threshold_type):
+    """
+    Prints the test results to the console.
+    """
     print(
         "Test failed:  "
         + metric_name

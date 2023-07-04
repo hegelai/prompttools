@@ -2,7 +2,7 @@ from functools import wraps
 import logging
 
 from prompttools.testing.threshold_type import ThresholdType
-from prompttools.testing.error.failure import PromptTestFailure
+from prompttools.testing.error.failure import PromptTestSetupException
 from prompttools.testing.runner.prompt_template_runner import (
     run_prompt_template_test,
     run_prompt_template_test_from_files,
@@ -30,8 +30,13 @@ def prompttest(
     is_average=None,
     use_input_pairs=False,
     threshold_type=ThresholdType.MINIMUM,
-    model_arguments={}
+    model_arguments={},
 ):
+    """
+    Creates a decorator for prompt tests, which can annotate evaluation functions.
+    This enables developers to create a prompt test suite from their evaluations.
+    """
+
     def prompttest_decorator(eval_fn):
         @wraps(eval_fn)
         def runs_test():
@@ -89,7 +94,7 @@ def prompttest(
                 )
             else:
                 logging.error("Bad configuration for metric: " + metric_name)
-                raise PromptTestFailure
+                raise PromptTestSetupException
 
         TESTS_TO_RUN.append(runs_test)
         return runs_test

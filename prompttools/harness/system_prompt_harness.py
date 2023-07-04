@@ -36,6 +36,9 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         return {"role": "user", "content": content}
 
     def prepare(self):
+        """
+        Creates messages to use for the experiment, and then initializes and prepares the experiment.
+        """
         self.input_pairs_dict = {}
         messages_to_try = []
         for system_prompt in self.system_prompts:

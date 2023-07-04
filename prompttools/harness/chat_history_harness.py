@@ -24,6 +24,9 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
         self.model_arguments = model_arguments
 
     def prepare(self):
+        """
+        Initializes and prepares the experiment.
+        """
         self.experiment = self.experiment_classname(
             [self.model_name],
             self.chat_histories,
