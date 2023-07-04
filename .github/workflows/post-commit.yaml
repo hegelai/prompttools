@@ -1,4 +1,4 @@
-name: Testing and Coverage
+name: Run prompt tests
 
 on:
   push:
