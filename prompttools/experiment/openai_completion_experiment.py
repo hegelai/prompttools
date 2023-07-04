@@ -5,7 +5,9 @@ import logging
 
 from prompttools.mock.fake import fake_completion_fn
 from prompttools.experiment.experiment import Experiment
-from dialectic.api.client_api.dialectic_scribe import DialecticScribe  # TODO: Switch to `hegel`
+from dialectic.api.client_api.dialectic_scribe import (
+    DialecticScribe,
+)  # TODO: Switch to `hegel`
 
 
 class OpenAICompletionExperiment(Experiment):
@@ -37,6 +39,8 @@ class OpenAICompletionExperiment(Experiment):
         self,
         model: List[str],
         prompt: List[str],
+        use_dialectic_scribe: bool = False,
+        dialectic_scribe_name: str = "Completion Experiment",
         suffix: Optional[List[str]] = [None],
         max_tokens: Optional[List[int]] = [float("inf")],
         temperature: Optional[List[float]] = [1.0],
@@ -50,11 +54,12 @@ class OpenAICompletionExperiment(Experiment):
         frequency_penalty: Optional[List[float]] = [0],
         best_of: Optional[List[int]] = [1],
         logit_bias: Optional[Dict] = [None],
-        use_dialectic_scribe: bool = False,
     ):
+        self.use_dialectic_scribe = use_dialectic_scribe
         if use_dialectic_scribe:
-            # TODO: Perhaps we should accept a name for the experiment
-            self.completion_fn = DialecticScribe(name="Chat Experiment", completion_fn=openai.Completion.create)
+            self.completion_fn = DialecticScribe(
+                name=dialectic_scribe_name, completion_fn=openai.Completion.create
+            )
         else:
             self.completion_fn = openai.Completion.create
 

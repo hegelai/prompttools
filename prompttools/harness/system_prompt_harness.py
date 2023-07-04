@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional
 from prompttools.harness.harness import ExperimentationHarness
+from prompttools.experiment.openai_chat_experiment import OpenAIChatExperiment
 
 
 class SystemPromptExperimentationHarness(ExperimentationHarness):
@@ -11,17 +12,20 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
 
     def __init__(
         self,
-        experiment_classname,
         model_name: str,
         system_prompts: List[str],
         human_messages: List[str],
+        use_dialectic_scribe: bool = False,
+        dialectic_scribe_name: str = "System Prompt Experiment",
         model_arguments: Optional[Dict[str, object]] = {},
     ):
-        self.experiment_classname = experiment_classname
+        self.experiment_classname = OpenAIChatExperiment
         self.model_name = model_name
-        self.model_arguments = model_arguments
         self.system_prompts = system_prompts
         self.human_messages = human_messages
+        self.use_dialectic_scribe = use_dialectic_scribe
+        self.dialectic_scribe_name = dialectic_scribe_name
+        self.model_arguments = model_arguments
 
     @staticmethod
     def _create_system_prompt(content):
@@ -45,6 +49,8 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         self.experiment = self.experiment_classname(
             [self.model_name],
             messages_to_try,
+            self.use_dialectic_scribe,
+            self.dialectic_scribe_name,
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()

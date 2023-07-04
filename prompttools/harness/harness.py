@@ -7,10 +7,13 @@ class ExperimentationHarness:
         self.experiment.prepare()
 
     def run(self):
-        self.experiment.run()
+        self.experiment.run(self.PIVOT_COLUMNS[0], self.input_pairs_dict)
 
-    def evaluate(self, metric_name, eval_fn):
-        self.experiment.evaluate(metric_name, eval_fn)
+    def evaluate(self, metric_name, eval_fn, use_input_pairs=False):
+        if use_input_pairs:
+            self.experiment.evaluate(metric_name, eval_fn, self.input_pairs_dict)
+        else:
+            self.experiment.evaluate(metric_name, eval_fn)
 
     def gather_feedback(self):
         self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)

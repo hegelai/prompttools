@@ -1,4 +1,4 @@
-from typing import Callable, Dict
+from typing import Callable, Dict, Optional, Tuple
 from collections import defaultdict
 import itertools
 import logging
@@ -44,6 +44,11 @@ class Experiment:
     def _get_human_eval_listener(self, i) -> Callable:
         def listener(change):
             self.scores["feedback"][i] = change["new"]
+            if self.use_dialectic_scribe:
+                self.completion_fn.add_feedback(
+                    self.results[i]["hegel_id"],
+                    {"thumbs_up": self.scores["feedback"][i]},
+                )
 
         return listener
 
@@ -59,8 +64,10 @@ class Experiment:
 
         return on_click
 
-    def _create_args_dict(self, args) -> Dict[str, object]:
+    def _create_args_dict(self, args, tagname, input_pairs) -> Dict[str, object]:
         args = {self.PARAMETER_NAMES[i]: arg for i, arg in enumerate(args)}
+        if self.use_dialectic_scribe:
+            args["hegel_tags"] = {tagname: input_pairs[args[1]]}
         return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
 
     def prepare(self) -> None:
@@ -71,7 +78,11 @@ class Experiment:
         for combo in itertools.product(*self.all_args):
             self.argument_combos.append(combo)
 
-    def run(self) -> None:
+    def run(
+        self,
+        tagname: str,
+        input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
+    ) -> None:
         """
         Create tuples of input and output for every possible combination of arguments.
         """
@@ -79,11 +90,18 @@ class Experiment:
             logging.warning("Please run `prepare` first.")
             return
         for combo in self.argument_combos:
-            self.queue.enqueue(self.completion_fn, self._create_args_dict(combo))
+            self.queue.enqueue(
+                self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
+            )
         self.results = self.queue.results()
         self.scores["latency"] = self.queue.latencies()
 
-    def evaluate(self, metric_name: str, eval_fn: Callable) -> None:
+    def evaluate(
+        self,
+        metric_name: str,
+        eval_fn: Callable,
+        input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
+    ) -> None:
         """
         Using the given evaluation function, all input/response pairs are evaluated.
         """
@@ -92,13 +110,22 @@ class Experiment:
             return
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
-            self.scores[metric_name].append(
-                eval_fn(
-                    self.argument_combos[i][1],
-                    result,
-                    {"latency": self.scores["latency"][i]},
-                )
+            score = eval_fn(
+                input_pairs[self.argument_combos[i][1]]
+                if input_pairs
+                else self.argument_combos[i][1],
+                result,
+                {
+                    name: self.scores[name][i]
+                    for name in self.scores.keys()
+                    if name is not metric_name
+                },
             )
+            self.scores[metric_name].append(score)
+            if self.use_dialectic_scribe:
+                self.completion_fn.add_feedback(
+                    self.results[i]["hegel_id"], {metric_name: score}
+                )
 
     def get_table(self, pivot_data, pivot_columns, pivot) -> pd.DataFrame:
         """
@@ -122,10 +149,10 @@ class Experiment:
         df = None
         if pivot_data:
             data[pivot_columns[0]] = [
-                pivot_data[str(combo[1])][0] for combo in self.argument_combos
+                str(pivot_data[str(combo[1])][0]) for combo in self.argument_combos
             ]
             data[pivot_columns[1]] = [
-                pivot_data[str(combo[1])][1] for combo in self.argument_combos
+                str(pivot_data[str(combo[1])][1]) for combo in self.argument_combos
             ]
             df = pd.DataFrame(data)
             if pivot:
@@ -181,7 +208,7 @@ class Experiment:
             feedback_dropdown = widgets.Dropdown(
                 options=[("\U0001F44D", 1), ("\U0001F44E", 0)],
                 value=1,
-                description="Feedback:",
+                layout={"width": "50px"},
             )
             feedback_dropdown.observe(
                 self._get_human_eval_listener(index), names="value"
@@ -204,7 +231,7 @@ class Experiment:
         ]
         grid = widgets.GridBox(
             items,
-            layout=widgets.Layout(grid_template_columns="repeat(4, 250px)"),
+            layout=widgets.Layout(grid_template_columns="repeat(4, 230px)"),
         )
         display.display(grid)
 
@@ -212,8 +239,8 @@ class Experiment:
         """
         Creates and shows a table using the results produced.
         """
-        if not self.scores:
-            logging.warning("Please run `evaluate` first.")
+        if not self.results:
+            logging.warning("Please run `run` first.")
             return
         table = self.get_table(pivot_data, pivot_columns, pivot=True)
         if self._is_interactive():
