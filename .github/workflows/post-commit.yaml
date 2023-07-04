@@ -22,6 +22,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Setup prompttools
+      run: |
+        python setup.py install
     - name: Run tests
       run: |
         DEBUG=1 python examples/prompttests/example.py
