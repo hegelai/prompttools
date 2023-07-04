@@ -31,9 +31,9 @@ class SystemPromptTestRunner(PromptTestRunner):
         self.human_messages[human_messages_file] = human_messages
         return system_prompt, human_messages
 
-    def _get_harness(self, model_name, system_prompt, human_messages):
+    def _get_harness(self, model_name, system_prompt, human_messages, model_args):
         return SystemPromptExperimentationHarness(
-            model_name, [system_prompt], human_messages
+            model_name, [system_prompt], human_messages, model_arguments=model_args
         )
 
 
@@ -50,8 +50,9 @@ def run_system_prompt_test(
     system_prompt,
     human_messages,
     use_input_pairs,
+    model_args,
 ):
-    key = system_prompt_test_runner.run(model_name, system_prompt, human_messages)
+    key = system_prompt_test_runner.run(model_name, system_prompt, human_messages, model_args)
     system_prompt_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
     if (
@@ -89,6 +90,7 @@ def run_system_prompt_test_from_files(
     system_prompt_file,
     human_messages_file,
     use_input_pairs,
+    model_args,
 ):
     system_prompt, human_messages = system_prompt_test_runner.read(
         system_prompt_file, human_messages_file
@@ -103,4 +105,5 @@ def run_system_prompt_test_from_files(
         system_prompt,
         human_messages,
         use_input_pairs,
+        model_args,
     )

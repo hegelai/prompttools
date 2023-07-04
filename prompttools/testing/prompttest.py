@@ -30,6 +30,7 @@ def prompttest(
     is_average=None,
     use_input_pairs=False,
     threshold_type=ThresholdType.MINIMUM,
+    model_arguments={}
 ):
     def prompttest_decorator(eval_fn):
         @wraps(eval_fn)
@@ -45,6 +46,7 @@ def prompttest(
                     prompt_template_file,
                     user_input_file,
                     use_input_pairs,
+                    model_arguments,
                 )
             elif prompt_template and user_input:
                 return run_prompt_template_test(
@@ -57,6 +59,7 @@ def prompttest(
                     prompt_template,
                     user_input,
                     use_input_pairs,
+                    model_arguments,
                 )
             elif system_prompt_file and human_messages_file:
                 return run_system_prompt_test_from_files(
@@ -69,6 +72,7 @@ def prompttest(
                     system_prompt_file,
                     human_messages_file,
                     use_input_pairs,
+                    model_arguments,
                 )
             elif system_prompt and human_messages:
                 return run_system_prompt_test(
@@ -81,6 +85,7 @@ def prompttest(
                     system_prompt,
                     human_messages,
                     use_input_pairs,
+                    model_arguments,
                 )
             else:
                 logging.error("Bad configuration for metric: " + metric_name)

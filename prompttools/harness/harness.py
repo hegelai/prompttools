@@ -1,7 +1,7 @@
 class ExperimentationHarness:
     @staticmethod
     def _prepare_arguments(arguments):
-        return {name: [arg] for name, arg in arguments}
+        return {name: [arg] for name, arg in arguments.items()}
 
     def prepare(self):
         self.experiment.prepare()

@@ -22,6 +22,7 @@ def extract_responses(output) -> str:
     prompt_template="Echo the following input: {{input}}",
     user_input=[{"input": "This is a test"}],
     use_input_pairs=True,
+    model_arguments={'temperature': 0.9},
 )
 def check_similarity(
     input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict

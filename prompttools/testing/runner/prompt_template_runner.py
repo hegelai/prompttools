@@ -33,9 +33,9 @@ class PromptTemplateTestRunner(PromptTestRunner):
         self.user_inputs[user_input_file] = user_inputs
         return prompt_template, user_inputs
 
-    def _get_harness(self, model_name, prompt_template, user_inputs):
+    def _get_harness(self, model_name, prompt_template, user_inputs, model_args):
         return PromptTemplateExperimentationHarness(
-            model_name, [prompt_template], user_inputs
+            model_name, [prompt_template], user_inputs, model_arguments=model_args
         )
 
 
@@ -52,8 +52,9 @@ def run_prompt_template_test(
     prompt_template,
     user_inputs,
     use_input_pairs,
+    model_args,
 ):
-    key = prompt_template_test_runner.run(model_name, prompt_template, user_inputs)
+    key = prompt_template_test_runner.run(model_name, prompt_template, user_inputs, model_args)
     prompt_template_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = prompt_template_test_runner.rank(key, metric_name, is_average)
     if (
@@ -91,6 +92,7 @@ def run_prompt_template_test_from_files(
     prompt_template_file,
     user_input_file,
     use_input_pairs,
+    model_args,
 ):
     prompt_template, user_inputs = prompt_template_test_runner.read(
         prompt_template_file, user_input_file
@@ -105,4 +107,5 @@ def run_prompt_template_test_from_files(
         prompt_template,
         user_inputs,
         use_input_pairs,
+        model_args,
     )
