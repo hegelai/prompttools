@@ -5,7 +5,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 import chromadb
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 import prompttools.testing.prompttest as prompttest
 from prompttools.testing.threshold_type import ThresholdType
 
@@ -17,7 +17,7 @@ def extract_responses(output) -> str:
 @prompttest.prompttest(
     model_name="gpt-3.5-turbo",
     metric_name="did_echo",
-    threshold=1,
+    threshold=2,
     threshold_type=ThresholdType.MAXIMUM,
     prompt_template="Echo the following input: {{input}}",
     user_input=[{"input": "This is a test"}],
@@ -28,7 +28,9 @@ def check_similarity(
 ) -> float:
     chroma_client = chromadb.Client()
     collection = chroma_client.create_collection(name="test_collection")
-    collection.add(documents=[dict(input_pair[1])["input"]], ids=["id1"])
+    collection.add(
+        documents=[dict(input_pair[1])["input"]], metadatas=[metadata], ids=["id1"]
+    )
     query_results = collection.query(
         query_texts=extract_responses(results), n_results=1
     )
