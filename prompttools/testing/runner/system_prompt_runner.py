@@ -1,6 +1,6 @@
 import csv
 
-from prompttools.testing.error.failure import PromptTestFailure, log_failure
+from prompttools.testing.error.failure import log_failure
 from prompttools.harness.system_prompt_harness import SystemPromptExperimentationHarness
 from prompttools.testing.runner.runner import PromptTestRunner
 
@@ -48,12 +48,13 @@ def run_system_prompt_test(
     system_prompt,
     human_messages,
 ):
-    system_prompt_test_runner.run(model_name, system_prompt, human_messages)
-    system_prompt_test_runner.evaluate(metric_name, eval_fn)
-    scored_template = system_prompt_test_runner.rank(metric_name, is_average)
+    key = system_prompt_test_runner.run(model_name, system_prompt, human_messages)
+    system_prompt_test_runner.evaluate(key, metric_name, eval_fn)
+    scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
     if scored_template[system_prompt] < threshold:
         log_failure(metric_name, threshold, actual=scored_template[system_prompt])
-        raise PromptTestFailure
+        return 1
+    return 0
 
 
 def run_system_prompt_test_from_files(
@@ -68,7 +69,7 @@ def run_system_prompt_test_from_files(
     system_prompt, human_messages = system_prompt_test_runner.read(
         system_prompt_file, human_messages_file
     )
-    run_system_prompt_test(
+    return run_system_prompt_test(
         model_name,
         metric_name,
         eval_fn,

@@ -1,17 +1,23 @@
+from collections import defaultdict
+
+
 class PromptTestRunner:
     def __init__(self):
-        self.ran = False
+        self.ran = defaultdict(bool)
+        self.harnesses = dict()
 
     def run(self, *args, **kwargs):
-        if self.ran:
-            return
-        self.harness = self._get_harness(*args, **kwargs)
-        self.harness.prepare()
-        self.harness.run()
-        self.ran = True
+        key = str(args)
+        if self.ran[key]:
+            return key
+        self.harnesses[key] = self._get_harness(*args, **kwargs)
+        self.harnesses[key].prepare()
+        self.harnesses[key].run()
+        self.ran[key] = True
+        return key
 
-    def evaluate(self, metric_name, eval_fn):
-        self.harness.evaluate(metric_name, eval_fn)
+    def evaluate(self, key, metric_name, eval_fn):
+        self.harnesses[key].evaluate(metric_name, eval_fn)
 
-    def rank(self, metric_name, is_average):
-        return self.harness.rank(metric_name, is_average)
+    def rank(self, key, metric_name, is_average):
+        return self.harnesses[key].rank(metric_name, is_average)

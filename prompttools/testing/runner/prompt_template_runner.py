@@ -1,6 +1,6 @@
 import csv
 
-from prompttools.testing.error.failure import PromptTestFailure, log_failure
+from prompttools.testing.error.failure import log_failure
 from prompttools.harness.prompt_template_harness import (
     PromptTemplateExperimentationHarness,
 )
@@ -50,12 +50,13 @@ def run_prompt_template_test(
     prompt_template,
     user_inputs,
 ):
-    prompt_template_test_runner.run(model_name, prompt_template, user_inputs)
-    prompt_template_test_runner.evaluate(metric_name, eval_fn)
-    scored_template = prompt_template_test_runner.rank(metric_name, is_average)
+    key = prompt_template_test_runner.run(model_name, prompt_template, user_inputs)
+    prompt_template_test_runner.evaluate(key, metric_name, eval_fn)
+    scored_template = prompt_template_test_runner.rank(key, metric_name, is_average)
     if scored_template[prompt_template] < threshold:
         log_failure(metric_name, threshold, actual=scored_template[prompt_template])
-        raise PromptTestFailure
+        return 1
+    return 0
 
 
 def run_prompt_template_test_from_files(
@@ -70,7 +71,7 @@ def run_prompt_template_test_from_files(
     prompt_template, user_inputs = prompt_template_test_runner.read(
         prompt_template_file, user_input_file
     )
-    run_prompt_template_test(
+    return run_prompt_template_test(
         model_name,
         metric_name,
         eval_fn,

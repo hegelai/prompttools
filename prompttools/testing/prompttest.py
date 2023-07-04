@@ -11,6 +11,8 @@ from prompttools.testing.runner.system_prompt_runner import (
     run_system_prompt_test_from_files,
 )
 
+TESTS_TO_RUN = []
+
 
 def prompttest(
     model_name,
@@ -30,7 +32,7 @@ def prompttest(
         @wraps(eval_fn)
         def runs_test():
             if prompt_template_file and user_input_file:
-                run_prompt_template_test_from_files(
+                return run_prompt_template_test_from_files(
                     model_name,
                     metric_name,
                     eval_fn,
@@ -40,7 +42,7 @@ def prompttest(
                     user_input_file,
                 )
             elif prompt_template and user_input:
-                run_prompt_template_test(
+                return run_prompt_template_test(
                     model_name,
                     metric_name,
                     eval_fn,
@@ -50,7 +52,7 @@ def prompttest(
                     user_input,
                 )
             elif system_prompt_file and human_messages_file:
-                run_system_prompt_test_from_files(
+                return run_system_prompt_test_from_files(
                     model_name,
                     metric_name,
                     eval_fn,
@@ -60,7 +62,7 @@ def prompttest(
                     human_messages_file,
                 )
             elif system_prompt and human_messages:
-                run_system_prompt_test(
+                return run_system_prompt_test(
                     model_name,
                     metric_name,
                     eval_fn,
@@ -73,6 +75,17 @@ def prompttest(
                 logging.error("Bad configuration for metric: " + metric_name)
                 raise PromptTestFailure
 
+        TESTS_TO_RUN.append(runs_test)
         return runs_test
 
     return prompttest_decorator
+
+
+def main():
+    failures = sum([test() for test in TESTS_TO_RUN])
+    if failures == 0:
+        print("Ok")
+        exit(0)
+    else:
+        print("Tests failed: " + str(failures))
+        exit(1)

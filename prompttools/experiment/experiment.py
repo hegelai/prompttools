@@ -108,6 +108,8 @@ class Experiment:
         if not self.results:
             logging.warning("Please run `run` first.")
             return
+        if metric_name in self.scores:
+            return
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
             score = eval_fn(
