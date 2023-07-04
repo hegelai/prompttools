@@ -5,4 +5,5 @@ pandas
 jinja2
 jupyterlab
 ipywidgets
+chromadb
 # hegel  # This can be used once client package is released
