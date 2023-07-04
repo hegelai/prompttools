@@ -1,6 +1,7 @@
 from functools import wraps
 import logging
 
+from prompttools.testing.threshold_type import ThresholdType
 from prompttools.testing.error.failure import PromptTestFailure
 from prompttools.testing.runner.prompt_template_runner import (
     run_prompt_template_test,
@@ -27,6 +28,8 @@ def prompttest(
     system_prompt=None,
     human_messages=None,
     is_average=None,
+    use_input_pairs=False,
+    threshold_type=ThresholdType.MINIMUM
 ):
     def prompttest_decorator(eval_fn):
         @wraps(eval_fn)
@@ -37,9 +40,11 @@ def prompttest(
                     metric_name,
                     eval_fn,
                     threshold,
+                    threshold_type,
                     is_average,
                     prompt_template_file,
                     user_input_file,
+                    use_input_pairs,
                 )
             elif prompt_template and user_input:
                 return run_prompt_template_test(
@@ -47,9 +52,11 @@ def prompttest(
                     metric_name,
                     eval_fn,
                     threshold,
+                    threshold_type,
                     is_average,
                     prompt_template,
                     user_input,
+                    use_input_pairs,
                 )
             elif system_prompt_file and human_messages_file:
                 return run_system_prompt_test_from_files(
@@ -57,9 +64,11 @@ def prompttest(
                     metric_name,
                     eval_fn,
                     threshold,
+                    threshold_type,
                     is_average,
                     system_prompt_file,
                     human_messages_file,
+                    use_input_pairs,
                 )
             elif system_prompt and human_messages:
                 return run_system_prompt_test(
@@ -67,9 +76,11 @@ def prompttest(
                     metric_name,
                     eval_fn,
                     threshold,
+                    threshold_type,
                     is_average,
                     system_prompt,
                     human_messages,
+                    use_input_pairs,
                 )
             else:
                 logging.error("Bad configuration for metric: " + metric_name)
@@ -82,6 +93,7 @@ def prompttest(
 
 
 def main():
+    logging.getLogger().setLevel(logging.WARNING)
     failures = sum([test() for test in TESTS_TO_RUN])
     if failures == 0:
         print("Ok")

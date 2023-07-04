@@ -16,8 +16,8 @@ class PromptTestRunner:
         self.ran[key] = True
         return key
 
-    def evaluate(self, key, metric_name, eval_fn):
-        self.harnesses[key].evaluate(metric_name, eval_fn)
+    def evaluate(self, key, metric_name, eval_fn, use_input_pairs):
+        self.harnesses[key].evaluate(metric_name, eval_fn, use_input_pairs)
 
     def rank(self, key, metric_name, is_average):
         return self.harnesses[key].rank(metric_name, is_average)
