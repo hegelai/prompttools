@@ -29,7 +29,7 @@ def prompttest(
     human_messages=None,
     is_average=None,
     use_input_pairs=False,
-    threshold_type=ThresholdType.MINIMUM
+    threshold_type=ThresholdType.MINIMUM,
 ):
     def prompttest_decorator(eval_fn):
         @wraps(eval_fn)

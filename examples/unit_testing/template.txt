@@ -1,1 +1,0 @@
-Answer the following question: {{input}}

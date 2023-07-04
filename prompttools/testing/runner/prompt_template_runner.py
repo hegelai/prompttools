@@ -56,11 +56,27 @@ def run_prompt_template_test(
     key = prompt_template_test_runner.run(model_name, prompt_template, user_inputs)
     prompt_template_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = prompt_template_test_runner.rank(key, metric_name, is_average)
-    if scored_template[prompt_template] < threshold and threshold_type is ThresholdType.MINIMUM:
-        log_failure(metric_name, threshold, actual=scored_template[prompt_template], threshold_type=threshold_type)
+    if (
+        scored_template[prompt_template] < threshold
+        and threshold_type is ThresholdType.MINIMUM
+    ):
+        log_failure(
+            metric_name,
+            threshold,
+            actual=scored_template[prompt_template],
+            threshold_type=threshold_type,
+        )
         return 1
-    if scored_template[prompt_template] > threshold and threshold_type is ThresholdType.MAXIMUM:
-        log_failure(metric_name, threshold, actual=scored_template[prompt_template], threshold_type=threshold_type)
+    if (
+        scored_template[prompt_template] > threshold
+        and threshold_type is ThresholdType.MAXIMUM
+    ):
+        log_failure(
+            metric_name,
+            threshold,
+            actual=scored_template[prompt_template],
+            threshold_type=threshold_type,
+        )
         return 1
     return 0
 

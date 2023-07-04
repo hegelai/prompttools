@@ -9,26 +9,9 @@ from typing import Dict, List, Tuple
 import prompttools.testing.prompttest as prompttest
 from prompttools.testing.threshold_type import ThresholdType
 
-# TODO better unit test examples
-
 
 def extract_responses(output) -> str:
     return [choice["text"] for choice in output["choices"]]
-
-
-@prompttest.prompttest(
-    model_name="gpt-3.5-turbo",
-    metric_name="names_dodgers_pt",
-    threshold=1,
-    prompt_template_file="template.txt",
-    user_input_file="user_input.txt",
-)
-def names_dodgers(prompts: List[str], results: Dict, metadata: Dict) -> float:
-    responses = extract_responses(results)
-    for response in responses:
-        if "Dodgers" in response:
-            return 1.0
-    return 0.0
 
 
 @prompttest.prompttest(

@@ -54,11 +54,27 @@ def run_system_prompt_test(
     key = system_prompt_test_runner.run(model_name, system_prompt, human_messages)
     system_prompt_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
-    if scored_template[system_prompt] < threshold and threshold_type is ThresholdType.MINIMUM:
-        log_failure(metric_name, threshold, actual=scored_template[system_prompt], threshold_type=threshold_type)
+    if (
+        scored_template[system_prompt] < threshold
+        and threshold_type is ThresholdType.MINIMUM
+    ):
+        log_failure(
+            metric_name,
+            threshold,
+            actual=scored_template[system_prompt],
+            threshold_type=threshold_type,
+        )
         return 1
-    if scored_template[system_prompt] > threshold and threshold_type is ThresholdType.MAXIMUM:
-        log_failure(metric_name, threshold, actual=scored_template[system_prompt], threshold_type=threshold_type)
+    if (
+        scored_template[system_prompt] > threshold
+        and threshold_type is ThresholdType.MAXIMUM
+    ):
+        log_failure(
+            metric_name,
+            threshold,
+            actual=scored_template[system_prompt],
+            threshold_type=threshold_type,
+        )
         return 1
     return 0
 
