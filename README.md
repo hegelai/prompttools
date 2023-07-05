@@ -25,7 +25,7 @@ prompt_templates = ["Echo the following input: {{input}}",
 user_inputs = [{"input": "This is a test"}, 
                {"input": "This is not a test"}]
 
-harness = PromptTemplateExperimentationHarness("gpt-3.5-turbo", 
+harness = PromptTemplateExperimentationHarness("text-davinci-003", 
                                                prompt_templates, 
                                                user_inputs)
 
