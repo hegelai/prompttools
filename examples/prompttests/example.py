@@ -1,9 +1,3 @@
-import os
-
-abspath = os.path.abspath(__file__)
-dname = os.path.dirname(abspath)
-os.chdir(dname)
-
 import chromadb
 from typing import Dict, Tuple
 import prompttools.testing.prompttest as prompttest
