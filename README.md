@@ -7,7 +7,7 @@ Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo
 There are primarily two ways you can use `prompttools` in your LLM workflow:
 
 1. Run experiments in [notebooks](/examples/notebooks/).
-1. Write [unit tests](/examples/prompttests/example.py) and integrate them into CI/CD like [Github Actions](/.github/workflows/post-commit.yaml).
+1. Write [unit tests](/examples/prompttests/example.py) and integrate them in your CI/CD workflow [via GitHub Actions](/.github/workflows/post-commit.yaml).
 
 ### Notebooks
 
@@ -42,8 +42,9 @@ harness.visualize()  # The results will be displayed as a table in your notebook
 
 ![image](img/table.png)
 
+If you are interested to compare different models, the [ModelComparison example](/examples/notebooks/ModelComparison.ipynb) may be of interest.
 
-Please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details. 
+For an example of built-in evaluation function, please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details. 
 
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
 
@@ -53,10 +54,15 @@ You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipy
 
 Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The `prompttest` framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/example.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).
 
-## Persisting Results
+### Persisting Results
 
-To persist the results of your tests and experiments, you can enable `HegelScribe` (also developed by us at [Hegel AI](https://hegel-ai.com/)). It logs all the inferences from your LLM, along with metadata and custom metrics, for you to view on your [private dashboard](https://app.hegel-ai.com). We have a few early adopters right now, and
+To persist the results of your tests and experiments, one option is to enable `HegelScribe` (also developed by us at [Hegel AI](https://hegel-ai.com/)). It logs all the inferences from your LLM, along with metadata and custom metrics, for you to view on your [private dashboard](https://app.hegel-ai.com). We have a few early adopters right now, and
 we can further discuss your use cases, pain points, and how it may be useful for you.
+
+### Frequently Asked Questions (FAQs)
+
+1. Will this library forward my LLM calls to a server before sending it to OpenAI/Anthropic/etc?
+    - No, the source code will be executed on your machine. Any call to LLM APIs will be directly executed from your machine without any forwarding.
 
 ## Contributing
 
@@ -70,4 +76,3 @@ interested in using this tooling for your project or have any feedback.
 ## License
 
 We will be gradually releasing more components to the open-source community. The current license can be found in the  [LICENSE](LICENSE) file. If there is any concern, please [contact us](mailto:eam@hegel-ai.com) and we will be happy to work with you.
-
