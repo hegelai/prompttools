@@ -26,7 +26,7 @@ class ExperimentationHarness:
         self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = False
     ) -> None:
         """
-        Prepares the underlying experiment.
+        Uses the given eval_fn to evalaute the results of the underlying experiment.
         """
         if use_input_pairs:
             self.experiment.evaluate(metric_name, eval_fn, self.input_pairs_dict)
@@ -37,12 +37,18 @@ class ExperimentationHarness:
         self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)
 
     def visualize(self, pivot: bool = False) -> None:
+        """
+        Displays a visualization of the experiment results.
+        """
         if pivot:
             self.experiment.visualize(self.input_pairs_dict, self.PIVOT_COLUMNS)
         else:
             self.experiment.visualize()
 
     def rank(self, metric_name: str, is_average: bool = False) -> Dict[str, float]:
+        """
+        Scores and ranks the experiment inputs using the pivot columns, e.g. prompt templates or system prompts.
+        """
         return self.experiment.rank(
             self.input_pairs_dict, self.PIVOT_COLUMNS, metric_name, is_average
         )
