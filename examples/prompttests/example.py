@@ -1,3 +1,10 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+import chromadb
 from typing import Dict, Tuple
 import prompttools.testing.prompttest as prompttest
 from prompttools.utils import similarity
