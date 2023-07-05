@@ -7,7 +7,7 @@ Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo
 There are primarily two ways you can use `prompttools` in your LLM workflow:
 
 1. Run experiments in [notebooks](/examples/notebooks/).
-1. Write [unit tests](/examples/prompttests/example.py) and integrate them in your CI/CD workflow [via GitHub Actions](/.github/workflows/post-commit.yaml).
+1. Write [unit tests](/examples/prompttests/example.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/post-commit.yaml).
 
 ### Notebooks
 
@@ -49,6 +49,8 @@ For an example of built-in evaluation function, please see this example of [sema
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
 
 ![image](img/feedback.png)
+
+> Note: Above we used an `ExperimentationHarness`. Under the hood, that harness uses an `Experiment` to construct and make API calls to LLMs. The harness is responsible for managing higher level abstractions, like prompt templates or system prompts. To see how experiments work at a low level, [see this example](/examples/notebooks/BasicExperiment.ipynb).
 
 ### Unit Tests
 
