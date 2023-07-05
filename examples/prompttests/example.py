@@ -11,6 +11,9 @@ from prompttools.testing.threshold_type import ThresholdType
 
 
 def extract_responses(output) -> str:
+    """
+    Helper function to unwrap the OpenAI repsonse object.
+    """
     return [choice["text"] for choice in output["choices"]]
 
 
@@ -27,6 +30,10 @@ def extract_responses(output) -> str:
 def check_similarity(
     input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict
 ) -> float:
+    """
+    A simple test that checks semantic similarity between the user input
+    and the model's text responses, using ChromaDB to create a vector index.
+    """
     chroma_client = chromadb.Client()
     collection = chroma_client.create_collection(name="test_collection")
     collection.add(
