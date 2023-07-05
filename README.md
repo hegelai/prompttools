@@ -49,7 +49,7 @@ we can further discuss your use cases, pain points, and how it may be useful for
 
 ## Contributing
 
-We welcome PRs and suggestions! Don't hesitate to open a PR/issue or to reach out to us [via email](team@hegel-ai.com).
+We welcome PRs and suggestions! Don't hesitate to open a PR/issue or to reach out to us [via email](mailto:team@hegel-ai.com).
 
 ## Usage and Feedback
 
