@@ -1,6 +1,13 @@
-# Use a list to optionally hold a reference to the
-# embedding model and client, allowing for lazy
-# initialization
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+r"""
+Use a list to optionally hold a reference to the embedding model and client,
+allowing for lazy initialization.
+"""
 EMBEDDING_MODEL = []  #
 CHROMA_CLIENT = []
 

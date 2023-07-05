@@ -10,7 +10,7 @@ import logging
 
 
 def create_retry_decorator():
-    """
+    r"""
     This method creates a retry decorator that can be used for requests.
     This improves the reliability of the request queue.
     """
@@ -18,7 +18,7 @@ def create_retry_decorator():
     max_seconds = 10
     max_attempts = 5
     # Wait 2^x * 1 second between each retry starting with
-    # 4 seconds, then up to 10 seconds, then 10 seconds afterwards
+    # 4 seconds, then up to 10 seconds, then 10 seconds afterward
     return retry(
         reraise=True,
         stop=stop_after_attempt(max_attempts),

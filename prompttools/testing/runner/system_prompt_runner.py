@@ -8,7 +8,7 @@ from prompttools.testing.runner.runner import PromptTestRunner
 
 
 class SystemPromptTestRunner(PromptTestRunner):
-    """
+    r"""
     A prompt test runner for tests based on system prompts.
     """
 
@@ -20,7 +20,7 @@ class SystemPromptTestRunner(PromptTestRunner):
     def read(
         self, system_prompt_file: str, human_messages_file: str
     ) -> Tuple[str, List[str]]:
-        """
+        r"""
         Reads data from files and parses it into a system prompt and human messages.
         """
         if (
@@ -68,7 +68,7 @@ def run_system_prompt_test(
     use_input_pairs: bool,
     model_args: Dict[str, str],
 ) -> int:
-    """
+    r"""
     Runs the prompt test.
     """
     key = system_prompt_test_runner.run(
@@ -113,7 +113,7 @@ def run_system_prompt_test_from_files(
     use_input_pairs: bool,
     model_args: Dict[str, str],
 ) -> int:
-    """
+    r"""
     Reads data in from files and runs the prompt test.
     """
     system_prompt, human_messages = system_prompt_test_runner.read(

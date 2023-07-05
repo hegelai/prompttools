@@ -27,7 +27,7 @@ class Experiment:
 
     @staticmethod
     def _is_interactive() -> bool:
-        """
+        r"""
         Used to determine if we are in a jupyter notebook, which
         determines how we present the visualizations.
         """
@@ -89,7 +89,7 @@ class Experiment:
         return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
 
     def prepare(self) -> None:
-        """
+        r"""
         Creates argument combinations by taking the cartesian product of all inputs.
         """
         self.argument_combos = []
@@ -101,7 +101,7 @@ class Experiment:
         tagname: str,
         input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
     ) -> None:
-        """
+        r"""
         Create tuples of input and output for every possible combination of arguments.
         """
         if not self.argument_combos:

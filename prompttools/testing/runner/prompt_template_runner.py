@@ -10,7 +10,7 @@ from prompttools.testing.runner.runner import PromptTestRunner
 
 
 class PromptTemplateTestRunner(PromptTestRunner):
-    """
+    r"""
     A prompt test runner for tests based on prompt templates.
     """
 

@@ -9,8 +9,8 @@ from prompttools.requests.retries import retry_decorator
 
 
 class RequestQueue:
-    """
-    A generic queue for processing requests in the prompttools library.
+    r"""
+    A generic queue for processing requests in the `prompttools` library.
     It can be used to handle and time requests to any LLM asynchronously.
     """
 
@@ -55,27 +55,27 @@ class RequestQueue:
         self.data_queue.join()
         self.is_running = False
         # TODO: If we are hanging and interrupt, this line will
-        # have the following error: TypeError: 'NoneType' object is not callable
+        #       have the following error: TypeError: 'NoneType' object is not callable
         self.worker_thread.join()
 
     def __del__(self) -> None:
         self.shutdown()
 
     def enqueue(self, callable: Callable, args: Dict[str, object]) -> None:
-        """
+        r"""
         Adds another request to the queue.
         """
         self.data_queue.put((callable, args))
 
     def results(self) -> List[Dict[str, object]]:
-        """
+        r"""
         Joins the queue and gets results.
         """
         self.data_queue.join()
         return self.request_results
 
     def latencies(self) -> List[float]:
-        """
+        r"""
         Joins the queue and gets latencies.
         """
         self.data_queue.join()

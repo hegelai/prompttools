@@ -8,7 +8,7 @@ from typing import Callable, Dict, List
 
 
 class ExperimentationHarness:
-    """
+    r"""
     Base class for experimentation harnesses.
     """
 
@@ -17,13 +17,13 @@ class ExperimentationHarness:
         return {name: [arg] for name, arg in arguments.items()}
 
     def prepare(self) -> None:
-        """
+        r"""
         Prepares the underlying experiment.
         """
         self.experiment.prepare()
 
     def run(self) -> None:
-        """
+        r"""
         Runs the underlying experiment.
         """
         self.experiment.run(self.PIVOT_COLUMNS[0], self.input_pairs_dict)
@@ -31,7 +31,7 @@ class ExperimentationHarness:
     def evaluate(
         self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True
     ) -> None:
-        """
+        r"""
         Uses the given eval_fn to evalaute the results of the underlying experiment.
         """
         if use_input_pairs:
@@ -43,7 +43,7 @@ class ExperimentationHarness:
         self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)
 
     def visualize(self, pivot: bool = False) -> None:
-        """
+        r"""
         Displays a visualization of the experiment results.
         """
         if pivot:
@@ -52,7 +52,7 @@ class ExperimentationHarness:
             self.experiment.visualize()
 
     def rank(self, metric_name: str, is_average: bool = False) -> Dict[str, float]:
-        """
+        r"""
         Scores and ranks the experiment inputs using the pivot columns,
         e.g. prompt templates or system prompts.
         """

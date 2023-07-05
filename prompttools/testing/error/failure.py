@@ -2,7 +2,7 @@ from prompttools.testing.threshold_type import ThresholdType
 
 
 class PromptTestSetupException(Exception):
-    """
+    r"""
     An exception to throw when something goes wrong with the prompt test setup
     """
 
@@ -10,7 +10,7 @@ class PromptTestSetupException(Exception):
 
 
 def log_failure(metric_name, threshold, actual, threshold_type):
-    """
+    r"""
     Prints the test results to the console.
     """
     print(

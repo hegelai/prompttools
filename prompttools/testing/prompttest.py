@@ -33,7 +33,7 @@ def prompttest(
     threshold_type: ThresholdType = ThresholdType.MAXIMUM,
     model_arguments: Dict[str, object] = {},
 ):
-    """
+    r"""
     Creates a decorator for prompt tests, which can annotate evaluation functions.
     This enables developers to create a prompt test suite from their evaluations.
     """
