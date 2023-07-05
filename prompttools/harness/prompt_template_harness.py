@@ -25,8 +25,8 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         model_name: str,
         prompt_templates: List[str],
         user_inputs: List[Dict[str, str]],
-        use_dialectic_scribe: bool = False,
-        dialectic_scribe_name: str = "Prompt Template Experiment",
+        use_scribe: Optional[bool] = False,
+        scribe_name: Optional[str] = "Prompt Template Experiment",
         model_arguments: Optional[Dict[str, object]] = {},
     ):
         self.environment = jinja2.Environment()
@@ -34,9 +34,10 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         self.model_name = model_name
         self.prompt_templates = prompt_templates
         self.user_inputs = user_inputs
-        self.use_dialectic_scribe = use_dialectic_scribe
-        self.dialectic_scribe_name = dialectic_scribe_name
+        self.use_scribe = use_scribe
+        self.scribe_name = scribe_name
         self.model_arguments = model_arguments
+        super().__init__()
 
     def prepare(self) -> None:
         """
@@ -53,8 +54,8 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         self.experiment = self.experiment_classname(
             [self.model_name],
             rendered_inputs,
-            self.use_dialectic_scribe,
-            self.dialectic_scribe_name,
+            self.use_scribe,
+            self.scribe_name,
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()

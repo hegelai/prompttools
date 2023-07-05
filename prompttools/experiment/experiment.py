@@ -11,9 +11,11 @@ import logging
 from IPython import display
 from tabulate import tabulate
 import pandas as pd
-import ipywidgets as widgets
 
 from prompttools.requests.request_queue import RequestQueue
+from prompttools.experiment.widgets.feedback import FeedbackWidgetProvider
+from prompttools.experiment.widgets.comparison import ComparisonWidgetProvider
+from prompttools.experiment.widgets.utility import is_interactive
 
 pd.set_option("display.max_colwidth", 0)
 
@@ -24,16 +26,61 @@ class Experiment:
         self.argument_combos = []
         self.results = []
         self.scores = defaultdict(list)
+        self.feedback_widget_provider = FeedbackWidgetProvider(
+            self.completion_fn, self._aggregate_metric, self._get_human_eval_listener
+        )
+        self.comparison_widget_provider = ComparisonWidgetProvider(
+            self.completion_fn,
+            self._aggregate_comparison,
+            self._get_comparison_listener,
+        )
 
-    @staticmethod
-    def _is_interactive() -> bool:
-        """
-        Used to determine if we are in a jupyter notebook, which
-        determines how we present the visualizations.
-        """
-        import __main__ as main
+    def _get_human_eval_listener(self, i: int) -> Callable:
+        def listener(change):
+            self.scores["feedback"][i] = change["new"]
+            if self.use_scribe:
+                self.completion_fn.add_feedback(
+                    self.results[i]["hegel_id"],
+                    {"thumbs_up": self.scores["feedback"][i]},
+                )
 
-        return not hasattr(main, "__file__")
+        return listener
+
+    def _get_comparison_listener(self, index: int) -> Callable:
+        # TODO: Map this index to the original index of the primary model
+        # so we can submit feedback for the row
+        def listener(change):
+            new_index = self.comparison_index_translation(index)
+            self.scores["comparison"][new_index] = change["new"]
+            if self.use_scribe:
+                self.completion_fn.add_feedback(
+                    self.results[new_index]["hegel_id"],
+                    {"thumbs_up": self.scores["comparison"][new_index]},
+                )
+
+        return listener
+
+    def _aggregate_comparison(
+        self,
+        table: pd.DataFrame,
+        agg_column: int = 0,
+        is_average: bool = False,
+    ) -> pd.DataFrame:
+        # TODO: This could be a group by
+        prompt_scores = defaultdict(int)
+        prompt_counts = defaultdict(int)
+        for index, row in enumerate(table.iterrows()):
+            key = str(row[agg_column])
+            new_index = self.comparison_index_translation(index)
+            prompt_scores[key] += self.scores["comparison"][new_index]
+            prompt_counts[key] += 1
+        if is_average:
+            for k, v in prompt_scores.items():
+                prompt_scores[k] = v / prompt_counts[k]
+        sorted_scores = dict(
+            sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True)
+        )
+        return sorted_scores
 
     def _aggregate_metric(
         self,
@@ -43,48 +90,26 @@ class Experiment:
         is_average: bool = False,
     ) -> pd.DataFrame:
         # TODO: This could be a group by
+
         prompt_scores = defaultdict(int)
         prompt_counts = defaultdict(int)
         for index, row in table.iterrows():
-            prompt_scores[row[agg_column]] += self.scores[metric_name][index]
-            prompt_counts[row[agg_column]] += 1
+            key = str(row[1][agg_column])
+            prompt_scores[key] += self.scores[metric_name][index]
+            prompt_counts[key] += 1
         if is_average:
-            prompt_scores[row[agg_column]] /= prompt_counts[row[agg_column]]
+            for k, v in prompt_scores.items():
+                prompt_scores[k] = v / prompt_counts[k]
         sorted_scores = dict(
             sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True)
         )
         return sorted_scores
 
-    def _get_human_eval_listener(self, i: int) -> Callable:
-        def listener(change):
-            self.scores["feedback"][i] = change["new"]
-            if self.use_dialectic_scribe:
-                self.completion_fn.add_feedback(
-                    self.results[i]["hegel_id"],
-                    {"thumbs_up": self.scores["feedback"][i]},
-                )
-
-        return listener
-
-    def _get_feedback_submission_listener(
-        self, table: pd.DataFrame, pivot_columns: List[str]
-    ) -> Callable:
-        def on_click(b):
-            sorted_scores = self._aggregate_metric(table, "feedback", pivot_columns[0])
-            data = {
-                pivot_columns[0]: sorted_scores.keys(),
-                "feedback": sorted_scores.values(),
-            }
-            df = pd.DataFrame(data)
-            display.display(df)
-
-        return on_click
-
     def _create_args_dict(
         self, args: Dict[str, object], tagname: str, input_pairs: Dict[str, object]
     ) -> Dict[str, object]:
         args = {self.PARAMETER_NAMES[i]: arg for i, arg in enumerate(args)}
-        if self.use_dialectic_scribe:
+        if self.use_scribe:
             args["hegel_tags"] = {tagname: input_pairs[args[1]]}
         return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
 
@@ -98,7 +123,7 @@ class Experiment:
 
     def run(
         self,
-        tagname: str,
+        tagname: Optional[str] = "",
         input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
     ) -> None:
         """
@@ -143,7 +168,7 @@ class Experiment:
                 },
             )
             self.scores[metric_name].append(score)
-            if self.use_dialectic_scribe:
+            if self.use_scribe:
                 self.completion_fn.add_feedback(
                     self.results[i]["hegel_id"], {metric_name: score}
                 )
@@ -156,20 +181,20 @@ class Experiment:
         to create a pivot table, or a table for gathering human feedback.
         """
         data = {
-            "messages": [combo[1] for combo in self.argument_combos],
+            "messages": [str(combo[1]) for combo in self.argument_combos],
             "response(s)": [self._extract_responses(result) for result in self.results],
             "latency": self.scores["latency"],
         }
         # Add scores for each eval fn, including feedback
         for metric_name, evals in self.scores.items():
-            data[metric_name] = evals
+            if metric_name != "comparison":
+                data[metric_name] = evals
         # Add other args as cols if there was more than 1 input
         for i, args in enumerate([self.all_args[0]] + self.all_args[2:]):
             if len(args) > 1:
                 data[self.PARAMETER_NAMES[i]] = [
                     combo[i] for combo in self.argument_combos
                 ]
-        df = None
         if pivot_data:
             data[pivot_columns[0]] = [
                 str(pivot_data[str(combo[1])][0]) for combo in self.argument_combos
@@ -177,17 +202,15 @@ class Experiment:
             data[pivot_columns[1]] = [
                 str(pivot_data[str(combo[1])][1]) for combo in self.argument_combos
             ]
-            df = pd.DataFrame(data)
-            if pivot:
-                df = pd.pivot_table(
-                    df,
-                    values="response(s)",
-                    index=[pivot_columns[1]],
-                    columns=[pivot_columns[0]],
-                    aggfunc=lambda x: x.iloc[0],
-                )
-        else:
-            df = pd.DataFrame(data)
+        df = pd.DataFrame(data)
+        if pivot:
+            df = pd.pivot_table(
+                df,
+                values="response(s)",
+                index=[pivot_columns[1]],
+                columns=[pivot_columns[0]],
+                aggfunc=lambda x: x.iloc[0],
+            )
         return df
 
     def gather_feedback(
@@ -199,66 +222,37 @@ class Experiment:
         if not self.results:
             logging.warning("Please run `run` first.")
             return
+        if not is_interactive():
+            logging.warning("This method only works in notebooks.")
+            return
         self.scores["feedback"] = [1] * len(self.results)
         table = self.get_table(pivot_data, pivot_columns, pivot=False)
-        items = [
-            widgets.Label(pivot_columns[0]),
-            widgets.Label(pivot_columns[1]),
-            widgets.Label("response(s)"),
-            widgets.Label("Feedback"),
-        ]
-        for index, row in table.iterrows():
-            items += [
-                widgets.HTML(
-                    value="<style>p{word-wrap: break-word}</style> <p>"
-                    + row[pivot_columns[0]]
-                    + " </p>"
-                )
-            ]
-            items += [
-                widgets.HTML(
-                    value="<style>p{word-wrap: break-word}</style> <p>"
-                    + row[pivot_columns[1]]
-                    + " </p>"
-                )
-            ]
-            items += [
-                widgets.HTML(
-                    value="<style>p{word-wrap: break-word}</style> <p>"
-                    + ", ".join(row["response(s)"])
-                    + " </p>"
-                )
-            ]
+        self.feedback_widget_provider.set_pivot_columns(pivot_columns)
+        items = self.feedback_widget_provider.get_header_widgets()
+        for row in table.iterrows():
+            items += self.feedback_widget_provider.get_row_widgets(*row)
+        items += self.feedback_widget_provider.get_footer_widgets(table)
+        self.feedback_widget_provider.display(items)
 
-            feedback_dropdown = widgets.Dropdown(
-                options=[("\U0001F44D", 1), ("\U0001F44E", 0)],
-                value=1,
-                layout={"width": "50px"},
-            )
-            feedback_dropdown.observe(
-                self._get_human_eval_listener(index), names="value"
-            )
-            items += [feedback_dropdown]
-        submit_button = widgets.Button(
-            description="Submit",
-            disabled=False,
-            button_style="success",
-            tooltip="Submit",
-        )
-        submit_button.on_click(
-            self._get_feedback_submission_listener(table, pivot_columns)
-        )
-        items += [
-            widgets.Label(""),
-            widgets.Label(""),
-            widgets.Label(""),
-            submit_button,
-        ]
-        grid = widgets.GridBox(
-            items,
-            layout=widgets.Layout(grid_template_columns="repeat(4, 230px)"),
-        )
-        display.display(grid)
+    def compare(self, primary_model: str, pivot_columns: List[str]) -> None:
+        """
+        This method creates a table to gather human feedback from a notebook interface.
+        """
+        if not self.results:
+            logging.warning("Please run `run` first.")
+            return
+        if not is_interactive():
+            logging.warning("This method only works in notebooks.")
+            return
+        table = self.get_table(pivot_data=None, pivot_columns=pivot_columns, pivot=True)
+        self.scores["comparison"] = [1] * len(table)
+        self.comparison_index_translation = lambda i: i * len(table.columns)
+        self.comparison_widget_provider.set_models(table.columns)
+        items = self.comparison_widget_provider.get_header_widgets()
+        for index, row in enumerate(table.iterrows()):
+            items += self.comparison_widget_provider.get_row_widgets(index, row[1])
+        items += self.comparison_widget_provider.get_footer_widgets(table)
+        self.comparison_widget_provider.display(items)
 
     def visualize(
         self,
@@ -271,8 +265,10 @@ class Experiment:
         if not self.results:
             logging.warning("Please run `run` first.")
             return
-        table = self.get_table(pivot_data, pivot_columns, pivot=True)
-        if self._is_interactive():
+        table = self.get_table(
+            pivot_data, pivot_columns, pivot=pivot_columns is not None
+        )
+        if is_interactive():
             display.display(table)
         else:
             logging.getLogger().setLevel(logging.INFO)

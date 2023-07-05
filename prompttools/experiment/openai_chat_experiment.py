@@ -42,8 +42,8 @@ class OpenAIChatExperiment(Experiment):
         self,
         model: List[str],
         messages: List[List[Dict[str, str]]],
-        use_dialectic_scribe: bool = False,
-        dialectic_scribe_name: str = "Chat Experiment",
+        use_scribe: bool = False,
+        scribe_name: str = "Chat Experiment",
         temperature: Optional[List[float]] = [1.0],
         top_p: Optional[List[float]] = [1.0],
         n: Optional[List[int]] = [1],
@@ -54,10 +54,10 @@ class OpenAIChatExperiment(Experiment):
         frequency_penalty: Optional[List[float]] = [0],
         logit_bias: Optional[Dict] = [None],
     ):
-        self.use_dialectic_scribe = use_dialectic_scribe
-        if use_dialectic_scribe:
+        self.use_scribe = use_scribe
+        if use_scribe:
             self.completion_fn = DialecticScribe(
-                name=dialectic_scribe_name, completion_fn=openai.ChatCompletion.create
+                name=scribe_name, completion_fn=openai.ChatCompletion.create
             )
         else:
             self.completion_fn = openai.ChatCompletion.create

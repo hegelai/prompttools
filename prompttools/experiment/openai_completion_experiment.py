@@ -45,8 +45,8 @@ class OpenAICompletionExperiment(Experiment):
         self,
         model: List[str],
         prompt: List[str],
-        use_dialectic_scribe: bool = False,
-        dialectic_scribe_name: str = "Completion Experiment",
+        use_scribe: bool = False,
+        scribe_name: str = "Completion Experiment",
         suffix: Optional[List[str]] = [None],
         max_tokens: Optional[List[int]] = [float("inf")],
         temperature: Optional[List[float]] = [1.0],
@@ -61,10 +61,10 @@ class OpenAICompletionExperiment(Experiment):
         best_of: Optional[List[int]] = [1],
         logit_bias: Optional[Dict] = [None],
     ):
-        self.use_dialectic_scribe = use_dialectic_scribe
-        if use_dialectic_scribe:
+        self.use_scribe = use_scribe
+        if use_scribe:
             self.completion_fn = DialecticScribe(
-                name=dialectic_scribe_name, completion_fn=openai.Completion.create
+                name=scribe_name, completion_fn=openai.Completion.create
             )
         else:
             self.completion_fn = openai.Completion.create

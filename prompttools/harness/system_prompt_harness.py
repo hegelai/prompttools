@@ -21,17 +21,18 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         model_name: str,
         system_prompts: List[str],
         human_messages: List[str],
-        use_dialectic_scribe: bool = False,
-        dialectic_scribe_name: str = "System Prompt Experiment",
+        use_scribe: bool = False,
+        scribe_name: str = "System Prompt Experiment",
         model_arguments: Optional[Dict[str, object]] = {},
     ):
         self.experiment_classname = OpenAIChatExperiment
         self.model_name = model_name
         self.system_prompts = system_prompts
         self.human_messages = human_messages
-        self.use_dialectic_scribe = use_dialectic_scribe
-        self.dialectic_scribe_name = dialectic_scribe_name
+        self.use_scribe = use_scribe
+        self.scribe_name = scribe_name
         self.model_arguments = model_arguments
+        super().__init__()
 
     @staticmethod
     def _create_system_prompt(content: str) -> Dict[str, str]:
@@ -58,8 +59,8 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         self.experiment = self.experiment_classname(
             [self.model_name],
             messages_to_try,
-            self.use_dialectic_scribe,
-            self.dialectic_scribe_name,
+            self.use_scribe,
+            self.scribe_name,
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()

@@ -8,6 +8,7 @@ CHROMA_CLIENT = []
 def _get_embedding_model():
     if len(EMBEDDING_MODEL) == 0:
         from sentence_transformers import SentenceTransformer
+
         EMBEDDING_MODEL.append(
             SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         )
@@ -17,6 +18,7 @@ def _get_embedding_model():
 def _get_chroma_client():
     if len(CHROMA_CLIENT) == 0:
         import chromadb
+
         CHROMA_CLIENT.append(chromadb.Client())
     return CHROMA_CLIENT[0]
 
@@ -26,6 +28,7 @@ def _from_huggingface(doc1, doc2):
     embedding_1 = model.encode(doc1, convert_to_tensor=True)
     embedding_2 = model.encode(doc2, convert_to_tensor=True)
     from sentence_transformers.util import pytorch_cos_sim
+
     return pytorch_cos_sim(embedding_1, embedding_2).item()
 
 

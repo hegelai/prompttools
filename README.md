@@ -49,7 +49,7 @@ Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest`
 
 ## Persisting Results
 
-To persist the results of your tests and experiments, you can enable `DialecticScribe` (also developed by us, [Hegel AI](https://hegel-ai.com/)). It logs all the inferences from your LLM, along with metadata and custom metrics, for you to view on your [private dashboard](https://app.hegel-ai.com). We have a few early adopters right now, and
+To persist the results of your tests and experiments, you can enable `hegel.Scribe` (also developed by us, [Hegel AI](https://hegel-ai.com/)). It logs all the inferences from your LLM, along with metadata and custom metrics, for you to view on your [private dashboard](https://app.hegel-ai.com). We have a few early adopters right now, and
 we can further discuss your use cases, pain points, and how it may be useful for you.
 
 ## Contributing

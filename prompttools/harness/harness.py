@@ -12,6 +12,9 @@ class ExperimentationHarness:
     Base class for experimentation harnesses.
     """
 
+    def __init__(self):
+        self.input_pairs_dict = None
+
     @staticmethod
     def _prepare_arguments(arguments: Dict[str, object]) -> Dict[str, List[object]]:
         return {name: [arg] for name, arg in arguments.items()}
@@ -26,7 +29,10 @@ class ExperimentationHarness:
         """
         Runs the underlying experiment.
         """
-        self.experiment.run(self.PIVOT_COLUMNS[0], self.input_pairs_dict)
+        if self.input_pairs_dict:
+            self.experiment.run(self.PIVOT_COLUMNS[0], self.input_pairs_dict)
+        else:
+            self.experiment.run()
 
     def evaluate(
         self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True
