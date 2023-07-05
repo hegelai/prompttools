@@ -43,8 +43,8 @@ class PromptTemplateTestRunner(PromptTestRunner):
         self.user_inputs[user_input_file] = user_inputs
         return prompt_template, user_inputs
 
+    @staticmethod
     def _get_harness(
-        self,
         model_name: str,
         prompt_template: str,
         user_inputs: List[Dict[str, str]],

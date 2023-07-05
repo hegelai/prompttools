@@ -21,6 +21,16 @@ pd.set_option("display.max_colwidth", 0)
 
 
 class Experiment:
+
+    r"""
+    Base class for experiment. This should not be used directly, please use the subclasses instead.
+    """
+
+    completion_fn: Callable
+    use_scribe: bool
+    PARAMETER_NAMES: tuple
+    all_args: list
+
     def __init__(self):
         self.queue = RequestQueue()
         self.argument_combos = []
@@ -65,7 +75,7 @@ class Experiment:
         table: pd.DataFrame,
         agg_column: int = 0,
         is_average: bool = False,
-    ) -> pd.DataFrame:
+    ) -> Dict[str, int]:
         # TODO: This could be a group by
         prompt_scores = defaultdict(int)
         prompt_counts = defaultdict(int)
@@ -88,7 +98,7 @@ class Experiment:
         metric_name: str,
         agg_column: str,
         is_average: bool = False,
-    ) -> pd.DataFrame:
+    ) -> Dict[str, int]:
         # TODO: This could be a group by
 
         prompt_scores = defaultdict(int)
@@ -244,7 +254,7 @@ class Experiment:
         if not is_interactive():
             logging.warning("This method only works in notebooks.")
             return
-        table = self.get_table(pivot_data=None, pivot_columns=pivot_columns, pivot=True)
+        table = self.get_table(pivot_data={}, pivot_columns=pivot_columns, pivot=True)
         self.scores["comparison"] = [1] * len(table)
         self.comparison_index_translation = lambda i: i * len(table.columns)
         self.comparison_widget_provider.set_models(table.columns)
@@ -280,7 +290,7 @@ class Experiment:
         pivot_columns: List[str],
         metric_name: str,
         is_average: bool,
-    ) -> Dict[str, float]:
+    ) -> Dict[str, int]:
         """
         Using pivot data, groups the data by the first pivot column to
         get scores, and sorts descending. For example, using pivot data of
@@ -297,3 +307,7 @@ class Experiment:
             table, metric_name, pivot_columns[0], is_average
         )
         return sorted_scores
+
+    @staticmethod
+    def _extract_responses(output: Dict[str, object]) -> list[str]:
+        raise NotImplementedError("This should be implemented by a subclass of `Experiment`.")

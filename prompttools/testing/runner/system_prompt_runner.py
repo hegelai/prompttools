@@ -19,7 +19,7 @@ class SystemPromptTestRunner(PromptTestRunner):
 
     def read(
         self, system_prompt_file: str, human_messages_file: str
-    ) -> Tuple[str, List[str]]:
+    ) -> Tuple[str, List[List[str]]]:
         r"""
         Reads data from files and parses it into a system prompt and human messages.
         """
@@ -41,8 +41,8 @@ class SystemPromptTestRunner(PromptTestRunner):
         self.human_messages[human_messages_file] = human_messages
         return system_prompt, human_messages
 
+    @staticmethod
     def _get_harness(
-        self,
         model_name: str,
         system_prompt: str,
         human_messages: List[str],

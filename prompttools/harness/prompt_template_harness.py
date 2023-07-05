@@ -14,8 +14,19 @@ from prompttools.experiment.openai_completion_experiment import (
 
 class PromptTemplateExperimentationHarness(ExperimentationHarness):
     r"""
-    An experimentation harness used for prompt templates.
-    We use jinja templates, e.g. "Answer the following question: {{input}}".
+    An experimentation harness used to test various prompt templates.
+    We use `jinja` templates, e.g. "Answer the following question: {{input}}".
+
+    Args:
+        model_name (str): The name of the model.
+        prompt_templates (List[str]): A list of prompt ``jinja``-styled templates.
+        user_inputs (List[Dict[str, str]]): A list of dictionaries representing user inputs.
+        use_scribe (Optional[bool], optional): Whether to use ``HegelScribe`` for logging and analytics.
+            Defaults to ``False``.
+        scribe_name (Optional[str], optional): The experiment name passed to ``HegelScribe``.
+            Defaults to ``f"Prompt Template Experiment {model_name}"``.
+        model_arguments (Optional[Dict[str, object]], optional): Additional arguments for the model.
+            Defaults to ``None``.
     """
 
     PIVOT_COLUMNS = ["prompt_template", "user_input"]
@@ -26,8 +37,8 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         prompt_templates: List[str],
         user_inputs: List[Dict[str, str]],
         use_scribe: Optional[bool] = False,
-        scribe_name: Optional[str] = "Prompt Template Experiment",
-        model_arguments: Optional[Dict[str, object]] = {},
+        scribe_name: Optional[str] = None,
+        model_arguments: Optional[Dict[str, object]] = None,
     ):
         self.environment = jinja2.Environment()
         self.experiment_classname = OpenAICompletionExperiment
@@ -35,9 +46,8 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         self.prompt_templates = prompt_templates
         self.user_inputs = user_inputs
         self.use_scribe = use_scribe
-        self.scribe_name = scribe_name
-        self.model_arguments = model_arguments
-        self.experiment = None
+        self.scribe_name = f"Prompt Template Experiment {model_name}" if scribe_name is None else scribe_name
+        self.model_arguments = {} if model_arguments is None else model_arguments
         super().__init__()
 
     def prepare(self) -> None:

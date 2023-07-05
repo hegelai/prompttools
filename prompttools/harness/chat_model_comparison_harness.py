@@ -12,6 +12,18 @@ from prompttools.experiment.openai_chat_experiment import OpenAIChatExperiment
 class ChatModelComparisonHarness(ExperimentationHarness):
     r"""
     An experimentation harness used for comparing chat models.
+    Multi-model version of ``hatHistoryExperimentationHarness``.
+
+    Args:
+        model_names (List[str]): The names of the models that you would like to compare
+        chat_histories (List[List[Dict[str, str]]]): A list of chat histories that will be fed into the models.
+        runs (int): Number of runs to execute. Defaults to ``1``.
+        use_scribe (Optional[bool], optional): Whether to use ``HegelScribe`` for logging and analytics.
+            Defaults to ``False``.
+        scribe_name (Optional[str], optional): The experiment name passed to ``HegelScribe``.
+            Defaults to ``f"Prompt Template Experiment {model_name}"``.
+        model_arguments (Optional[Dict[str, object]], optional): Additional arguments for the model.
+            Defaults to ``None``.
     """
 
     PIVOT_COLUMNS = ["model", "messages"]
@@ -20,10 +32,10 @@ class ChatModelComparisonHarness(ExperimentationHarness):
         self,
         model_names: List[str],
         chat_histories: List[List[Dict[str, str]]],
-        runs: Optional[int] = 1,
+        runs: int = 1,
         use_scribe: Optional[bool] = False,
         scribe_name: Optional[str] = "Chat Model Comparison",
-        model_arguments: Optional[Dict[str, object]] = {},
+        model_arguments: Optional[Dict[str, object]] = None,
     ):
         self.experiment_classname = OpenAIChatExperiment
         self.model_names = model_names
@@ -31,7 +43,7 @@ class ChatModelComparisonHarness(ExperimentationHarness):
         self.runs = runs
         self.use_scribe = use_scribe
         self.scribe_name = scribe_name
-        self.model_arguments = model_arguments
+        self.model_arguments = {} if model_arguments is None else model_arguments
         super().__init__()
 
     def prepare(self) -> None:
