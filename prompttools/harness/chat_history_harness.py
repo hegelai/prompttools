@@ -28,9 +28,10 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
         self.use_scribe = use_scribe
         self.scribe_name = scribe_name
         self.model_arguments = model_arguments
+        super().__init__()
 
     def prepare(self) -> None:
-        r"""
+        """
         Initializes and prepares the experiment.
         """
         self.experiment = self.experiment_classname(
@@ -41,3 +42,8 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()
+
+    def run(self):
+        if not self.experiment:
+            self.prepare()
+        super().run()
