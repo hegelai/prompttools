@@ -30,7 +30,7 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
         self.model_arguments = model_arguments
 
     def prepare(self) -> None:
-        """
+        r"""
         Initializes and prepares the experiment.
         """
         self.experiment = self.experiment_classname(

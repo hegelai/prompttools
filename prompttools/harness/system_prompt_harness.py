@@ -43,7 +43,7 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         return {"role": "user", "content": content}
 
     def prepare(self) -> None:
-        """
+        r"""
         Creates messages to use for the experiment, and then initializes and prepares the experiment.
         """
         self.input_pairs_dict = {}

@@ -13,7 +13,7 @@ EXPECTED = {"Who was the first president of the USA?": "George Washington"}
 
 
 def extract_responses(output) -> str:
-    """
+    r"""
     Helper function to unwrap the OpenAI repsonse object.
     """
     return [choice["text"] for choice in output["choices"]]
@@ -28,7 +28,7 @@ def extract_responses(output) -> str:
 def measure_similarity(
     input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict
 ) -> float:
-    """
+    r"""
     A simple test that checks semantic similarity between the user input
     and the model's text responses.
     """

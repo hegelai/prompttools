@@ -17,7 +17,7 @@ The simplest way is to define an experimentation harness and an evaluation funct
 
 ```python
 def eval_fn(prompt: str, results: Dict, metadata: Dict) -> float:
-    # Your logic here
+    # Your logic here, or use a built-in one such as ` prompttools.utils.similarity`.
     pass
 
 prompt_templates = [
@@ -38,18 +38,23 @@ harness = PromptTemplateExperimentationHarness("text-davinci-003",
 harness.prepare()
 harness.run()
 harness.evaluate("metric_name", eval_fn)
-harness.visualize()
+harness.visualize()  # The results will be displayed as a table in your notebook
 ```
+
+[comment]: <> (TODO: Insert screenshot of result here.)
+
+
+Please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details. 
 
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
 
 ### Unit Tests
 
-Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The prompttest framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/example.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).
+Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The `prompttest` framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/example.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).
 
 ## Persisting Results
 
-To persist the results of your tests and experiments, you can enable `hegel.Scribe` (also developed by us, [Hegel AI](https://hegel-ai.com/)). It logs all the inferences from your LLM, along with metadata and custom metrics, for you to view on your [private dashboard](https://app.hegel-ai.com). We have a few early adopters right now, and
+To persist the results of your tests and experiments, you can enable `HegelScribe` (also developed by us at [Hegel AI](https://hegel-ai.com/)). It logs all the inferences from your LLM, along with metadata and custom metrics, for you to view on your [private dashboard](https://app.hegel-ai.com). We have a few early adopters right now, and
 we can further discuss your use cases, pain points, and how it may be useful for you.
 
 ## Contributing

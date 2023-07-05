@@ -10,7 +10,7 @@ import openai
 
 import logging
 
-from prompttools.mock.fake import fake_chat_completion_fn
+from prompttools.mock.mock import mock_chat_completion_fn
 from prompttools.experiment.experiment import Experiment
 from dialectic.api.client_api.dialectic_scribe import (
     DialecticScribe,
@@ -18,7 +18,7 @@ from dialectic.api.client_api.dialectic_scribe import (
 
 
 class OpenAIChatExperiment(Experiment):
-    """
+    r"""
     This class defines an experiment for OpenAI's chat completion API.
     It accepts lists for each argument passed into OpenAI's API, then creates
     a cartesian product of those arguments, and gets results for each.
@@ -62,7 +62,7 @@ class OpenAIChatExperiment(Experiment):
         else:
             self.completion_fn = openai.ChatCompletion.create
         if os.getenv("DEBUG", default=False):
-            self.completion_fn = fake_chat_completion_fn
+            self.completion_fn = mock_chat_completion_fn
         self.all_args = []
         self.all_args.append(model)
         self.all_args.append(messages)

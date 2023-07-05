@@ -3,7 +3,7 @@ from typing import Callable, Dict, Tuple
 
 
 class PromptTestRunner:
-    """
+    r"""
     Base class for prompt test runners.
     """
 
@@ -12,7 +12,7 @@ class PromptTestRunner:
         self.harnesses = dict()
 
     def run(self, *args, **kwargs) -> str:
-        """
+        r"""
         Runs the test if it has not already been run.
         """
         key = str(args)
@@ -31,7 +31,7 @@ class PromptTestRunner:
         eval_fn: Callable,
         use_input_pairs: Dict[str, Tuple[str, Dict[str, str]]],
     ) -> None:
-        """
+        r"""
         Evaluates the test results.
         """
         self.harnesses[key].evaluate(metric_name, eval_fn, use_input_pairs)
