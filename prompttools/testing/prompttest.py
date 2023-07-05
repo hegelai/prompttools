@@ -19,7 +19,7 @@ TESTS_TO_RUN = []
 def prompttest(
     model_name: str,
     metric_name: str,
-    threshold: float,
+    threshold: float = 1.0,
     prompt_template_file: str = None,
     user_input_file: str = None,
     system_prompt_file: str = None,
@@ -29,8 +29,8 @@ def prompttest(
     system_prompt: str = None,
     human_messages: str = None,
     is_average: bool = False,
-    use_input_pairs: bool = False,
-    threshold_type: ThresholdType = ThresholdType.MINIMUM,
+    use_input_pairs: bool = True,
+    threshold_type: ThresholdType = ThresholdType.MAXIMUM,
     model_arguments: Dict[str, object] = {},
 ):
     """

@@ -6,4 +6,5 @@ jinja2
 jupyterlab
 ipywidgets
 chromadb
+sentence_transformers
 # hegel  # This can be used once client package is released

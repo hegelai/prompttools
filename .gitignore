@@ -168,3 +168,4 @@ cython_debug/
 #.idea/
 
 **/.chroma/**
+/ptvenv

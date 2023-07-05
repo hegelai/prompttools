@@ -1,7 +1,8 @@
-import chromadb
 from typing import Dict, Tuple
 import prompttools.testing.prompttest as prompttest
-from prompttools.testing.threshold_type import ThresholdType
+from prompttools.utils import similarity
+
+EXPECTED = {"Who was the first president of the USA?": "George Washington"}
 
 
 def extract_responses(output) -> str:
@@ -13,31 +14,23 @@ def extract_responses(output) -> str:
 
 @prompttest.prompttest(
     model_name="text-davinci-003",
-    metric_name="did_echo",
-    threshold=2,
-    threshold_type=ThresholdType.MAXIMUM,
-    prompt_template="Echo the following input: {{input}}",
-    user_input=[{"input": "This is a test"}],
-    use_input_pairs=True,
-    model_arguments={"temperature": 0.9},
+    metric_name="similar_to_expected",
+    prompt_template="Answer the following question: {{input}}",
+    user_input=[{"input": "Who was the first president of the USA?"}],
 )
-def check_similarity(
+def measure_similarity(
     input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict
 ) -> float:
     """
     A simple test that checks semantic similarity between the user input
-    and the model's text responses, using ChromaDB to create a vector index.
+    and the model's text responses.
     """
-    chroma_client = chromadb.Client()
-    collection = chroma_client.create_collection(name="test_collection")
-    collection.add(
-        documents=[dict(input_pair[1])["input"]], metadatas=[metadata], ids=["id1"]
-    )
-    query_results = collection.query(
-        query_texts=extract_responses(results), n_results=1
-    )
-    chroma_client.delete_collection("test_collection")
-    return min(query_results["distances"])[0]
+    expected = EXPECTED[input_pair[1]["input"]]
+    distances = [
+        similarity.compute(expected, response)
+        for response in extract_responses(results)
+    ]
+    return min(distances)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # PromptTools: Tools for Prompts
 
-Welcome to prompttools! This repo offers a set of tools for testing and experimenting with prompts. The core idea is to enable developers to play with prompts using familiar interfaces like _code_ and _notebooks_.
+Welcome to prompttools! This repo offers a set of tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
 
 ## Using prompttools
 
@@ -17,13 +17,18 @@ The simplest way is to define an experimentation harness and an evaluation funct
 
 ```python
 def eval_fn(prompt: str, results: Dict, metadata: Dict) -> float:
-    return 1.0
+    # Your logic here
+    pass
 
-prompt_templates = ["Echo the following input: {{input}}",
-                    "Repeat the following input: {{input}}"]
+prompt_templates = [
+    "Answer the following question: {{input}}", 
+    "Respond the following query: {{input}}"
+]
 
-user_inputs = [{"input": "This is a test"}, 
-               {"input": "This is not a test"}]
+user_inputs = [
+    {"input": "Who was the first president?"}, 
+    {"input": "Who was the first president of India?"}
+]
 
 harness = PromptTemplateExperimentationHarness("text-davinci-003", 
                                                prompt_templates, 
