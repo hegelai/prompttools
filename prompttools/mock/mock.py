@@ -8,6 +8,7 @@ r"""
 These mock functions exist for testing and demo purposes.
 """
 
+
 def mock_chat_completion_fn(**kwargs):
     return {
         "choices": [

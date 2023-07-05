@@ -7,7 +7,7 @@ Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo
 There are primarily two ways you can use `prompttools` in your LLM workflow:
 
 1. Run experiments in [notebooks](/examples/notebooks/).
-1. Write [unit tests](/examples/prompttests/example.py).
+1. Write [unit tests](/examples/prompttests/example.py) and integrate them into CI/CD like [Github Actions](/.github/workflows/post-commit.yaml).
 
 ### Notebooks
 
@@ -35,18 +35,19 @@ harness = PromptTemplateExperimentationHarness("text-davinci-003",
                                                user_inputs)
 
 
-harness.prepare()
 harness.run()
 harness.evaluate("metric_name", eval_fn)
 harness.visualize()  # The results will be displayed as a table in your notebook
 ```
 
-[comment]: <> (TODO: Insert screenshot of result here.)
+![image](img/table.png)
 
 
 Please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details. 
 
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
+
+![image](img/feedback.png)
 
 ### Unit Tests
 

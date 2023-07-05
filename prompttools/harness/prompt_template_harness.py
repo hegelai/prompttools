@@ -37,6 +37,7 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         self.use_scribe = use_scribe
         self.scribe_name = scribe_name
         self.model_arguments = model_arguments
+        self.experiment = None
         super().__init__()
 
     def prepare(self) -> None:
@@ -59,3 +60,8 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()
+
+    def run(self):
+        if not self.experiment:
+            self.prepare()
+        super().run()

@@ -51,5 +51,10 @@ class ChatModelComparisonHarness(ExperimentationHarness):
         )
         super().prepare()
 
+    def run(self):
+        if not self.experiment:
+            self.prepare()
+        super().run()
+
     def compare(self):
         self.experiment.compare(self.model_names[0], self.PIVOT_COLUMNS)

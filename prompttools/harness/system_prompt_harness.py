@@ -64,3 +64,8 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()
+
+    def run(self):
+        if not self.experiment:
+            self.prepare()
+        super().run()

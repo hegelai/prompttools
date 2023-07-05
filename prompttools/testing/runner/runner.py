@@ -19,7 +19,6 @@ class PromptTestRunner:
         if self.ran[key]:
             return key
         self.harnesses[key] = self._get_harness(*args, **kwargs)
-        self.harnesses[key].prepare()
         self.harnesses[key].run()
         self.ran[key] = True
         return key
