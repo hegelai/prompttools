@@ -1,6 +1,6 @@
-# PromptTools: Tools for Prompts
+# PromptTools
 
-Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of tools for testing and experimenting with prompts. The core idea is to enable developers to play with prompts using familiar interfaces like _code_ and _notebooks_.
+Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of free, open-source tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
 
 ## Using `prompttools`
 
@@ -58,5 +58,5 @@ interested in using this tooling for your project or have any feedback.
 
 ## License
 
-We will be gradually releasing more components to the open-source community. The current license can be found in the  [LICENSE](LICENSE) file.
+We will be gradually releasing more components to the open-source community. The current license can be found in the  [LICENSE](LICENSE) file. If there is any concern, please [contact us](team@hegel-ai.com) and we will be happy to work with you.
 
