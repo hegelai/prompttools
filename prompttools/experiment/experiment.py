@@ -121,6 +121,7 @@ class Experiment:
             logging.warning("Please run `run` first.")
             return
         if metric_name in self.scores:
+            logging.warning(metric_name + " is already present, skipping.")
             return
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function

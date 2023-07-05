@@ -1,6 +1,6 @@
 # prompttools
 
-Welcome to prompttools! This repo offers a set of tools for testing and experimenting with prompts. The core idea is to enable developers to play with prompts using familiar interfaces like _code_ and _notebooks_ instead of a playground.
+Welcome to prompttools! This repo offers a set of tools for testing and experimenting with prompts. The core idea is to enable developers to play with prompts using familiar interfaces like _code_ and _notebooks_.
 
 ## Using prompttools
 
