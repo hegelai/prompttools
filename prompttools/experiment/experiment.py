@@ -130,8 +130,8 @@ class Experiment:
         Create tuples of input and output for every possible combination of arguments.
         """
         if not self.argument_combos:
-            logging.warning("Please run `prepare` first.")
-            return
+            logging.info('Preparing first...')
+            self.prepare()
         for combo in self.argument_combos:
             self.queue.enqueue(
                 self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
@@ -149,8 +149,8 @@ class Experiment:
         Using the given evaluation function, all input/response pairs are evaluated.
         """
         if not self.results:
-            logging.warning("Please run `run` first.")
-            return
+            logging.info('Running first...')
+            self.run()
         if metric_name in self.scores:
             logging.warning(metric_name + " is already present, skipping.")
             return
@@ -190,7 +190,7 @@ class Experiment:
             if metric_name != "comparison":
                 data[metric_name] = evals
         # Add other args as cols if there was more than 1 input
-        for i, args in enumerate([self.all_args[0]] + self.all_args[2:]):
+        for i, args in enumerate(self.all_args):
             if len(args) > 1:
                 data[self.PARAMETER_NAMES[i]] = [
                     combo[i] for combo in self.argument_combos
@@ -220,8 +220,8 @@ class Experiment:
         This method creates a table to gather human feedback from a notebook interface.
         """
         if not self.results:
-            logging.warning("Please run `run` first.")
-            return
+            logging.info('Running first...')
+            self.run()
         if not is_interactive():
             logging.warning("This method only works in notebooks.")
             return
@@ -239,8 +239,8 @@ class Experiment:
         This method creates a table to gather human feedback from a notebook interface.
         """
         if not self.results:
-            logging.warning("Please run `run` first.")
-            return
+            logging.info('Running first...')
+            self.run()
         if not is_interactive():
             logging.warning("This method only works in notebooks.")
             return
@@ -263,8 +263,8 @@ class Experiment:
         Creates and shows a table using the results produced.
         """
         if not self.results:
-            logging.warning("Please run `run` first.")
-            return
+            logging.info('Running first...')
+            self.run()
         table = self.get_table(
             pivot_data, pivot_columns, pivot=pivot_columns is not None
         )

@@ -49,6 +49,8 @@ You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipy
 
 ![image](img/feedback.png)
 
+> Note: Above we used an `ExperimentationHarness`. Under the hood, that harness uses an `Experiment` to construct and make API calls to LLMs. The harness is responsible for managing higher level abstractions, like prompt templates or system prompts. To see how experiments work at a low level, [see this example](/examples/notebooks/BasicExperiment.ipynb)
+
 ### Unit Tests
 
 Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The `prompttest` framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/example.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).

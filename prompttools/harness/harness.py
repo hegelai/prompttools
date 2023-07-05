@@ -14,6 +14,7 @@ class ExperimentationHarness:
 
     def __init__(self):
         self.input_pairs_dict = None
+        self.experiment = None
 
     @staticmethod
     def _prepare_arguments(arguments: Dict[str, object]) -> Dict[str, List[object]]:
