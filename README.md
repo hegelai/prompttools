@@ -53,7 +53,7 @@ We welcome PRs and suggestions! Don't hesitate to open a PR/issue or to reach ou
 
 ## Usage and Feedback
 
-We will be delighted to work with early adopters to shape our designs. Please reach out to us [via email](team@hegel-ai.com) if you're
+We will be delighted to work with early adopters to shape our designs. Please reach out to us [via email](mailto:team@hegel-ai.com) if you're
 interested in using this tooling for your project or have any feedback.
 
 ## License
