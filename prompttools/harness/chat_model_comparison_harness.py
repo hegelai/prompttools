@@ -12,7 +12,7 @@ from prompttools.experiment.openai_chat_experiment import OpenAIChatExperiment
 class ChatModelComparisonHarness(ExperimentationHarness):
     r"""
     An experimentation harness used for comparing chat models.
-    Multi-model version of ``hatHistoryExperimentationHarness``.
+    Multi-model version of ``ChatHistoryExperimentationHarness``.
 
     Args:
         model_names (List[str]): The names of the models that you would like to compare
