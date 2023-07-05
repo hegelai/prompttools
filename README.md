@@ -17,7 +17,7 @@ The simplest way is to define an experimentation harness and an evaluation funct
 
 ```python
 def eval_fn(prompt: str, results: Dict, metadata: Dict) -> float:
-    # Your logic here, or use a built-in one such as ` prompttools.utils.similarity`.
+    # Your logic here, or use a built-in one such as `prompttools.utils.similarity`.
     pass
 
 prompt_templates = [
@@ -69,5 +69,5 @@ interested in using this tooling for your project or have any feedback.
 
 ## License
 
-We will be gradually releasing more components to the open-source community. The current license can be found in the  [LICENSE](LICENSE) file. If there is any concern, please [contact us](team@hegel-ai.com) and we will be happy to work with you.
+We will be gradually releasing more components to the open-source community. The current license can be found in the  [LICENSE](LICENSE) file. If there is any concern, please [contact us](mailto:eam@hegel-ai.com) and we will be happy to work with you.
 
