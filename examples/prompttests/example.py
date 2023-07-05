@@ -12,7 +12,7 @@ def extract_responses(output) -> str:
 
 
 @prompttest.prompttest(
-    model_name="gpt-3.5-turbo",
+    model_name="text-davinci-003",
     metric_name="did_echo",
     threshold=2,
     threshold_type=ThresholdType.MAXIMUM,
