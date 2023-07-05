@@ -1,3 +1,9 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
 from typing import Callable, Dict, List, Optional, Tuple
 from collections import defaultdict
 import itertools
@@ -29,7 +35,7 @@ class Experiment:
 
         return not hasattr(main, "__file__")
 
-    def _aggregrate_metric(
+    def _aggregate_metric(
         self,
         table: pd.DataFrame,
         metric_name: str,
@@ -64,7 +70,7 @@ class Experiment:
         self, table: pd.DataFrame, pivot_columns: List[str]
     ) -> Callable:
         def on_click(b):
-            sorted_scores = self._aggregrate_metric(table, "feedback", pivot_columns[0])
+            sorted_scores = self._aggregate_metric(table, "feedback", pivot_columns[0])
             data = {
                 pivot_columns[0]: sorted_scores.keys(),
                 "feedback": sorted_scores.values(),
@@ -291,7 +297,7 @@ class Experiment:
             )
             return
         table = self.get_table(pivot_data, pivot_columns, pivot=False)
-        sorted_scores = self._aggregrate_metric(
+        sorted_scores = self._aggregate_metric(
             table, metric_name, pivot_columns[0], is_average
         )
         return sorted_scores
