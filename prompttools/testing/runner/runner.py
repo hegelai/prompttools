@@ -1,10 +1,10 @@
 from collections import defaultdict
-from typing import Callable, Dict, Tuple
+from typing import Callable, Dict, List, Tuple
 
 
 class PromptTestRunner:
     r"""
-    Base class for prompt test runners.
+    Base class for prompt test runners. Please use the subclass instead.s
     """
 
     def __init__(self):
@@ -36,9 +36,20 @@ class PromptTestRunner:
         self.harnesses[key].evaluate(metric_name, eval_fn, use_input_pairs)
 
     def rank(self, key: str, metric_name: str, is_average: bool) -> Dict[str, float]:
-        """
+        r"""
         Uses evaluations to "rank" the template or system prompt.
         This creates an overall score (sum or average) across all
         test inputs, which can be compared against a threshold.
         """
         return self.harnesses[key].rank(metric_name, is_average)
+
+    @staticmethod
+    def _get_harness(
+        model_name: str,
+        prompt_template: str,
+        user_inputs: List[Dict[str, str]],
+        model_args: Dict[str, object],
+    ):
+        raise NotImplementedError(
+            "This should be implemented by a subclass of `PromptTestRunner`."
+        )

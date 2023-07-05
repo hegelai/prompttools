@@ -78,5 +78,5 @@ class OpenAIChatExperiment(Experiment):
         super().__init__()
 
     @staticmethod
-    def _extract_responses(output: Dict[str, object]) -> str:
+    def _extract_responses(output: Dict[str, object]) -> list[str]:
         return [choice["message"]["content"] for choice in output["choices"]]

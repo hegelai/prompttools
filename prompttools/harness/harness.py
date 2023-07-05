@@ -5,14 +5,18 @@
 # LICENSE file in the root directory of this source tree.
 
 from typing import Callable, Dict, List
+from prompttools.experiment.experiment import Experiment
 
 
 class ExperimentationHarness:
     r"""
-    Base class for experimentation harnesses.
+    Base class for experimentation harnesses. This should not be used directly, please use the subclasses instead.
     """
 
-    def __init__(self):
+    experiment: Experiment
+    PIVOT_COLUMNS: list
+
+    def __init__(self) -> None:
         self.input_pairs_dict = None
 
     @staticmethod
@@ -38,7 +42,7 @@ class ExperimentationHarness:
         self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True
     ) -> None:
         r"""
-        Uses the given eval_fn to evalaute the results of the underlying experiment.
+        Uses the given eval_fn to evaluate the results of the underlying experiment.
         """
         if use_input_pairs:
             self.experiment.evaluate(metric_name, eval_fn, self.input_pairs_dict)
