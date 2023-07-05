@@ -1,4 +1,14 @@
-def fake_chat_completion_fn(**kwargs):
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+r"""
+These mock functions exist for testing and demo purposes.
+"""
+
+def mock_chat_completion_fn(**kwargs):
     return {
         "choices": [
             {
@@ -18,7 +28,7 @@ def fake_chat_completion_fn(**kwargs):
     }
 
 
-def fake_completion_fn(**kwargs):
+def mock_completion_fn(**kwargs):
     return {
         "id": "cmpl-uqkvlQyYK7bGYrRHQ0eXlWi7",
         "object": "text_completion",
