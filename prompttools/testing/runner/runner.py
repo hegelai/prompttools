@@ -30,7 +30,7 @@ class PromptTestRunner:
         metric_name: str,
         eval_fn: Callable,
         use_input_pairs: Dict[str, Tuple[str, Dict[str, str]]],
-    ):
+    ) -> None:
         """
         Evaluates the test results.
         """
