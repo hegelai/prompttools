@@ -12,9 +12,7 @@ import logging
 
 from prompttools.mock.mock import mock_chat_completion_fn
 from prompttools.experiment.experiment import Experiment
-from dialectic.api.client_api.dialectic_scribe import (
-    DialecticScribe,
-)  # TODO: Switch to `hegel`
+from hegel.scribe import HegelScribe 
 
 
 class OpenAIChatExperiment(Experiment):
@@ -56,7 +54,7 @@ class OpenAIChatExperiment(Experiment):
     ):
         self.use_scribe = use_scribe
         if use_scribe:
-            self.completion_fn = DialecticScribe(
+            self.completion_fn = HegelScribe(
                 name=scribe_name, completion_fn=openai.ChatCompletion.create
             )
         else:
