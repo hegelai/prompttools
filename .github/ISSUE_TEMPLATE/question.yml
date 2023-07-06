@@ -1,0 +1,15 @@
+name: ⁉️ Question and Discussion
+description: Discuss or ask question about how to use prompttools and what the best practice may be.
+
+body:
+  - type: textarea
+    attributes:
+      label: ⁉️ Discussion/Question
+      description: |
+        Provide context on how you are using prompttools, what you have tried, and what question you may have.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for contributing 🎉!
