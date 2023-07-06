@@ -2,7 +2,4 @@ blank_issues_enabled: true
 contact_links:
   - name: Contact Us
     url: team@hegel-ai.com
-    about: >
-      If for any reason you do not wish to open a public issue, feel free to contact us with the linked email.
-      We would love to hear about your experience and pain points, and we'll offer bespoke advice and solution whenever
-      possible.
+    about: If for any reason you do not wish to open a public issue, feel free to contact us with the linked email. We would love to hear about your experience and pain points, and we'll offer bespoke advice and solution whenever possible.
