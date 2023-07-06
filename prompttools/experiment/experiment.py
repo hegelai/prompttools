@@ -104,7 +104,7 @@ class Experiment:
         prompt_scores = defaultdict(int)
         prompt_counts = defaultdict(int)
         for index, row in table.iterrows():
-            key = str(row[1][agg_column])
+            key = str(row[agg_column])
             prompt_scores[key] += self.scores[metric_name][index]
             prompt_counts[key] += 1
         if is_average:
