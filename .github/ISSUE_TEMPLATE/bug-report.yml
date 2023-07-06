@@ -1,0 +1,51 @@
+name: 🐛 Bug Report
+description: Create a report to help us reproduce and fix the bug
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        #### Before submitting a bug, please make sure the issue hasn't been already addressed by searching through [the
+        existing and past issues](https://github.com/hegelai/prompttools/issues?q=is%3Aissue+sort%3Acreated-desc+).
+  - type: textarea
+    attributes:
+      label: 🐛 Describe the bug
+      description: |
+        Please provide a clear and concise description of what the bug is.
+
+        If relevant, add a minimal example so that we can reproduce the error by running the code. For example 
+
+        ```python
+        # Include all the necessary imports at the beginning
+        from prompttools.harness.prompt_template_harness import (
+            PromptTemplateExperimentationHarness,
+        )
+
+        # A succinct reproducible example trimmed down to the essential parts:
+        prompt_templates = ["Answer the following question: {{input}}", "Respond the following query: {{input}}"]
+        user_inputs = [{"input": "Who was the first president?"}, {"input": "Who was the first president of India?"}]
+        harness = PromptTemplateExperimentationHarness("text-davinci-003", prompt_templates, user_inputs)
+        
+        harness.run()  
+        harness.visualize()  # Note: the bug is here, the visualization "X" is different from expected "Y"
+        ```
+
+        If the code is too long, feel free to put it in a public gist and link it here: https://gist.github.com.
+
+        Please also paste or describe the results you observe instead of the expected results. If you observe an error, please paste the error message including the **full** traceback of the exception. It may be relevant to wrap error messages in ```` ```triple quotes blocks``` ````.
+      placeholder: |
+        A clear and concise description of what the bug is.
+
+        ```python
+        Sample code to reproduce the problem
+        ```
+
+        ```
+        The error message you got, with the full traceback.
+        ```
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for contributing 🎉!
