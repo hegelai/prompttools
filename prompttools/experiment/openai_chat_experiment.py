@@ -12,7 +12,6 @@ import logging
 
 from prompttools.mock.mock import mock_chat_completion_fn
 from prompttools.experiment.experiment import Experiment
-from hegel.scribe import HegelScribe 
 
 
 class OpenAIChatExperiment(Experiment):
@@ -54,6 +53,7 @@ class OpenAIChatExperiment(Experiment):
     ):
         self.use_scribe = use_scribe
         if use_scribe:
+            from hegel.scribe import HegelScribe 
             self.completion_fn = HegelScribe(
                 name=scribe_name, completion_fn=openai.ChatCompletion.create
             )
