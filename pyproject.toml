@@ -4,18 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prompttools"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Hegel AI", email="team@hegel-ai.com" },
 ]
-description = "Tools for LLM prompting"
+description = "Tools for LLM prompt testing and experimentation"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
+    "License :: Other/Proprietary License",
     "Operating System :: OS Independent",
 ]
+
+dynamic = ["dependencies", "license"]
 
 [project.urls]
 "Homepage" = "https://github.com/hegelai/prompttools"
 "Bug Tracker" = "https://github.com/hegelai/prompttools"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
