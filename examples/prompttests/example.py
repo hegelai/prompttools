@@ -4,11 +4,18 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 from typing import Dict, Tuple
 import prompttools.testing.prompttest as prompttest
 from prompttools.utils import similarity
 
 EXPECTED = {"Who was the first president of the USA?": "George Washington"}
+
+if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
+    print(
+        "Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1"
+    )
+    exit(1)
 
 
 def extract_responses(output) -> str:

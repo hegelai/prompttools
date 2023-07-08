@@ -4,6 +4,12 @@ Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo
 
 ## Quickstart
 
+To install `prompttools`, you can use `pip`:
+
+```
+pip install prompttools
+```
+
 You can run a simple example of a `prompttools` with the following
 
 ```

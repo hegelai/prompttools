@@ -53,7 +53,8 @@ class OpenAIChatExperiment(Experiment):
     ):
         self.use_scribe = use_scribe
         if use_scribe:
-            from hegel.scribe import HegelScribe 
+            from hegel.scribe import HegelScribe
+
             self.completion_fn = HegelScribe(
                 name=scribe_name, completion_fn=openai.ChatCompletion.create
             )

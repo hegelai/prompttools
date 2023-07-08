@@ -46,7 +46,11 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         self.prompt_templates = prompt_templates
         self.user_inputs = user_inputs
         self.use_scribe = use_scribe
-        self.scribe_name = f"Prompt Template Experiment {model_name}" if scribe_name is None else scribe_name
+        self.scribe_name = (
+            f"Prompt Template Experiment {model_name}"
+            if scribe_name is None
+            else scribe_name
+        )
         self.model_arguments = {} if model_arguments is None else model_arguments
         super().__init__()
 

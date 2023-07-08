@@ -16,12 +16,12 @@ from prompttools.requests.request_queue import RequestQueue
 from prompttools.experiment.widgets.feedback import FeedbackWidgetProvider
 from prompttools.experiment.widgets.comparison import ComparisonWidgetProvider
 from prompttools.experiment.widgets.utility import is_interactive
+from prompttools.experiment.error import PromptExperimentException
 
 pd.set_option("display.max_colwidth", 0)
 
 
 class Experiment:
-
     r"""
     Base class for experiment. This should not be used directly, please use the subclasses instead.
     """
@@ -140,7 +140,7 @@ class Experiment:
         Create tuples of input and output for every possible combination of arguments.
         """
         if not self.argument_combos:
-            logging.info('Preparing first...')
+            logging.info("Preparing first...")
             self.prepare()
         for combo in self.argument_combos:
             self.queue.enqueue(
@@ -148,6 +148,9 @@ class Experiment:
             )
         self.results = self.queue.results()
         self.scores["latency"] = self.queue.latencies()
+        if len(self.results) == 0:
+            logging.error("No results. Something went wrong.")
+            raise PromptExperimentException
 
     def evaluate(
         self,
@@ -159,7 +162,7 @@ class Experiment:
         Using the given evaluation function, all input/response pairs are evaluated.
         """
         if not self.results:
-            logging.info('Running first...')
+            logging.info("Running first...")
             self.run()
         if metric_name in self.scores:
             logging.warning(metric_name + " is already present, skipping.")
@@ -230,7 +233,7 @@ class Experiment:
         This method creates a table to gather human feedback from a notebook interface.
         """
         if not self.results:
-            logging.info('Running first...')
+            logging.info("Running first...")
             self.run()
         if not is_interactive():
             logging.warning("This method only works in notebooks.")
@@ -249,7 +252,7 @@ class Experiment:
         This method creates a table to gather human feedback from a notebook interface.
         """
         if not self.results:
-            logging.info('Running first...')
+            logging.info("Running first...")
             self.run()
         if not is_interactive():
             logging.warning("This method only works in notebooks.")
@@ -273,7 +276,7 @@ class Experiment:
         Creates and shows a table using the results produced.
         """
         if not self.results:
-            logging.info('Running first...')
+            logging.info("Running first...")
             self.run()
         table = self.get_table(
             pivot_data, pivot_columns, pivot=pivot_columns is not None
@@ -310,4 +313,6 @@ class Experiment:
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        raise NotImplementedError("This should be implemented by a subclass of `Experiment`.")
+        raise NotImplementedError(
+            "This should be implemented by a subclass of `Experiment`."
+        )

@@ -1,10 +1,12 @@
 from typing import Callable, Dict, List, Tuple
 import csv
+import logging
 
 from prompttools.testing.threshold_type import ThresholdType
 from prompttools.testing.error.failure import log_failure
 from prompttools.harness.system_prompt_harness import SystemPromptExperimentationHarness
 from prompttools.testing.runner.runner import PromptTestRunner
+from prompttools.testing.error.failure import PromptTestSetupException
 
 
 class SystemPromptTestRunner(PromptTestRunner):
@@ -76,6 +78,11 @@ def run_system_prompt_test(
     )
     system_prompt_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
+    if not scored_template:
+        logging.error(
+            "Something went wrong during testing. Make sure your API keys are set correctly."
+        )
+        raise PromptTestSetupException
     if (
         scored_template[system_prompt] < threshold
         and threshold_type is ThresholdType.MINIMUM
