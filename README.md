@@ -2,6 +2,24 @@
 
 Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of free, open-source tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
 
+## Quickstart
+
+You can run a simple example of a `prompttools` with the following
+
+```
+DEBUG=1 python examples/prompttests/example.py
+```
+
+To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key. 
+This is because `prompttools` makes a call to OpenAI from your machine. For example:
+
+```
+OPENAI_API_KEY=sk-... python examples/prompttests/example.py
+```
+
+You can see the full example [here](/examples/prompttests/example.py).
+
+
 ## Using `prompttools`
 
 There are primarily two ways you can use `prompttools` in your LLM workflow:
