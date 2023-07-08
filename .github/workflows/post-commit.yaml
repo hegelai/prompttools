@@ -22,6 +22,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip uninstall pydantic
+        pip install "pydantic==1.*"
     - name: Setup prompttools
       run: |
         python setup.py develop
