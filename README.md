@@ -2,6 +2,8 @@
 
 Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of free, open-source tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
 
+Join the [Discord](https://discord.gg/7KeRPNHGdJ).
+
 ## Quickstart
 
 To install `prompttools`, you can use `pip`:
