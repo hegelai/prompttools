@@ -42,6 +42,9 @@ There are a few different ways to run an experiment in a notebook.
 The simplest way is to define an experimentation harness and an evaluation function:
 
 ```python
+from prompttools.harness import PromptTemplateExperimentationHarness
+
+
 def eval_fn(prompt: str, results: Dict, metadata: Dict) -> float:
     # Your logic here, or use a built-in one such as `prompttools.utils.similarity`.
     pass
