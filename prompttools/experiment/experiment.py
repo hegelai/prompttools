@@ -13,10 +13,10 @@ from tabulate import tabulate
 import pandas as pd
 
 from prompttools.requests.request_queue import RequestQueue
-from prompttools.experiment.widgets.feedback import FeedbackWidgetProvider
-from prompttools.experiment.widgets.comparison import ComparisonWidgetProvider
-from prompttools.experiment.widgets.utility import is_interactive
-from prompttools.experiment.error import PromptExperimentException
+from .widgets.feedback import FeedbackWidgetProvider
+from .widgets.comparison import ComparisonWidgetProvider
+from .widgets.utility import is_interactive
+from .error import PromptExperimentException
 
 pd.set_option("display.max_colwidth", 0)
 

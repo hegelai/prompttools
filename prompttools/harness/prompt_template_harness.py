@@ -6,7 +6,7 @@
 
 from typing import Dict, List, Optional
 import jinja2
-from prompttools.harness import ExperimentationHarness
+from .harness import ExperimentationHarness
 from prompttools.experiment import OpenAICompletionExperiment
 
 

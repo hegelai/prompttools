@@ -10,7 +10,7 @@ import openai
 import logging
 
 from prompttools.mock.mock import mock_completion_fn
-from prompttools.experiment import Experiment
+from .experiment import Experiment
 
 
 class OpenAICompletionExperiment(Experiment):

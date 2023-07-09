@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from typing import Dict, List, Optional
-from prompttools.harness import ExperimentationHarness
+from .harness import ExperimentationHarness
 from prompttools.experiment import OpenAIChatExperiment
 
 
