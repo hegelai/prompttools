@@ -10,4 +10,4 @@ from .openai_chat_experiment import OpenAIChatExperiment
 from .openai_completion_experiment import OpenAICompletionExperiment
 
 
-__all__ = ["OpenAIChatExperiment", "OpenAICompletionExperiment"]
+__all__ = ["Experiment", "OpenAIChatExperiment", "OpenAICompletionExperiment"]
