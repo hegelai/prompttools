@@ -17,9 +17,7 @@ body:
 
         ```python
         # Include all the necessary imports at the beginning
-        from prompttools.harness.prompt_template_harness import (
-            PromptTemplateExperimentationHarness,
-        )
+        from prompttools.harness import PromptTemplateExperimentationHarness
 
         # A succinct reproducible example trimmed down to the essential parts:
         prompt_templates = ["Answer the following question: {{input}}", "Respond the following query: {{input}}"]
