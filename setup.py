@@ -86,7 +86,7 @@ class Clean(distutils.command.clean.clean):
 if __name__ == "__main__":
     VERSION, SHA = _get_version()
     # TODO: Exporting the version here breaks `python -m build`
-    # _export_version(VERSION, SHA)
+    _export_version(VERSION, SHA)
 
     print("-- Building version " + VERSION)
 
