@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from typing import Callable, Dict, List
-from prompttools.experiment.experiment import Experiment
+from prompttools.experiment import Experiment
 
 
 class ExperimentationHarness:
