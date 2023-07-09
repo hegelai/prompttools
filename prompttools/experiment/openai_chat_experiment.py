@@ -11,7 +11,7 @@ import openai
 import logging
 
 from prompttools.mock.mock import mock_chat_completion_fn
-from prompttools.experiment.experiment import Experiment
+from prompttools.experiment import Experiment
 
 
 class OpenAIChatExperiment(Experiment):

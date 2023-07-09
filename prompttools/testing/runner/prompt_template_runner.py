@@ -4,9 +4,7 @@ import logging
 
 from prompttools.testing.threshold_type import ThresholdType
 from prompttools.testing.error.failure import log_failure
-from prompttools.harness.prompt_template_harness import (
-    PromptTemplateExperimentationHarness,
-)
+from prompttools.harness import PromptTemplateExperimentationHarness
 from prompttools.testing.runner.runner import PromptTestRunner
 from prompttools.testing.error.failure import PromptTestSetupException
 
