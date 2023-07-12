@@ -4,14 +4,14 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 from collections import defaultdict
 import itertools
 import logging
 from IPython import display
 from tabulate import tabulate
 import pandas as pd
-from langchain import PromptTemplate, LLMChain
+from operator import itemgetter
 
 from prompttools.requests.request_queue import RequestQueue
 from .widgets.feedback import FeedbackWidgetProvider
@@ -46,7 +46,7 @@ class Experiment:
             self._get_comparison_listener,
         ),
         self.hf = False
-        self.hf_results = {"params": [], "response": []}
+        self.responses = {"params": [],}
 
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
@@ -148,15 +148,11 @@ class Experiment:
         if self.hf: # Hugging Face Hub API input differs from OpenAI
             for combo in self.argument_combos:
                 args_dict = self._create_args_dict(combo, tagname, input_pairs)
-                llm = self.hf_fn(repo_id=args_dict["repo_id"],
+                llm = self.hugging_face_hub(repo_id=args_dict["repo_id"],
                             model_kwargs={k: args_dict[k] for k in args_dict if k != "repo_id"})
-                # temp for testing
-                prompt = PromptTemplate(template="""Question: {question}
-                Answer: """, 
-                                input_variables=["question"])
-                llm_chain = LLMChain(prompt=prompt, llm=llm)
+                llm_chain = self.LLMChain(prompt=self.prompt, llm=llm)
                 self.queue.enqueue(
-                    llm_chain.run, {"question": "Who was the first president of USA?"}
+                    llm_chain.run, {self.query_type: self.query}
                 )
         else:
             for combo in self.argument_combos:
@@ -167,13 +163,26 @@ class Experiment:
         if self.hf:
             for i, combo in enumerate(self.argument_combos):
                 args = self._create_args_dict(combo, tagname, input_pairs)
-                self.hf_results["params"].append(args)
-                self.hf_results["response"].append(self.results[i])
-            print(self.hf_results)
+                args["response"] = self.results[i]
+                self.responses["params"].append(args)
         self.scores["latency"] = self.queue.latencies()
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
+
+    def top_n_responses(
+        self,
+        eval_fn: Callable,
+        n: int = 1,
+    ) -> Any:
+        scores = []
+        for params in self.responses["params"]:
+            if self.hf:
+                params["score"] = eval_fn(params["response"], self.expected, use_chroma=False)
+                scores.append(params)
+        if self.hf:
+            scores = sorted(scores, key=itemgetter('score'), reverse=True)
+        return scores[:n]
 
     def evaluate(
         self,

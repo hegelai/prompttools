@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 
 import logging
 
-from langchain import HuggingFaceHub, LLMChain
+from langchain import HuggingFaceHub, PromptTemplate, LLMChain
 
 from .experiment import Experiment
 from prompttools.mock.mock import mock_chat_completion_fn
@@ -39,9 +39,17 @@ class HuggingFaceHubExperiment(Experiment):
         temperature: List[float] = [1.0],
         top_k: List[int] = [50],
         top_p: List[float] = [0.999],
+        template: str = """Question: {question}
+        Answer: """,
+        input_variables: List[str] = ["question"],
+        question: str = "Who was the first president?",
+        context: str = "The first president",
+        expected: str = "George Washington",
+
         use_scribe: bool = False,
     ):
-        self.hf_fn = HuggingFaceHub
+        self.hugging_face_hub = HuggingFaceHub
+        self.LLMChain = LLMChain
         self.use_scribe = use_scribe
         # Make this optional?
         self.completion_fn = mock_chat_completion_fn
@@ -57,6 +65,10 @@ class HuggingFaceHubExperiment(Experiment):
         super().__init__()
 
         self.hf = True
+        self.prompt = PromptTemplate(template=template, input_variables=input_variables)
+        self.expected = expected
+        self.query = question if input_variables == ["question"] else context
+        self.query_type = "question" if input_variables == ["question"] else "context"
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
