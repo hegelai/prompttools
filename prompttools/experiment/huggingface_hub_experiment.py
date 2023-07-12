@@ -45,7 +45,6 @@ class HuggingFaceHubExperiment(Experiment):
         input_variables: List[str] = ["question"],
         question: str = "Who was the first president?",
         context: str = "The first president",
-
         use_scribe: bool = False,
     ):
         self.use_scribe = use_scribe
