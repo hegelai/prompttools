@@ -9,8 +9,10 @@ from typing import Dict, List, Optional
 
 import logging
 
-from prompttools.mock.mock import mock_chat_completion_fn
+from langchain import HuggingFaceHub, LLMChain
+
 from .experiment import Experiment
+from prompttools.mock.mock import mock_chat_completion_fn
 
 
 class HuggingFaceHubExperiment(Experiment):
@@ -36,12 +38,13 @@ class HuggingFaceHubExperiment(Experiment):
         max_time: List[Optional[float]] = [None],
         temperature: List[float] = [1.0],
         top_k: List[int] = [50],
-        top_p: List[float] = [1.0],
+        top_p: List[float] = [0.999],
         use_scribe: bool = False,
     ):
-        # Placeholder. Should this be optional in experiment class?
-        self.completion_fn = mock_chat_completion_fn
+        self.hf_fn = HuggingFaceHub
         self.use_scribe = use_scribe
+        # Make this optional?
+        self.completion_fn = mock_chat_completion_fn
 
         self.all_args = []
         self.all_args.append(repo_id)
@@ -52,6 +55,8 @@ class HuggingFaceHubExperiment(Experiment):
         self.all_args.append(top_k)
         self.all_args.append(top_p)
         super().__init__()
+
+        self.hf = True
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:

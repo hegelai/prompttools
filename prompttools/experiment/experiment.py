@@ -11,6 +11,7 @@ import logging
 from IPython import display
 from tabulate import tabulate
 import pandas as pd
+from langchain import PromptTemplate, LLMChain
 
 from prompttools.requests.request_queue import RequestQueue
 from .widgets.feedback import FeedbackWidgetProvider
@@ -43,7 +44,9 @@ class Experiment:
             self.completion_fn,
             self._aggregate_comparison,
             self._get_comparison_listener,
-        )
+        ),
+        self.hf = False
+        self.hf_results = {"params": [], "response": []}
 
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
@@ -142,11 +145,31 @@ class Experiment:
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
-        for combo in self.argument_combos:
-            self.queue.enqueue(
-                self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
-            )
+        if self.hf: # Hugging Face Hub API input differs from OpenAI
+            for combo in self.argument_combos:
+                args_dict = self._create_args_dict(combo, tagname, input_pairs)
+                llm = self.hf_fn(repo_id=args_dict["repo_id"],
+                            model_kwargs={k: args_dict[k] for k in args_dict if k != "repo_id"})
+                # temp for testing
+                prompt = PromptTemplate(template="""Question: {question}
+                Answer: """, 
+                                input_variables=["question"])
+                llm_chain = LLMChain(prompt=prompt, llm=llm)
+                self.queue.enqueue(
+                    llm_chain.run, {"question": "Who was the first president of USA?"}
+                )
+        else:
+            for combo in self.argument_combos:
+                self.queue.enqueue(
+                    self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
+                )
         self.results = self.queue.results()
+        if self.hf:
+            for i, combo in enumerate(self.argument_combos):
+                args = self._create_args_dict(combo, tagname, input_pairs)
+                self.hf_results["params"].append(args)
+                self.hf_results["response"].append(self.results[i])
+            print(self.hf_results)
         self.scores["latency"] = self.queue.latencies()
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
