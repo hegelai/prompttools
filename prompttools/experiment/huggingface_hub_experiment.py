@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import logging
 
@@ -22,6 +22,7 @@ class HuggingFaceHubExperiment(Experiment):
 
     PARAMETER_NAMES = (
         "repo_id",
+        "messages",
         "max_length",
         "min_length",
         "max_time",
@@ -32,6 +33,7 @@ class HuggingFaceHubExperiment(Experiment):
 
     def __init__(
         self,
+        messages: List[List[Dict[str, str]]],
         repo_id: List[str] = ["gpt2"],
         max_length: List[int] = [20],
         min_length: List[int] = [0],
@@ -56,6 +58,7 @@ class HuggingFaceHubExperiment(Experiment):
 
         self.all_args = []
         self.all_args.append(repo_id)
+        self.all_args.append(messages)
         self.all_args.append(max_length)
         self.all_args.append(min_length)
         self.all_args.append(max_time)
@@ -69,7 +72,20 @@ class HuggingFaceHubExperiment(Experiment):
         self.expected = expected
         self.query = question if input_variables == ["question"] else context
         self.query_type = "question" if input_variables == ["question"] else "context"
+        self.hf_reformat = self.reformat_output
+
+    def reformat_output(
+        self,
+        repo_id: str,
+        response: str,
+        model_kwargs,
+    ) -> Dict[str, Any]:
+        return {
+            "repo_id": repo_id,
+            "response": response,
+            "model_kwargs": model_kwargs,
+        }
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return [choice["message"]["content"] for choice in output["choices"]]
+        return output["response"]

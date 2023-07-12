@@ -46,7 +46,6 @@ class Experiment:
             self._get_comparison_listener,
         ),
         self.hf = False
-        self.responses = {"params": [],}
 
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
@@ -147,12 +146,13 @@ class Experiment:
             self.prepare()
         if self.hf: # Hugging Face Hub API input differs from OpenAI
             for combo in self.argument_combos:
-                args_dict = self._create_args_dict(combo, tagname, input_pairs)
-                llm = self.hugging_face_hub(repo_id=args_dict["repo_id"],
-                            model_kwargs={k: args_dict[k] for k in args_dict if k != "repo_id"})
+                args = self._create_args_dict(combo, tagname, input_pairs)
+                model_kwargs = {k: args[k] for k in args if k != "repo_id"}
+                llm = self.hugging_face_hub(repo_id=args["repo_id"], model_kwargs=model_kwargs)
+                args[self.query_type] = self.query
                 llm_chain = self.LLMChain(prompt=self.prompt, llm=llm)
                 self.queue.enqueue(
-                    llm_chain.run, {self.query_type: self.query}
+                    llm_chain.run, args
                 )
         else:
             for combo in self.argument_combos:
@@ -161,28 +161,21 @@ class Experiment:
                 )
         self.results = self.queue.results()
         if self.hf:
+            # Need to reformat the HF results to fit other functions
             for i, combo in enumerate(self.argument_combos):
                 args = self._create_args_dict(combo, tagname, input_pairs)
-                args["response"] = self.results[i]
-                self.responses["params"].append(args)
+                model_kwargs = {k: args[k] for k in args if k != "repo_id"}
+                response = self.results[i]
+                ref = self.hf_reformat(
+                    repo_id=args["repo_id"],
+                    response=response,
+                    model_kwargs=model_kwargs,
+                )
+                self.results[i] = ref
         self.scores["latency"] = self.queue.latencies()
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
-
-    def top_n_responses(
-        self,
-        eval_fn: Callable,
-        n: int = 1,
-    ) -> Any:
-        scores = []
-        for params in self.responses["params"]:
-            if self.hf:
-                params["score"] = eval_fn(params["response"], self.expected, use_chroma=False)
-                scores.append(params)
-        if self.hf:
-            scores = sorted(scores, key=itemgetter('score'), reverse=True)
-        return scores[:n]
 
     def evaluate(
         self,
