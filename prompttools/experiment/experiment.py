@@ -4,14 +4,13 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 from collections import defaultdict
 import itertools
 import logging
 from IPython import display
 from tabulate import tabulate
 import pandas as pd
-from operator import itemgetter
 
 from prompttools.requests.request_queue import RequestQueue
 from .widgets.feedback import FeedbackWidgetProvider
@@ -44,8 +43,7 @@ class Experiment:
             self.completion_fn,
             self._aggregate_comparison,
             self._get_comparison_listener,
-        ),
-        self.hf = False
+        )
 
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
@@ -144,34 +142,12 @@ class Experiment:
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
-        if self.hf: # Hugging Face Hub API input differs from OpenAI
-            for combo in self.argument_combos:
-                args = self._create_args_dict(combo, tagname, input_pairs)
-                model_kwargs = {k: args[k] for k in args if k != "repo_id"}
-                llm = self.hugging_face_hub(repo_id=args["repo_id"], model_kwargs=model_kwargs)
-                args[self.query_type] = self.query
-                llm_chain = self.LLMChain(prompt=self.prompt, llm=llm)
-                self.queue.enqueue(
-                    llm_chain.run, args
-                )
-        else:
-            for combo in self.argument_combos:
-                self.queue.enqueue(
-                    self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
-                )
+        for combo in self.argument_combos:
+            print(self._create_args_dict(combo, tagname, input_pairs))
+            self.queue.enqueue(
+                self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
+            )
         self.results = self.queue.results()
-        if self.hf:
-            # Need to reformat the HF results to fit other functions
-            for i, combo in enumerate(self.argument_combos):
-                args = self._create_args_dict(combo, tagname, input_pairs)
-                model_kwargs = {k: args[k] for k in args if k != "repo_id"}
-                response = self.results[i]
-                ref = self.hf_reformat(
-                    repo_id=args["repo_id"],
-                    response=response,
-                    model_kwargs=model_kwargs,
-                )
-                self.results[i] = ref
         self.scores["latency"] = self.queue.latencies()
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")

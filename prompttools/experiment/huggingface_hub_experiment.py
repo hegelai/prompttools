@@ -50,11 +50,8 @@ class HuggingFaceHubExperiment(Experiment):
 
         use_scribe: bool = False,
     ):
-        self.hugging_face_hub = HuggingFaceHub
-        self.LLMChain = LLMChain
         self.use_scribe = use_scribe
-        # Make this optional?
-        self.completion_fn = mock_chat_completion_fn
+        self.completion_fn = self.hf_completion_fn
 
         self.all_args = []
         self.all_args.append(repo_id)
@@ -72,20 +69,17 @@ class HuggingFaceHubExperiment(Experiment):
         self.expected = expected
         self.query = question if input_variables == ["question"] else context
         self.query_type = "question" if input_variables == ["question"] else "context"
-        self.hf_reformat = self.reformat_output
 
-    def reformat_output(
+    def hf_completion_fn(
         self,
-        repo_id: str,
-        response: str,
-        model_kwargs,
-    ) -> Dict[str, Any]:
-        return {
-            "repo_id": repo_id,
-            "response": response,
-            "model_kwargs": model_kwargs,
-        }
+        **params: Dict[str, Any],
+    ):
+        print("params: ", params)
+        model_kwargs = {k: params[k] for k in params if k != "repo_id"}
+        llm = HuggingFaceHub(repo_id=params["repo_id"], model_kwargs=model_kwargs)
+        llm_chain = LLMChain(prompt=self.prompt, llm=llm)
+        return llm_chain.run(self.query)
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return output["response"]
+        return output
