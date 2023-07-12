@@ -12,7 +12,6 @@ import logging
 from langchain import HuggingFaceHub, PromptTemplate, LLMChain
 
 from .experiment import Experiment
-from prompttools.mock.mock import mock_chat_completion_fn
 
 
 class HuggingFaceHubExperiment(Experiment):
@@ -46,7 +45,6 @@ class HuggingFaceHubExperiment(Experiment):
         input_variables: List[str] = ["question"],
         question: str = "Who was the first president?",
         context: str = "The first president",
-        expected: str = "George Washington",
 
         use_scribe: bool = False,
     ):
@@ -66,7 +64,6 @@ class HuggingFaceHubExperiment(Experiment):
 
         self.hf = True
         self.prompt = PromptTemplate(template=template, input_variables=input_variables)
-        self.expected = expected
         self.query = question if input_variables == ["question"] else context
         self.query_type = "question" if input_variables == ["question"] else "context"
 
@@ -74,7 +71,9 @@ class HuggingFaceHubExperiment(Experiment):
         self,
         **params: Dict[str, Any],
     ):
-        print("params: ", params)
+        r"""
+        Hugging Face Hub helper function to make request
+        """
         model_kwargs = {k: params[k] for k in params if k != "repo_id"}
         llm = HuggingFaceHub(repo_id=params["repo_id"], model_kwargs=model_kwargs)
         llm_chain = LLMChain(prompt=self.prompt, llm=llm)
