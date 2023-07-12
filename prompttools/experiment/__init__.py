@@ -8,6 +8,7 @@
 from .experiment import Experiment
 from .openai_chat_experiment import OpenAIChatExperiment
 from .openai_completion_experiment import OpenAICompletionExperiment
+from .huggingface_hub_experiment import HuggingFaceHubExperiment
 
 
-__all__ = ["Experiment", "OpenAIChatExperiment", "OpenAICompletionExperiment"]
+__all__ = ["Experiment", "HuggingFaceHubExperiment", "OpenAIChatExperiment", "OpenAICompletionExperiment"]

@@ -44,6 +44,7 @@ class Experiment:
             self._aggregate_comparison,
             self._get_comparison_listener,
         )
+        self.responses = []
 
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
@@ -142,6 +143,13 @@ class Experiment:
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
+        if self.hf:
+            for combo in self.argument_combos:
+                args = self._create_args_dict(combo, tagname, input_pairs)
+                # Should this be a helper function somewhere?
+                # prompts = PromptTemplate(template=combo.template,
+                #                 input_variables=["question"])
+            pass
         for combo in self.argument_combos:
             self.queue.enqueue(
                 self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
