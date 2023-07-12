@@ -143,7 +143,6 @@ class Experiment:
             logging.info("Preparing first...")
             self.prepare()
         for combo in self.argument_combos:
-            print(self._create_args_dict(combo, tagname, input_pairs))
             self.queue.enqueue(
                 self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
             )
