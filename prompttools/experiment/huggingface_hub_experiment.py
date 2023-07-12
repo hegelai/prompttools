@@ -20,39 +20,37 @@ class HuggingFaceHubExperiment(Experiment):
 
     PARAMETER_NAMES = (
         "repo_id",
-        "temperature",
         "max_length",
-        "template",
-        "question",
-        "expected",
+        "min_length",
+        "max_time",
+        "temperature",
+        "top_k",
+        "top_p",
     )
 
     def __init__(
         self,
-        repo_id: List[str] = [],
-        temperature: List[float] = [],
-        max_length: List[int] = [],
-        template: List[str] = ["""Question: {question}
-        Answer: """],
-        question: List[str] = [""],
-        expected: List[str] = [""],
+        repo_id: List[str] = ["gpt2"],
+        max_length: List[int] = [20],
+        min_length: List[int] = [0],
+        max_time: List[Optional[float]] = [None],
+        temperature: List[float] = [1.0],
+        top_k: List[int] = [50],
+        top_p: List[float] = [1.0],
         use_scribe: bool = False,
     ):
         # Placeholder. Should this be optional in experiment class?
         self.completion_fn = mock_chat_completion_fn
-
         self.use_scribe = use_scribe
-
-        # Notify Experiments this is HF run
-        self.hf = True
 
         self.all_args = []
         self.all_args.append(repo_id)
-        self.all_args.append(temperature)
         self.all_args.append(max_length)
-        self.all_args.append(template)
-        self.all_args.append(question)
-        self.all_args.append(expected)
+        self.all_args.append(min_length)
+        self.all_args.append(max_time)
+        self.all_args.append(temperature)
+        self.all_args.append(top_k)
+        self.all_args.append(top_p)
         super().__init__()
 
     @staticmethod
