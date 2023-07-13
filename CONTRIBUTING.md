@@ -58,8 +58,14 @@ We actively welcome your pull requests.
 pip install pre-commit
 ```
 
-To check and in most cases fix the code format, stage all your changes (`git add`) and run `pre-commit run`. To perform
-the checks automatically before every `git commit`, you can install them with `pre-commit install`.
+To check and in most cases fix the code format, stage all your changes (`git add`) and run `pre-commit run`.
+
+We recommend you to perform the checks automatically before every `git commit`, you can install that by executing
+this in the directory:
+
+```shell
+pre-commit install
+```
 
 
 ## Contributor License Agreement ("CLA")
