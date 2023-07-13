@@ -4,17 +4,15 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import logging
 
-from langchain.llms import LlamaCpp
-from langchain import PromptTemplate, LLMChain
-from langchain.callbacks.manager import CallbackManager
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from llama_cpp import Llama
+from time import perf_counter
 
 from .experiment import Experiment
+from .error import PromptExperimentException
 
 
 class LlamaCppExperiment(Experiment):
@@ -24,60 +22,61 @@ class LlamaCppExperiment(Experiment):
     
     PARAMETER_NAMES = (
         "model_path",
-        "messages",
+        "prompt",
+        "lora_path",
+        "lora_base",
+        "n_ctx",
+        "n_parts",
+        "seed",
+        "f16_kv",
+        "logits_all",
+        "vocab_only",
+        "use_mlock",
+        "n_threads",
+        "n_batch",
+        "use_mmap",
+        "last_n_tokens_size",
+        "verbose",
+        "prompt",
         "suffix",
         "max_tokens",
         "temperature",
         "top_p",
-        # "logprobs", removed until logits_all support included
+        "logprobs",
+        "echo",
+        "stop_sequences",
         "repeat_penalty",
         "top_k",
     )
+
+    MODEL_PARAMETERS = PARAMETER_NAMES[2:15]
+    CALL_PARAMETERS = PARAMETER_NAMES[16:]
 
     def __init__(
         self,
         model_path: List[str],
         prompt: List[str],
-        suffix: List[Optional[str]] = [" "],
-        max_tokens: List[Optional[int]] = [256],
-        temperature: List[Optional[float]] = [0.8],
-        top_p: List[Optional[float]] = [0.95],
-        echo: Optional[bool] = False,
-        stop: Optional[List[str]] = [],
-        repeat_penalty: List[Optional[float]] = [1.1],
-        top_k: List[Optional[int]] = [40],
-        verbose: bool = False,
-        template = """Question: {question}
-
-        Answer: """,
-        question: str = "Who was the first president?",
-        context: str = "The first president",
-        input_variables: List[str] = ["question"],
         use_scribe: bool = False,
-        local_model_type: str = "llama",
+        scribe_name: str = "HuggingFace Experiment",
+        **kwargs: Dict[str,object]
     ):
         self.use_scribe = use_scribe
-        if local_model_type == "llama":
-            self.completion_fn = self.llama_completion_fn
-        self.echo = echo
-        self.stop = stop
-        self.verbose = verbose
+        if use_scribe:
+            from hegel.scribe import HegelScribe
 
+            self.completion_fn = HegelScribe(
+                name=scribe_name, completion_fn=self.llama_completion_fn
+            )
+        else:
+            self.completion_fn = self.llama_completion_fn
+        
         self.all_args = []
         self.all_args.append(model_path)
         self.all_args.append(prompt)
-        self.all_args.append(suffix)
-        self.all_args.append(max_tokens)
-        self.all_args.append(temperature)
-        self.all_args.append(top_p)
-        self.all_args.append(repeat_penalty)
-        self.all_args.append(top_k)
+        for param in self.PARAMETER_NAMES[2:]:
+            if param in kwargs:
+                self.all_args.append(kwargs[param])
         super().__init__()
-
-        self.prompt = PromptTemplate(template=template, input_variables=input_variables)
-        self.query = question if input_variables == ["question"] else context
-        # Callbacks support token-wise streaming
-        self.callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     
     def llama_completion_fn(
         self,
@@ -86,23 +85,37 @@ class LlamaCppExperiment(Experiment):
         r"""
         Local model helper function to make request
         """
-        llm = LlamaCpp(
-                    model_path=params["model_path"],
-                    suffix=params["suffix"],
-                    max_tokens=params["max_tokens"],
-                    temperature=params["temperature"],
-                    top_p=params["top_p"],
-                    echo=self.echo,
-                    stop=self.stop,
-                    repeat_penalty=params["repeat_penalty"],
-                    top_k=params["top_k"],
-                    verbose=self.verbose,
-                    callback_manager=self.callback_manager,
-                )
-        
-        llm_chain = LLMChain(prompt=self.prompt, llm=llm)
-        return llm_chain.run(self.query)
-    
+        print("Making call")
+        model_params = {k: v for k,v in params.items() if k in self.MODEL_PARAMETERS}
+        call_params = {k: v for k,v in params.items() if k in self.CALL_PARAMETERS}
+        client = Llama(params['model_path'], **model_params)
+        print("Got client")
+        response = client(prompt=params["prompt"], **call_params)
+        print("Made call")
+        logging.info(response)
+        return response
+
+    def run(
+        self,
+        tagname: Optional[str] = "",
+        input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
+    ) -> None:
+        r"""
+        Create tuples of input and output for every possible combination of arguments.
+        For local models we need to run this single-thread.
+        """
+        if not self.argument_combos:
+            logging.info("Preparing first...")
+            self.prepare()
+        for combo in self.argument_combos:
+            start = perf_counter()
+            res = self.completion_fn(**self._create_args_dict(combo, tagname, input_pairs))
+            self.results.append(res)
+            self.scores["latency"] = perf_counter() - start
+        if len(self.results) == 0:
+            logging.error("No results. Something went wrong.")
+            raise PromptExperimentException
+
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
         return output
