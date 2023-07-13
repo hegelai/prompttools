@@ -62,5 +62,5 @@ class HuggingFaceHubExperiment(Experiment):
         return response
 
     @staticmethod
-    def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return output
+    def _extract_responses(output: List[Dict[str, object]], task: str) -> list[str]:
+        return [resp[task] for resp in output]
