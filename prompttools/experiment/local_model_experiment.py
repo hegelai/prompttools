@@ -72,9 +72,6 @@ class LocalModelExperiment(Experiment):
         self.all_args.append(top_p)
         self.all_args.append(repeat_penalty)
         self.all_args.append(top_k)
-
-        print(self.all_args)
-        
         super().__init__()
 
         self.prompt = PromptTemplate(template=template, input_variables=input_variables)
