@@ -17,7 +17,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from .experiment import Experiment
 
 
-class LocalModelExperiment(Experiment):
+class LlamaCppExperiment(Experiment):
     r"""
     Experiment for local models.
     """
@@ -37,7 +37,7 @@ class LocalModelExperiment(Experiment):
     def __init__(
         self,
         model_path: List[str],
-        messages: List[List[Dict[str, str]]],
+        prompt: List[str],
         suffix: List[Optional[str]] = [" "],
         max_tokens: List[Optional[int]] = [256],
         temperature: List[Optional[float]] = [0.8],
@@ -65,7 +65,7 @@ class LocalModelExperiment(Experiment):
 
         self.all_args = []
         self.all_args.append(model_path)
-        self.all_args.append(messages)
+        self.all_args.append(prompt)
         self.all_args.append(suffix)
         self.all_args.append(max_tokens)
         self.all_args.append(temperature)
@@ -76,7 +76,6 @@ class LocalModelExperiment(Experiment):
 
         self.prompt = PromptTemplate(template=template, input_variables=input_variables)
         self.query = question if input_variables == ["question"] else context
-        self.query_type = "question" if input_variables == ["question"] else "context"
         # Callbacks support token-wise streaming
         self.callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     

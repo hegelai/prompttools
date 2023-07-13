@@ -6,65 +6,44 @@
 
 import os
 from typing import Any, Dict, List, Optional
+from huggingface_hub.inference_api import InferenceApi
 
 import logging
 
-from langchain import HuggingFaceHub, PromptTemplate, LLMChain
-
 from .experiment import Experiment
 
+VALID_TASKS = ("text2text-generation", "text-generation", "summarization")
 
 class HuggingFaceHubExperiment(Experiment):
     r"""
     Experiment for Hugging Face Hub's API.
     """
 
-    PARAMETER_NAMES = (
+    PARAMETER_NAMES = [
         "repo_id",
-        "messages",
-        "max_length",
-        "min_length",
-        "max_time",
-        "temperature",
-        "top_k",
-        "top_p",
-    )
+        "prompt",
+        "task"
+    ]
 
     def __init__(
         self,
-        messages: List[List[Dict[str, str]]],
-        repo_id: List[str] = ["gpt2"],
-        max_length: List[int] = [20],
-        min_length: List[int] = [0],
-        max_time: List[Optional[float]] = [None],
-        temperature: List[float] = [1.0],
-        top_k: List[int] = [50],
-        top_p: List[float] = [0.999],
-        template: str = """Question: {question}
-        Answer: """,
-        input_variables: List[str] = ["question"],
-        question: str = "Who was the first president?",
-        context: str = "The first president",
+        repo_id: List[str],
+        prompt: List[str],
+        task: List[str],
         use_scribe: bool = False,
+        **kwargs: Dict[str,object]
     ):
         self.use_scribe = use_scribe
         self.completion_fn = self.hf_completion_fn
 
         self.all_args = []
         self.all_args.append(repo_id)
-        self.all_args.append(messages)
-        self.all_args.append(max_length)
-        self.all_args.append(min_length)
-        self.all_args.append(max_time)
-        self.all_args.append(temperature)
-        self.all_args.append(top_k)
-        self.all_args.append(top_p)
+        self.all_args.append(prompt)
+        self.all_args.append(task)
+        for k, v in kwargs.items():
+            self.PARAMETER_NAMES.append(k)
+            self.all_args.append(v)
         super().__init__()
-
-        self.hf = True
-        self.prompt = PromptTemplate(template=template, input_variables=input_variables)
-        self.query = question if input_variables == ["question"] else context
-        self.query_type = "question" if input_variables == ["question"] else "context"
 
     def hf_completion_fn(
         self,
@@ -73,10 +52,14 @@ class HuggingFaceHubExperiment(Experiment):
         r"""
         Hugging Face Hub helper function to make request
         """
-        model_kwargs = {k: params[k] for k in params if k != "repo_id"}
-        llm = HuggingFaceHub(repo_id=params["repo_id"], model_kwargs=model_kwargs)
-        llm_chain = LLMChain(prompt=self.prompt, llm=llm)
-        return llm_chain.run(self.query)
+        client = InferenceApi(repo_id=params['repo_id'],
+                              token=os.environ.get('HUGGINGFACEHUB_API_TOKEN'),
+                              task=params['task'],
+        )
+        model_kwargs = {k: params[k] for k in params if k not in ["repo_id", "prompt", "task"]}
+        response = client(inputs=params["prompt"], params=model_kwargs)
+        logging.info(response)
+        return response
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:

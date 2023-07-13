@@ -8,3 +8,5 @@ ipywidgets
 chromadb
 sentence_transformers
 hegel
+huggingface_hub
+langchain

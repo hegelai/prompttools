@@ -9,7 +9,7 @@ from .experiment import Experiment
 from .openai_chat_experiment import OpenAIChatExperiment
 from .openai_completion_experiment import OpenAICompletionExperiment
 from .huggingface_hub_experiment import HuggingFaceHubExperiment
-from .local_model_experiment import LocalModelExperiment
+# from .llama_cpp_experiment import LocalModelExperiment
 
 
 __all__ = ["Experiment", "LocalModelExperiment", "HuggingFaceHubExperiment", "OpenAIChatExperiment", "OpenAICompletionExperiment"]
