@@ -9,4 +9,4 @@ chromadb
 sentence_transformers
 hegel
 huggingface_hub
-langchain
+llama-cpp-python

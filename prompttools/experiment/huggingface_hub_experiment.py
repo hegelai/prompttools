@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from huggingface_hub.inference_api import InferenceApi
 
 import logging
@@ -31,10 +31,18 @@ class HuggingFaceHubExperiment(Experiment):
         prompt: List[str],
         task: List[str],
         use_scribe: bool = False,
+        scribe_name: str = "HuggingFace Experiment",
         **kwargs: Dict[str,object]
     ):
         self.use_scribe = use_scribe
-        self.completion_fn = self.hf_completion_fn
+        if use_scribe:
+            from hegel.scribe import HegelScribe
+
+            self.completion_fn = HegelScribe(
+                name=scribe_name, completion_fn=self.hf_completion_fn
+            )
+        else:
+            self.completion_fn = self.hf_completion_fn
 
         self.all_args = []
         self.all_args.append(repo_id)
@@ -58,9 +66,8 @@ class HuggingFaceHubExperiment(Experiment):
         )
         model_kwargs = {k: params[k] for k in params if k not in ["repo_id", "prompt", "task"]}
         response = client(inputs=params["prompt"], params=model_kwargs)
-        logging.info(response)
         return response
 
     @staticmethod
-    def _extract_responses(output: List[Dict[str, object]], task: str) -> list[str]:
-        return [resp[task] for resp in output]
+    def _extract_responses(output: Dict[str, object]) -> list[str]:
+        return output["generated_text"]
