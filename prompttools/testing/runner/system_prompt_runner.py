@@ -33,10 +33,8 @@ class SystemPromptTestRunner(PromptTestRunner):
                 self.system_prompts[system_prompt_file],
                 self.human_messages[human_messages_file],
             )
-        system_prompt = ""
         with open(system_prompt_file, "r") as f:
             system_prompt = f.read()
-        human_messages = []
         with open(human_messages_file) as f:
             human_messages = list(csv.reader(f))
         self.system_prompts[system_prompt_file] = system_prompt
@@ -48,7 +46,7 @@ class SystemPromptTestRunner(PromptTestRunner):
         model_name: str,
         system_prompt: str,
         human_messages: List[str],
-        model_args: Dict[str, str],
+        model_args: Dict[str, object],
     ) -> SystemPromptExperimentationHarness:
         return SystemPromptExperimentationHarness(
             model_name, [system_prompt], human_messages, model_arguments=model_args
@@ -68,7 +66,7 @@ def run_system_prompt_test(
     system_prompt: str,
     human_messages: List[str],
     use_input_pairs: bool,
-    model_args: Dict[str, str],
+    model_args: Dict[str, object],
 ) -> int:
     r"""
     Runs the prompt test.
@@ -118,7 +116,7 @@ def run_system_prompt_test_from_files(
     system_prompt_file: str,
     human_messages_file: str,
     use_input_pairs: bool,
-    model_args: Dict[str, str],
+    model_args: Dict[str, object],
 ) -> int:
     r"""
     Reads data in from files and runs the prompt test.
@@ -134,7 +132,7 @@ def run_system_prompt_test_from_files(
         threshold_type,
         is_average,
         system_prompt,
-        human_messages,
+        human_messages,  # TODO: The type of this may be incorrect
         use_input_pairs,
         model_args,
     )

@@ -1,4 +1,4 @@
-from typing import Callable, Dict
+from typing import Callable, Dict, List, Optional
 from functools import wraps
 import logging
 
@@ -25,9 +25,9 @@ def prompttest(
     system_prompt_file: str = None,
     human_messages_file: str = None,
     prompt_template: str = None,
-    user_input: Dict[str, str] = None,
+    user_input: Optional[List[Dict[str, str]]] = None,
     system_prompt: str = None,
-    human_messages: str = None,
+    human_messages: Optional[List[str]] = None,
     is_average: bool = False,
     use_input_pairs: bool = True,
     threshold_type: ThresholdType = ThresholdType.MAXIMUM,

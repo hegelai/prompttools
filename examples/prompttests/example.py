@@ -18,7 +18,7 @@ if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
     exit(1)
 
 
-def extract_responses(output) -> str:
+def extract_responses(output) -> list[str]:
     r"""
     Helper function to unwrap the OpenAI repsonse object.
     """
