@@ -1,3 +1,9 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
 from typing import Callable, Dict, List, Tuple
 from queue import Queue, Empty
 from time import perf_counter
@@ -37,7 +43,7 @@ class RequestQueue:
             self.request_results.append(res[0])
             self.request_latencies.append(res[1])
         # TODO: If we get an unexpected error here, the queue will hang
-        except openai.error.AuthenticationError as e:
+        except openai.error.AuthenticationError:
             logging.error("Authentication error. Skipping request.")
 
     @retry_decorator
