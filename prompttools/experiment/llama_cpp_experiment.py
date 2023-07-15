@@ -132,4 +132,4 @@ class LlamaCppExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return output
+        return [choice["text"] for choice in output["choices"]]
