@@ -8,7 +8,6 @@ import os
 from typing import Dict, List, Optional
 import openai
 
-import logging
 
 from prompttools.mock.mock import mock_chat_completion_fn
 from .experiment import Experiment
@@ -39,8 +38,6 @@ class OpenAIChatExperiment(Experiment):
         self,
         model: List[str],
         messages: List[List[Dict[str, str]]],
-        use_scribe: bool = False,
-        scribe_name: str = "Chat Experiment",
         temperature: Optional[List[float]] = [1.0],
         top_p: Optional[List[float]] = [1.0],
         n: Optional[List[int]] = [1],
@@ -51,15 +48,7 @@ class OpenAIChatExperiment(Experiment):
         frequency_penalty: Optional[List[float]] = [0],
         logit_bias: Optional[Dict] = [None],
     ):
-        self.use_scribe = use_scribe
-        if use_scribe:
-            from hegel.scribe import HegelScribe
-
-            self.completion_fn = HegelScribe(
-                name=scribe_name, completion_fn=openai.ChatCompletion.create
-            )
-        else:
-            self.completion_fn = openai.ChatCompletion.create
+        self.completion_fn = openai.ChatCompletion.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_chat_completion_fn
         self.all_args = []

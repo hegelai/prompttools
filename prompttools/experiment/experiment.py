@@ -27,7 +27,6 @@ class Experiment:
     """
 
     completion_fn: Callable
-    use_scribe: bool
     PARAMETER_NAMES: tuple
     all_args: list
 
@@ -48,11 +47,6 @@ class Experiment:
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
             self.scores["feedback"][i] = change["new"]
-            if self.use_scribe:
-                self.completion_fn.add_feedback(
-                    self.results[i]["hegel_id"],
-                    {"thumbs_up": self.scores["feedback"][i]},
-                )
 
         return listener
 
@@ -62,11 +56,6 @@ class Experiment:
         def listener(change):
             new_index = self.comparison_index_translation(index)
             self.scores["comparison"][new_index] = change["new"]
-            if self.use_scribe:
-                self.completion_fn.add_feedback(
-                    self.results[new_index]["hegel_id"],
-                    {"thumbs_up": self.scores["comparison"][new_index]},
-                )
 
         return listener
 
@@ -119,8 +108,6 @@ class Experiment:
         self, args: Dict[str, object], tagname: str, input_pairs: Dict[str, object]
     ) -> Dict[str, object]:
         args = {self.PARAMETER_NAMES[i]: arg for i, arg in enumerate(args)}
-        if self.use_scribe:
-            args["hegel_tags"] = {tagname: input_pairs[args[1]]}
         return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
 
     def prepare(self) -> None:
@@ -181,10 +168,6 @@ class Experiment:
                 },
             )
             self.scores[metric_name].append(score)
-            if self.use_scribe:
-                self.completion_fn.add_feedback(
-                    self.results[i]["hegel_id"], {metric_name: score}
-                )
 
     def get_table(
         self, pivot_data: Dict[str, object], pivot_columns: List[str], pivot: bool

@@ -7,7 +7,6 @@
 import os
 from typing import Dict, List, Optional
 import openai
-import logging
 
 from prompttools.mock.mock import mock_completion_fn
 from .experiment import Experiment
@@ -42,8 +41,6 @@ class OpenAICompletionExperiment(Experiment):
         self,
         model: List[str],
         prompt: List[str],
-        use_scribe: bool = False,
-        scribe_name: str = "Completion Experiment",
         suffix: Optional[List[str]] = [None],
         max_tokens: Optional[List[int]] = [float("inf")],
         temperature: Optional[List[float]] = [1.0],
@@ -58,16 +55,7 @@ class OpenAICompletionExperiment(Experiment):
         best_of: Optional[List[int]] = [1],
         logit_bias: Optional[Dict] = [None],
     ):
-        self.use_scribe = use_scribe
-        if use_scribe:
-            from hegel.scribe import HegelScribe
-
-            self.completion_fn = HegelScribe(
-                name=scribe_name, completion_fn=openai.Completion.create
-            )
-        else:
-            self.completion_fn = openai.Completion.create
-
+        self.completion_fn = openai.Completion.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_completion_fn
         self.all_args = []

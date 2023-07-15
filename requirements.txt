@@ -7,6 +7,5 @@ jupyterlab
 ipywidgets
 chromadb
 sentence_transformers
-hegel
 huggingface_hub
 llama-cpp-python

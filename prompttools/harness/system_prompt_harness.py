@@ -17,10 +17,6 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         model_name (str): The name of the model.
         system_prompts (List[str]): A list of system prompts
         human_messages (List[str]): A list of
-        use_scribe (Optional[bool], optional): Whether to use ``HegelScribe`` for logging and analytics.
-            Defaults to ``False``.
-        scribe_name (Optional[str], optional): The experiment name passed to ``HegelScribe``.
-            Defaults to ``f"Prompt Template Experiment {model_name}"``.
         model_arguments (Optional[Dict[str, object]], optional): Additional arguments for the model.
             Defaults to ``None``.
     """
@@ -32,20 +28,12 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         model_name: str,
         system_prompts: List[str],
         human_messages: List[str],
-        use_scribe: bool = False,
-        scribe_name: Optional[str] = None,
         model_arguments: Optional[Dict[str, object]] = None,
     ):
         self.experiment_classname = OpenAIChatExperiment
         self.model_name = model_name
         self.system_prompts = system_prompts
         self.human_messages = human_messages
-        self.use_scribe = use_scribe
-        self.scribe_name = (
-            f"Prompt Template Experiment {model_name}"
-            if scribe_name is None
-            else scribe_name
-        )
         self.model_arguments = {} if model_arguments is None else model_arguments
         super().__init__()
 
@@ -74,8 +62,6 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         self.experiment = self.experiment_classname(
             [self.model_name],
             messages_to_try,
-            self.use_scribe,
-            self.scribe_name,
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()

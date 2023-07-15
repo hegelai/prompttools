@@ -19,7 +19,7 @@ class LlamaCppExperiment(Experiment):
     r"""
     Experiment for local models.
     """
-    
+
     PARAMETER_NAMES = (
         "model_path",
         "prompt",
@@ -53,23 +53,9 @@ class LlamaCppExperiment(Experiment):
     CALL_PARAMETERS = PARAMETER_NAMES[16:]
 
     def __init__(
-        self,
-        model_path: List[str],
-        prompt: List[str],
-        use_scribe: bool = False,
-        scribe_name: str = "HuggingFace Experiment",
-        **kwargs: Dict[str,object]
+        self, model_path: List[str], prompt: List[str], **kwargs: Dict[str, object]
     ):
-        self.use_scribe = use_scribe
-        if use_scribe:
-            from hegel.scribe import HegelScribe
-
-            self.completion_fn = HegelScribe(
-                name=scribe_name, completion_fn=self.llama_completion_fn
-            )
-        else:
-            self.completion_fn = self.llama_completion_fn
-        
+        self.completion_fn = self.llama_completion_fn
         self.all_args = []
         self.all_args.append(model_path)
         self.all_args.append(prompt)
@@ -77,7 +63,7 @@ class LlamaCppExperiment(Experiment):
             if param in kwargs:
                 self.all_args.append(kwargs[param])
         super().__init__()
-    
+
     def llama_completion_fn(
         self,
         **params: Dict[str, Any],
@@ -86,9 +72,9 @@ class LlamaCppExperiment(Experiment):
         Local model helper function to make request
         """
         print("Making call")
-        model_params = {k: v for k,v in params.items() if k in self.MODEL_PARAMETERS}
-        call_params = {k: v for k,v in params.items() if k in self.CALL_PARAMETERS}
-        client = Llama(params['model_path'], **model_params)
+        model_params = {k: v for k, v in params.items() if k in self.MODEL_PARAMETERS}
+        call_params = {k: v for k, v in params.items() if k in self.CALL_PARAMETERS}
+        client = Llama(params["model_path"], **model_params)
         print("Got client")
         response = client(prompt=params["prompt"], **call_params)
         print("Made call")
@@ -109,7 +95,9 @@ class LlamaCppExperiment(Experiment):
             self.prepare()
         for combo in self.argument_combos:
             start = perf_counter()
-            res = self.completion_fn(**self._create_args_dict(combo, tagname, input_pairs))
+            res = self.completion_fn(
+                **self._create_args_dict(combo, tagname, input_pairs)
+            )
             self.results.append(res)
             self.scores["latency"] = perf_counter() - start
         if len(self.results) == 0:
