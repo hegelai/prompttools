@@ -8,6 +8,7 @@ import os
 from typing import Any, Dict, List
 from huggingface_hub.inference_api import InferenceApi
 
+from prompttools.mock.mock import mock_hf_completion_fn
 
 from .experiment import Experiment
 
@@ -25,10 +26,12 @@ class HuggingFaceHubExperiment(Experiment):
         self,
         repo_id: List[str],
         prompt: List[str],
-        task: List[str],
+        task: List[str] = ["text-generation"],
         **kwargs: Dict[str, object],
     ):
         self.completion_fn = self.hf_completion_fn
+        if os.getenv("DEBUG", default=False):
+            self.completion_fn = mock_hf_completion_fn
         self.all_args = []
         self.all_args.append(repo_id)
         self.all_args.append(prompt)
