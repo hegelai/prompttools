@@ -37,7 +37,7 @@ class LlamaCppExperiment(Experiment):
         "use_mmap",
         "last_n_tokens_size",
         "verbose",
-        "prompt",
+        "prompt",  # TODO: Prompt is being added twice, need to remove this instance without breaking
         "suffix",
         "max_tokens",
         "temperature",
@@ -71,13 +71,10 @@ class LlamaCppExperiment(Experiment):
         r"""
         Local model helper function to make request
         """
-        print("Making call")
         model_params = {k: v for k, v in params.items() if k in self.MODEL_PARAMETERS}
         call_params = {k: v for k, v in params.items() if k in self.CALL_PARAMETERS}
-        client = Llama(params["model_path"], **model_params)
-        print("Got client")
-        response = client(prompt=params["prompt"], **call_params)
-        print("Made call")
+        client = Llama(model_path=params["model_path"], **model_params)
+        response = client(**call_params)
         logging.info(response)
         return response
 
