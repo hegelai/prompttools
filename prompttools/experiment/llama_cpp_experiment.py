@@ -37,7 +37,6 @@ class LlamaCppExperiment(Experiment):
         "use_mmap",
         "last_n_tokens_size",
         "verbose",
-        "prompt",  # TODO: Prompt is being added twice, need to remove this instance without breaking
         "suffix",
         "max_tokens",
         "temperature",
@@ -50,7 +49,7 @@ class LlamaCppExperiment(Experiment):
     )
 
     MODEL_PARAMETERS = PARAMETER_NAMES[2:15]
-    CALL_PARAMETERS = PARAMETER_NAMES[16:]
+    CALL_PARAMETERS = ("prompt",) + PARAMETER_NAMES[16:]
 
     DEFAULT = {
         "lora_path": [None],
