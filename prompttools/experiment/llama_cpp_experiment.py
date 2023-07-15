@@ -44,13 +44,39 @@ class LlamaCppExperiment(Experiment):
         "top_p",
         "logprobs",
         "echo",
-        "stop_sequences",
+        "stop",
         "repeat_penalty",
         "top_k",
     )
 
     MODEL_PARAMETERS = PARAMETER_NAMES[2:15]
     CALL_PARAMETERS = PARAMETER_NAMES[16:]
+
+    DEFAULT = {
+        "lora_path": [None],
+        "lora_base": [None],
+        "n_ctx": [512],
+        "n_parts": [-1],
+        "seed": [1337],
+        "f16_kv": [True],
+        "logits_all": [False],
+        "vocab_only": [False],
+        "use_mlock": [False],
+        "n_threads": [None],
+        "n_batch": [512],
+        "use_mmap": [True],
+        "last_n_tokens_size": [64],
+        "verbose": [True],
+        "suffix": [None],
+        "max_tokens": [128],
+        "temperature": [0.8],
+        "top_p": [0.95],
+        "logprobs": [None],
+        "echo": [False],
+        "stop": [None],
+        "repeat_penalty": [1.1],
+        "top_k": [40],
+    }
 
     def __init__(
         self, model_path: List[str], prompt: List[str], **kwargs: Dict[str, object]
@@ -62,6 +88,10 @@ class LlamaCppExperiment(Experiment):
         for param in self.PARAMETER_NAMES[2:]:
             if param in kwargs:
                 self.all_args.append(kwargs[param])
+            elif param in self.DEFAULT:
+                self.all_args.append(self.DEFAULT[param])
+            elif param == "prompt":
+                self.all_args.append(prompt)
         super().__init__()
 
     def llama_completion_fn(
