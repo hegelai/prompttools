@@ -23,6 +23,7 @@ TESTS_TO_RUN = []
 
 
 def prompttest(
+    experiment_classname: Callable,
     model_name: str,
     metric_name: str,
     threshold: float = 1.0,
@@ -43,6 +44,8 @@ def prompttest(
     Creates a decorator for prompt tests, which can annotate evaluation functions.
     This enables developers to create a prompt test suite from their evaluations.
     """
+
+    model_arguments["experiment_classname"] = experiment_classname
 
     def prompttest_decorator(eval_fn: Callable):
         @wraps(eval_fn)

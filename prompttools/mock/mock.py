@@ -45,3 +45,7 @@ def mock_completion_fn(**kwargs):
         ],
         "usage": {"prompt_tokens": 5, "completion_tokens": 7, "total_tokens": 12},
     }
+
+
+def mock_hf_completion_fn(**kwargs):
+    return {"generated_text": "George Washington"}

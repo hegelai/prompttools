@@ -6,7 +6,6 @@
 
 from typing import Dict, List, Optional
 from .harness import ExperimentationHarness
-from prompttools.experiment import OpenAIChatExperiment
 
 
 class SystemPromptExperimentationHarness(ExperimentationHarness):
@@ -30,7 +29,7 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         human_messages: List[str],
         model_arguments: Optional[Dict[str, object]] = None,
     ):
-        self.experiment_classname = OpenAIChatExperiment
+        self.experiment_classname = model_arguments["experiment_classname"]
         self.model_name = model_name
         self.system_prompts = system_prompts
         self.human_messages = human_messages
