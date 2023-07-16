@@ -17,7 +17,7 @@ from .error import PromptExperimentException
 
 class LlamaCppExperiment(Experiment):
     r"""
-    Experiment for local models.
+    Used to experiment across parameters for a local model, supported by LlamaCpp and GGML.
     """
 
     PARAMETER_NAMES = (

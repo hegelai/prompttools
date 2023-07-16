@@ -8,13 +8,13 @@ from typing import Callable, Dict, List, Optional
 from functools import wraps
 import logging
 
-from prompttools.testing.threshold_type import ThresholdType
-from prompttools.testing.error.failure import PromptTestSetupException
-from prompttools.testing.runner.prompt_template_runner import (
+from .threshold_type import ThresholdType
+from .error.failure import PromptTestSetupException
+from .runner.prompt_template_runner import (
     run_prompt_template_test,
     run_prompt_template_test_from_files,
 )
-from prompttools.testing.runner.system_prompt_runner import (
+from .runner.system_prompt_runner import (
     run_system_prompt_test,
     run_system_prompt_test_from_files,
 )

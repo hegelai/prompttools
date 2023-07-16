@@ -5,11 +5,17 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from .experiment import Experiment
-from .openai_chat_experiment import OpenAIChatExperiment
-from .openai_completion_experiment import OpenAICompletionExperiment
-from .huggingface_hub_experiment import HuggingFaceHubExperiment
-from .llama_cpp_experiment import LlamaCppExperiment
+from .experiments.experiment import Experiment
+from .experiments.openai_chat_experiment import OpenAIChatExperiment
+from .experiments.openai_completion_experiment import OpenAICompletionExperiment
+from .experiments.huggingface_hub_experiment import HuggingFaceHubExperiment
+from .experiments.llama_cpp_experiment import LlamaCppExperiment
 
 
-__all__ = ["Experiment", "LlamaCppExperiment", "HuggingFaceHubExperiment", "OpenAIChatExperiment", "OpenAICompletionExperiment"]
+__all__ = [
+    "Experiment", 
+    "LlamaCppExperiment", 
+    "HuggingFaceHubExperiment", 
+    "OpenAIChatExperiment", 
+    "OpenAICompletionExperiment"
+]

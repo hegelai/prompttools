@@ -13,9 +13,9 @@ from tabulate import tabulate
 import pandas as pd
 
 from prompttools.requests.request_queue import RequestQueue
-from .widgets.feedback import FeedbackWidgetProvider
-from .widgets.comparison import ComparisonWidgetProvider
-from .widgets.utility import is_interactive
+from ..widgets.feedback import FeedbackWidgetProvider
+from ..widgets.comparison import ComparisonWidgetProvider
+from ..widgets.utility import is_interactive
 from .error import PromptExperimentException
 
 pd.set_option("display.max_colwidth", 0)

@@ -8,11 +8,11 @@ from typing import Callable, Dict, List, Tuple
 import csv
 import logging
 
-from prompttools.testing.threshold_type import ThresholdType
-from prompttools.testing.error.failure import log_failure
+from prompttools.prompttest.threshold_type import ThresholdType
+from prompttools.prompttest.error.failure import log_failure
 from prompttools.harness import PromptTemplateExperimentationHarness
-from prompttools.testing.runner.runner import PromptTestRunner
-from prompttools.testing.error.failure import PromptTestSetupException
+from prompttools.prompttest.runner.runner import PromptTestRunner
+from prompttools.prompttest.error.failure import PromptTestSetupException
 
 
 class PromptTemplateTestRunner(PromptTestRunner):
