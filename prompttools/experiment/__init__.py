@@ -10,6 +10,7 @@ from .openai_chat_experiment import OpenAIChatExperiment
 from .openai_completion_experiment import OpenAICompletionExperiment
 from .huggingface_hub_experiment import HuggingFaceHubExperiment
 from .llama_cpp_experiment import LlamaCppExperiment
+from .chromadb_experiment import ChromaDBExperiment
 
 
-__all__ = ["Experiment", "LlamaCppExperiment", "HuggingFaceHubExperiment", "OpenAIChatExperiment", "OpenAICompletionExperiment"]
+__all__ = ["ChromaDBExperiment", "Experiment", "LlamaCppExperiment", "HuggingFaceHubExperiment", "OpenAIChatExperiment", "OpenAICompletionExperiment"]
