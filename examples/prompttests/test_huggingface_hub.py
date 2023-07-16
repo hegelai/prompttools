@@ -6,7 +6,7 @@
 
 import os
 from typing import Dict, Tuple
-import prompttools.prompttest.prompttest as prompttest
+import prompttools.prompttest as prompttest
 from prompttools.utils import similarity
 from prompttools.experiment import HuggingFaceHubExperiment
 
