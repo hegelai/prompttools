@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from .prompttest.prompttest import prompttest
+from .prompttest import prompttest
 
 
 __all__ = ["prompttest"]
