@@ -55,7 +55,7 @@ def mock_chromadb_fn(**kwargs):
     return {
         'ids': [['id1']],
         'embeddings': None,
-        'documents': [['George Washington live in modern day Philadelphia']],
+        'documents': [['George Washington lived in modern day Philadelphia']],
         'metadatas': [[{'source': 'my_source'}]],
         'distances': [[0.5932742953300476]]
     }
