@@ -26,7 +26,7 @@ def extract_responses(output) -> list[str]:
     return [choice["message"]["content"] for choice in output["choices"]]
 
 
-@prompttest.prompttest(
+@prompttest(
     experiment_classname=OpenAIChatExperiment,
     model_name="text-davinci-003",
     metric_name="similar_to_expected",
