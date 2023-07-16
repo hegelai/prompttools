@@ -122,17 +122,21 @@ class Experiment:
         self,
         tagname: Optional[str] = "",
         input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
+        runs: int = 1,
     ) -> None:
         r"""
         Create tuples of input and output for every possible combination of arguments.
+        For each combination, it will execute `runs` times, default to 1.
         """
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
         for combo in self.argument_combos:
-            self.queue.enqueue(
-                self.completion_fn, self._create_args_dict(combo, tagname, input_pairs)
-            )
+            for _ in range(runs):
+                self.queue.enqueue(
+                    self.completion_fn,
+                    self._create_args_dict(combo, tagname, input_pairs),
+                )
         self.results = self.queue.results()
         self.scores["latency"] = self.queue.latencies()
         if len(self.results) == 0:

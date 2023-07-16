@@ -111,21 +111,24 @@ class LlamaCppExperiment(Experiment):
         self,
         tagname: Optional[str] = "",
         input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
+        runs: int = 1,
     ) -> None:
         r"""
         Create tuples of input and output for every possible combination of arguments.
-        For local models we need to run this single-thread.
+        For each combination, it will execute `runs` times, default to 1.
+        For local models we need to run this in a single thread.
         """
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
         for combo in self.argument_combos:
-            start = perf_counter()
-            res = self.completion_fn(
-                **self._create_args_dict(combo, tagname, input_pairs)
-            )
-            self.results.append(res)
-            self.scores["latency"] = perf_counter() - start
+            for _ in range(runs):
+                start = perf_counter()
+                res = self.completion_fn(
+                    **self._create_args_dict(combo, tagname, input_pairs)
+                )
+                self.results.append(res)
+                self.scores["latency"] = perf_counter() - start
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException

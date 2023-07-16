@@ -42,13 +42,9 @@ class ChatModelComparisonHarness(ExperimentationHarness):
         """
         Initializes and prepares the experiment.
         """
-        histories_to_try = []
-        for history in self.chat_histories:
-            histories_to_try.extend([history] * self.runs)
-
         self.experiment = self.experiment_classname(
             self.model_names,
-            histories_to_try,
+            self.chat_histories,
             **self._prepare_arguments(self.model_arguments),
         )
         super().prepare()

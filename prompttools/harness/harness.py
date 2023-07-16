@@ -19,6 +19,7 @@ class ExperimentationHarness:
     def __init__(self) -> None:
         self.input_pairs_dict = None
         self.experiment = None
+        self.runs = 1
 
     @staticmethod
     def _prepare_arguments(arguments: Dict[str, object]) -> Dict[str, List[object]]:
@@ -35,9 +36,11 @@ class ExperimentationHarness:
         Runs the underlying experiment.
         """
         if self.input_pairs_dict:
-            self.experiment.run(self.PIVOT_COLUMNS[0], self.input_pairs_dict)
+            self.experiment.run(
+                self.PIVOT_COLUMNS[0], self.input_pairs_dict, runs=self.runs
+            )
         else:
-            self.experiment.run()
+            self.experiment.run(runs=self.runs)
 
     def evaluate(
         self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True
