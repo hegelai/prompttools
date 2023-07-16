@@ -27,4 +27,5 @@ jobs:
         python setup.py develop
     - name: Run tests
       run: |
-        DEBUG=1 python examples/prompttests/example.py
+        DEBUG=1 python examples/prompttests/test_openai_chat.py
+        DEBUG=1 python examples/prompttests/test_huggingface_hub.py
