@@ -9,3 +9,4 @@ chromadb
 sentence_transformers
 huggingface_hub
 llama-cpp-python
+sphinx-rtd-theme
