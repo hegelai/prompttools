@@ -51,13 +51,14 @@ class PromptTemplateTestRunner(PromptTestRunner):
 
     @staticmethod
     def _get_harness(
+        experiment_classname,
         model_name: str,
         prompt_template: str,
         user_inputs: List[Dict[str, str]],
         model_args: Dict[str, object],
     ) -> PromptTemplateExperimentationHarness:
         return PromptTemplateExperimentationHarness(
-            model_name, [prompt_template], user_inputs, model_arguments=model_args
+            experiment_classname, model_name, [prompt_template], user_inputs, model_arguments=model_args
         )
 
 
@@ -65,6 +66,7 @@ prompt_template_test_runner = PromptTemplateTestRunner()
 
 
 def run_prompt_template_test(
+    experiment_classname,
     model_name: str,
     metric_name: str,
     eval_fn: Callable,
@@ -115,6 +117,7 @@ def run_prompt_template_test(
 
 
 def run_prompt_template_test_from_files(
+    experiment_classname,
     model_name: str,
     metric_name: str,
     eval_fn: Callable,
@@ -133,6 +136,7 @@ def run_prompt_template_test_from_files(
         prompt_template_file, user_input_file
     )
     return run_prompt_template_test(
+        experiment_classname,
         model_name,
         metric_name,
         eval_fn,

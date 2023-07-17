@@ -45,13 +45,12 @@ def prompttest(
     This enables developers to create a prompt test suite from their evaluations.
     """
 
-    model_arguments["experiment_classname"] = experiment_classname
-
     def prompttest_decorator(eval_fn: Callable):
         @wraps(eval_fn)
         def runs_test():
             if prompt_template_file and user_input_file:
                 return run_prompt_template_test_from_files(
+                    experiment_classname,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -65,6 +64,7 @@ def prompttest(
                 )
             elif prompt_template and user_input:
                 return run_prompt_template_test(
+                    experiment_classname,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -78,6 +78,7 @@ def prompttest(
                 )
             elif system_prompt_file and human_messages_file:
                 return run_system_prompt_test_from_files(
+                    experiment_classname,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -91,6 +92,7 @@ def prompttest(
                 )
             elif system_prompt and human_messages:
                 return run_system_prompt_test(
+                    experiment_classname,
                     model_name,
                     metric_name,
                     eval_fn,

@@ -51,6 +51,7 @@ class PromptTestRunner:
 
     @staticmethod
     def _get_harness(
+        experiment_classname,
         model_name: str,
         prompt_template: str,
         user_inputs: List[Dict[str, str]],
