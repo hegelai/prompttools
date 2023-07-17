@@ -82,7 +82,7 @@ def run_prompt_template_test(
     Runs the prompt test.
     """
     key = prompt_template_test_runner.run(
-        model_name, prompt_template, user_inputs, model_args
+        experiment_classname, model_name, prompt_template, user_inputs, model_args
     )
     prompt_template_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = prompt_template_test_runner.rank(key, metric_name, is_average)

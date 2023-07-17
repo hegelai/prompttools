@@ -64,6 +64,7 @@ system_prompt_test_runner = SystemPromptTestRunner()
 
 
 def run_system_prompt_test(
+    experiment_classname,
     model_name: str,
     metric_name: str,
     eval_fn: Callable,
@@ -79,7 +80,7 @@ def run_system_prompt_test(
     Runs the prompt test.
     """
     key = system_prompt_test_runner.run(
-        model_name, system_prompt, human_messages, model_args
+        experiment_classname, model_name, system_prompt, human_messages, model_args
     )
     system_prompt_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
