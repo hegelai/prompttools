@@ -24,12 +24,13 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
 
     def __init__(
         self,
+        experiment_classname,
         model_name: str,
         system_prompts: List[str],
         human_messages: List[str],
         model_arguments: Optional[Dict[str, object]] = None,
     ):
-        self.experiment_classname = model_arguments["experiment_classname"]
+        self.experiment_classname = experiment_classname,
         self.model_name = model_name
         self.system_prompts = system_prompts
         self.human_messages = human_messages

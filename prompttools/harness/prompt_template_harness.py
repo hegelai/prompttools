@@ -26,13 +26,14 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
 
     def __init__(
         self,
+        experiment_classname,
         model_name: str,
         prompt_templates: List[str],
         user_inputs: List[Dict[str, str]],
         model_arguments: Optional[Dict[str, object]] = None,
     ):
         self.environment = jinja2.Environment()
-        self.experiment_classname = model_arguments["experiment_classname"]
+        self.experiment_classname = experiment_classname
         self.model_name = model_name
         self.prompt_templates = prompt_templates
         self.user_inputs = user_inputs
