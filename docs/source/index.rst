@@ -194,8 +194,7 @@ community. The current license can be found in the `LICENSE <https://github.com/
 file. If there is any concern, please `contact
 us <mailto:eam@hegel-ai.com>`__ and we will be happy to work with you.
 
-Indices and tables
-==================
+Module Index
+-------
 
 * :ref:`modindex`
-* :ref:`search`
