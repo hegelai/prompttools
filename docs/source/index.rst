@@ -10,52 +10,52 @@ Welcome to PromptTools!
    :maxdepth: 2
    :caption: Contents:
 
-Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! 
+Welcome to ``prompttools`` created by `Hegel AI<https://hegel-ai.com/>`! 
 This repo offers a set of free, open-source tools for testing and experimenting with prompts. 
 The core idea is to enable developers to evaluate prompts using familiar interfaces 
-like _code_ and _notebooks_.
+like *code* and *notebooks*.
 
 
 To stay in touch with us about issues and future updates, 
-join the [Discord](https://discord.gg/7KeRPNHGdJ).
+join the `Discord<https://discord.gg/7KeRPNHGdJ>`_.
 
 
 Quickstart
 ==================
 
-To install `prompttools`, you can use `pip`:
+To install ``prompttools``, you can use ``pip``:
 
-```
+``
 pip install prompttools
-```
+``
 
-You can run a simple example of a `prompttools` with the following
+You can run a simple example of a ``prompttools`` with the following
 
-```
+``
 DEBUG=1 python examples/prompttests/example.py
-```
+``
 
-To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key. 
-This is because `prompttools` makes a call to OpenAI from your machine. For example:
+To run the example outside of ``DEBUG`` mode, you'll need to bring your own OpenAI API key. 
+This is because ``prompttools`` makes a call to OpenAI from your machine. For example:
 
-```
+``
 OPENAI_API_KEY=sk-... python examples/prompttests/example.py
-```
+``
 
-You can see the full example [here](https://github.com/hegelai/prompttools/tree/main/examples/prompttests/test_openai_chat.py).
+You can see the full example `here<https://github.com/hegelai/prompttools/tree/main/examples/prompttests/test_openai_chat.py>`_.
 
-Using `prompttools`
+Using ``prompttools``
 ==================
 
-There are primarily two ways you can use `prompttools` in your LLM workflow:
+There are primarily two ways you can use ``prompttools`` in your LLM workflow:
 
-1. Run experiments in [notebooks](https://github.com/hegelai/prompttools/tree/main/examples/notebooks/).
-1. Write [unit tests](https://github.com/hegelai/prompttools/tree/main/examples/prompttests/test_openai_chat.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/post-commit.yaml).
+1. Run experiments in `notebooks<https://github.com/hegelai/prompttools/tree/main/examples/notebooks/>`_.
+1. Write `unit tests<https://github.com/hegelai/prompttools/tree/main/examples/prompttests/test_openai_chat.py>`_`` 
+and integrate them into your CI/CD workflow `via Github Actions<https://github.com/hegelai/prompttools/tree/main/.github/workflows/post-commit.yaml>`_.
 
 
 Indices and tables
 ==================
 
-* :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
