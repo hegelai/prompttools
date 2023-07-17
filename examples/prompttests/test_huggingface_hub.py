@@ -26,7 +26,7 @@ def extract_responses(output) -> list[str]:
     return output["generated_text"]
 
 
-@prompttest(
+@prompttest.prompttest(
     experiment_classname=HuggingFaceHubExperiment,
     model_name="google/flan-t5-xxl",
     metric_name="similar_to_expected",
