@@ -51,3 +51,11 @@ There are primarily two ways you can use `prompttools` in your LLM workflow:
 
 1. Run experiments in [notebooks](https://github.com/hegelai/prompttools/tree/main/examples/notebooks/).
 1. Write [unit tests](https://github.com/hegelai/prompttools/tree/main/examples/prompttests/test_openai_chat.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/post-commit.yaml).
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
