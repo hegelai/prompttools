@@ -4,10 +4,11 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Type
 from functools import wraps
 import logging
 
+from prompttools.experiment import Experiment
 from .threshold_type import ThresholdType
 from .error.failure import PromptTestSetupException
 from .runner.prompt_template_runner import (
@@ -23,7 +24,7 @@ TESTS_TO_RUN = []
 
 
 def prompttest(
-    experiment_classname: Callable,
+    experiment: Type[Experiment],
     model_name: str,
     metric_name: str,
     threshold: float = 1.0,
@@ -50,7 +51,7 @@ def prompttest(
         def runs_test():
             if prompt_template_file and user_input_file:
                 return run_prompt_template_test_from_files(
-                    experiment_classname,
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -64,7 +65,7 @@ def prompttest(
                 )
             elif prompt_template and user_input:
                 return run_prompt_template_test(
-                    experiment_classname,
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -78,7 +79,7 @@ def prompttest(
                 )
             elif system_prompt_file and human_messages_file:
                 return run_system_prompt_test_from_files(
-                    experiment_classname,
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -92,7 +93,7 @@ def prompttest(
                 )
             elif system_prompt and human_messages:
                 return run_system_prompt_test(
-                    experiment_classname,
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,

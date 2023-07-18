@@ -4,10 +4,11 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type
 import jinja2
-from .harness import ExperimentationHarness
+from .harness import ExperimentationHarness, Experiment
 import logging
+
 
 class PromptTemplateExperimentationHarness(ExperimentationHarness):
     r"""
@@ -15,6 +16,8 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
     We use `jinja` templates, e.g. "Answer the following question: {{input}}".
 
     Args:
+        experiment (Type[Experiment]): The experiment constructor that you would like to execute within the harness
+            (e.g. ``prompttools.experiment.OpenAICompletionExperiment``)
         model_name (str): The name of the model.
         prompt_templates (List[str]): A list of prompt ``jinja``-styled templates.
         user_inputs (List[Dict[str, str]]): A list of dictionaries representing user inputs.
@@ -26,14 +29,14 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
 
     def __init__(
         self,
-        experiment_classname,
+        experiment: Type[Experiment],
         model_name: str,
         prompt_templates: List[str],
         user_inputs: List[Dict[str, str]],
         model_arguments: Optional[Dict[str, object]] = None,
     ):
         self.environment = jinja2.Environment()
-        self.experiment_classname = experiment_classname
+        self.experiment_cls_constructor = experiment
         self.model_name = model_name
         self.prompt_templates = prompt_templates
         self.user_inputs = user_inputs
@@ -53,7 +56,7 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
                 prompt = template.render(**user_input)
                 rendered_inputs.append(prompt)
                 self.input_pairs_dict[prompt] = (pt, user_input)
-        self.experiment = self.experiment_classname(
+        self.experiment = self.experiment_cls_constructor(
             [self.model_name],
             rendered_inputs,
             **self._prepare_arguments(self.model_arguments),

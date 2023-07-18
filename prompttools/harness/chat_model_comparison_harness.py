@@ -31,7 +31,7 @@ class ChatModelComparisonHarness(ExperimentationHarness):
         runs: int = 1,
         model_arguments: Optional[Dict[str, object]] = None,
     ):
-        self.experiment_classname = OpenAIChatExperiment
+        self.experiment_cls_constructor = OpenAIChatExperiment
         self.model_names = model_names
         self.chat_histories = chat_histories
         self.runs = runs
@@ -42,7 +42,7 @@ class ChatModelComparisonHarness(ExperimentationHarness):
         """
         Initializes and prepares the experiment.
         """
-        self.experiment = self.experiment_classname(
+        self.experiment = self.experiment_cls_constructor(
             self.model_names,
             self.chat_histories,
             **self._prepare_arguments(self.model_arguments),

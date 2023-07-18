@@ -27,7 +27,7 @@ def extract_responses(output) -> list[str]:
 
 
 @prompttest.prompttest(
-    experiment_classname=HuggingFaceHubExperiment,
+    experiment=HuggingFaceHubExperiment,
     model_name="google/flan-t5-xxl",
     metric_name="similar_to_expected",
     prompt_template="Question: {{input}}",

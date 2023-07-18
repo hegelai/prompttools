@@ -4,12 +4,13 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple, Type
 import csv
 import logging
 
 from prompttools.prompttest.threshold_type import ThresholdType
 from prompttools.prompttest.error.failure import log_failure
+from prompttools.experiment import Experiment
 from prompttools.harness import SystemPromptExperimentationHarness
 from prompttools.prompttest.runner.runner import PromptTestRunner
 from prompttools.prompttest.error.failure import PromptTestSetupException
@@ -49,14 +50,18 @@ class SystemPromptTestRunner(PromptTestRunner):
 
     @staticmethod
     def _get_harness(
-        experiment_classname,
+        experiment: Type[Experiment],
         model_name: str,
         system_prompt: str,
         human_messages: List[str],
         model_args: Dict[str, object],
     ) -> SystemPromptExperimentationHarness:
         return SystemPromptExperimentationHarness(
-            experiment_classname, model_name, [system_prompt], human_messages, model_arguments=model_args
+            experiment,
+            model_name,
+            [system_prompt],
+            human_messages,
+            model_arguments=model_args,
         )
 
 
@@ -64,7 +69,7 @@ system_prompt_test_runner = SystemPromptTestRunner()
 
 
 def run_system_prompt_test(
-    experiment_classname,
+    experiment: Type[Experiment],
     model_name: str,
     metric_name: str,
     eval_fn: Callable,
@@ -80,7 +85,7 @@ def run_system_prompt_test(
     Runs the prompt test.
     """
     key = system_prompt_test_runner.run(
-        experiment_classname, model_name, system_prompt, human_messages, model_args
+        experiment, model_name, system_prompt, human_messages, model_args
     )
     system_prompt_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
@@ -115,7 +120,7 @@ def run_system_prompt_test(
 
 
 def run_system_prompt_test_from_files(
-    experiment_classname,
+    experiment: Type[Experiment],
     model_name: str,
     metric_name: str,
     eval_fn: Callable,
@@ -134,7 +139,7 @@ def run_system_prompt_test_from_files(
         system_prompt_file, human_messages_file
     )
     return run_system_prompt_test(
-        experiment_classname,
+        experiment,
         model_name,
         metric_name,
         eval_fn,

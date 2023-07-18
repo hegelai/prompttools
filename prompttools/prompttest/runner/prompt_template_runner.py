@@ -4,12 +4,13 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple, Type
 import csv
 import logging
 
 from prompttools.prompttest.threshold_type import ThresholdType
 from prompttools.prompttest.error.failure import log_failure
+from prompttools.experiment import Experiment
 from prompttools.harness import PromptTemplateExperimentationHarness
 from prompttools.prompttest.runner.runner import PromptTestRunner
 from prompttools.prompttest.error.failure import PromptTestSetupException
@@ -51,14 +52,18 @@ class PromptTemplateTestRunner(PromptTestRunner):
 
     @staticmethod
     def _get_harness(
-        experiment_classname,
+        experiment: Type[Experiment],
         model_name: str,
         prompt_template: str,
         user_inputs: List[Dict[str, str]],
         model_args: Dict[str, object],
     ) -> PromptTemplateExperimentationHarness:
         return PromptTemplateExperimentationHarness(
-            experiment_classname, model_name, [prompt_template], user_inputs, model_arguments=model_args
+            experiment,
+            model_name,
+            [prompt_template],
+            user_inputs,
+            model_arguments=model_args,
         )
 
 
@@ -66,7 +71,7 @@ prompt_template_test_runner = PromptTemplateTestRunner()
 
 
 def run_prompt_template_test(
-    experiment_classname,
+    experiment: Type[Experiment],
     model_name: str,
     metric_name: str,
     eval_fn: Callable,
@@ -82,7 +87,7 @@ def run_prompt_template_test(
     Runs the prompt test.
     """
     key = prompt_template_test_runner.run(
-        experiment_classname, model_name, prompt_template, user_inputs, model_args
+        experiment, model_name, prompt_template, user_inputs, model_args
     )
     prompt_template_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = prompt_template_test_runner.rank(key, metric_name, is_average)
@@ -117,7 +122,7 @@ def run_prompt_template_test(
 
 
 def run_prompt_template_test_from_files(
-    experiment_classname,
+    experiment: Type[Experiment],
     model_name: str,
     metric_name: str,
     eval_fn: Callable,
@@ -136,7 +141,7 @@ def run_prompt_template_test_from_files(
         prompt_template_file, user_input_file
     )
     return run_prompt_template_test(
-        experiment_classname,
+        experiment,
         model_name,
         metric_name,
         eval_fn,
