@@ -9,7 +9,7 @@
 project = 'prompttools'
 copyright = '2023, Hegel AI'
 author = 'Hegel AI'
-release = '0.0.12'
+release = '0.0.13'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
