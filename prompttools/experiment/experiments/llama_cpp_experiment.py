@@ -78,7 +78,11 @@ class LlamaCppExperiment(Experiment):
     }
 
     def __init__(
-        self, model_path: List[str], prompt: List[str], **kwargs: Dict[str, object]
+        self,
+        model_path: List[str],
+        prompt: List[str],
+        **kwargs: Dict[str, object],
+        # TODO: Refactor **kwargs to `model_params` and `call_params`
     ):
         self.completion_fn = self.llama_completion_fn
         self.all_args = []
@@ -121,6 +125,8 @@ class LlamaCppExperiment(Experiment):
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
+        # TODO: Separate into two `for` loops, one initialize different models and the inner loop will test
+        #       different `call_parameters`
         for combo in self.argument_combos:
             for _ in range(runs):
                 start = perf_counter()
