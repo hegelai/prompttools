@@ -44,6 +44,9 @@ class Experiment:
             self._get_comparison_listener,
         )
 
+    def _is_chat(self):
+        return False
+    
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
             self.scores["feedback"][i] = change["new"]
@@ -181,7 +184,7 @@ class Experiment:
         to create a pivot table, or a table for gathering human feedback.
         """
         data = {
-            "messages": [str(combo[1]) for combo in self.argument_combos],
+            "messages" if self._is_chat() else "prompt": [str(combo[1]) for combo in self.argument_combos],
             "response(s)": [self._extract_responses(result) for result in self.results],
             "latency": self.scores["latency"],
         }
