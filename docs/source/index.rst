@@ -7,10 +7,21 @@ PromptTools
 ===========
 
 Welcome to ``prompttools`` created by `Hegel
-AI <https://hegel-ai.com/>`__! This repo offers a set of free,
-open-source tools for testing and experimenting with prompts. The core
-idea is to enable developers to evaluate prompts using familiar
+AI <https://hegel-ai.com/>`__! This
+`repository <https://github.com/hegelai/prompttools>`_
+offers a set of free, open-source tools for testing and experimenting with prompts.
+The core idea is to enable developers to evaluate prompts using familiar
 interfaces like *code* and *notebooks*.
+
+There are primarily two ways you can use ``prompttools`` in your LLM workflow:
+
+1. Run experiments in `notebooks <https://github.com/hegelai/prompttools/tree/main/examples/notebooks>`_ and evaluate the outputs.
+2. Turn evaluations into
+   `unit tests <https://github.com/hegelai/prompttools/tree/main/examples/prompttests/test_openai_chat.py>`_ and
+   integrate them into your CI/CD workflow
+   `via Github Actions <https://github.com/hegelai/prompttools/blob/main/.github/workflows/ci.yml>`_.
+
+Please don't hesitate to star our repo, reach out, and provide feedback on GitHub!
 
 To stay in touch with us about issues and future updates, join the
 `Discord <https://discord.gg/7KeRPNHGdJ>`__.
@@ -88,5 +99,7 @@ Module Index
    :maxdepth: 2
    :hidden:
 
-   experiment
    harness
+   experiment
+   utils
+   testing
