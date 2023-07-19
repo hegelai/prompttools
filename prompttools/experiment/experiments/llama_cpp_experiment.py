@@ -139,6 +139,7 @@ class LlamaCppExperiment(Experiment):
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
+        self.results = []
         for model_combo in self.model_argument_combos:
             client = Llama(**model_combo)
             for call_combo in self.call_argument_combos:
