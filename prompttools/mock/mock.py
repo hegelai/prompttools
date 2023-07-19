@@ -49,3 +49,13 @@ def mock_completion_fn(**kwargs):
 
 def mock_hf_completion_fn(**kwargs):
     return {"generated_text": "George Washington"}
+
+
+def mock_chromadb_fn(**kwargs):
+    return {
+        'ids': [['id1']],
+        'embeddings': None,
+        'documents': [['George Washington lived in modern day Philadelphia']],
+        'metadatas': [[{'source': 'my_source'}]],
+        'distances': [[0.5932742953300476]]
+    }
