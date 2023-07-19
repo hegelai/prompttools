@@ -1,7 +1,7 @@
 import os
 import openai
 from .error import PromptToolsUtilityError
-import similarity
+from . import similarity
 
 
 def compute(prompt: str, model: str = "gpt-4") -> str:

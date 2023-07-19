@@ -45,10 +45,8 @@ evaluation function:
    harness.evaluate("metric_name", eval_fn)
    harness.visualize()  # The results will be displayed as a table in your notebook
 
-.. figure:: ../..img/table.png
-   :alt: image
-
-   image
+.. figure:: ../img/table.png
+   :alt: The visualized table in your notebook.
 
 If you are interested to compare different models, the `ModelComparison
 example <https://github.com/hegelai/prompttools/tree/main/examples/notebooks/ModelComparison.ipynb>`__ may be of
@@ -62,10 +60,8 @@ details.
 You can also manually enter feedback to evaluate prompts, see
 `HumanFeedback.ipynb <https://github.com/hegelai/prompttools/tree/main/examples/notebooks/HumanFeedback.ipynb>`__.
 
-.. figure:: ../..img/feedback.png
-   :alt: image
-
-   image
+.. figure:: ../img/feedback.png
+   :alt: You can annotate feedback directly within the notebook.
 
 ..
 

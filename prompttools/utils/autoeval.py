@@ -1,3 +1,10 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+
 import os
 import openai
 import jinja2
@@ -12,7 +19,7 @@ or "WRONG" if the model is not following directions.
 EVALUATION_USER_TEMPLATE = """
 PROMPT: {{prompt}}
 RESPONSE: {{response}}
-ANSWER: 
+ANSWER:
 """
 
 
