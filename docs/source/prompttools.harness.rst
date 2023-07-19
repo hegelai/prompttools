@@ -44,6 +44,14 @@ prompttools.harness.harness module
    :undoc-members:
    :show-inheritance:
 
+prompttools.harness.multi\_experiment\_harness module
+-----------------------------------------------------
+
+.. automodule:: prompttools.harness.multi_experiment_harness
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 prompttools.harness.prompt\_template\_harness module
 ----------------------------------------------------
 

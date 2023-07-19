@@ -8,7 +8,7 @@ import os
 from typing import Dict, Tuple
 from prompttools import prompttest
 from prompttools.utils import similarity
-from prompttools.experiment import OpenAIChatExperiment
+from prompttools.experiment import OpenAICompletionExperiment
 
 EXPECTED = {"Who was the first president of the USA?": "George Washington"}
 
@@ -23,11 +23,11 @@ def extract_responses(output) -> list[str]:
     r"""
     Helper function to unwrap the OpenAI repsonse object.
     """
-    return [choice["message"]["content"] for choice in output["choices"]]
+    return [choice["text"] for choice in output["choices"]]
 
 
 @prompttest.prompttest(
-    experiment=OpenAIChatExperiment,
+    experiment=OpenAICompletionExperiment,
     model_name="text-davinci-003",
     metric_name="similar_to_expected",
     prompt_template="Answer the following question: {{input}}",

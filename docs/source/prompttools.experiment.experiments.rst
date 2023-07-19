@@ -4,6 +4,22 @@ prompttools.experiment.experiments package
 Submodules
 ----------
 
+prompttools.experiment.experiments.anthropic\_claude\_experiment module
+-----------------------------------------------------------------------
+
+.. automodule:: prompttools.experiment.experiments.anthropic_claude_experiment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+prompttools.experiment.experiments.chromadb\_experiment module
+--------------------------------------------------------------
+
+.. automodule:: prompttools.experiment.experiments.chromadb_experiment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 prompttools.experiment.experiments.error module
 -----------------------------------------------
 
@@ -16,6 +32,22 @@ prompttools.experiment.experiments.experiment module
 ----------------------------------------------------
 
 .. automodule:: prompttools.experiment.experiments.experiment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+prompttools.experiment.experiments.google\_palm\_experiment module
+------------------------------------------------------------------
+
+.. automodule:: prompttools.experiment.experiments.google_palm_experiment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+prompttools.experiment.experiments.huggingface\_endpoint\_experiment module
+---------------------------------------------------------------------------
+
+.. automodule:: prompttools.experiment.experiments.huggingface_endpoint_experiment
    :members:
    :undoc-members:
    :show-inheritance:
