@@ -4,6 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 from typing import Any, Dict, List
 import itertools
 import logging
@@ -155,3 +156,9 @@ class LlamaCppExperiment(Experiment):
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
         return [choice["text"] for choice in output["choices"]]
+
+    def _get_model_names(self):
+        return [os.path.basename(combo['model_path']) for combo in self.argument_combos]
+    
+    def _get_prompts(self):
+        return  [combo['prompt'] for combo in self.argument_combos]

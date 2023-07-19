@@ -299,3 +299,9 @@ class Experiment:
         raise NotImplementedError(
             "This should be implemented by a subclass of `Experiment`."
         )
+
+    def _get_model_names(self):
+        pass
+
+    def _get_prompts(self):
+        pass

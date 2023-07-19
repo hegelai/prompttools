@@ -58,3 +58,9 @@ class OpenAIChatExperiment(Experiment):
 
     def _is_chat(self):
         return True
+
+    def _get_model_names(self):
+        return [combo['model'] for combo in self.argument_combos]
+    
+    def _get_prompts(self):
+        return [combo['messages'][-1]["content"] for combo in self.argument_combos]
