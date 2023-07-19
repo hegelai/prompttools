@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from typing import Any, Dict, List, Optional, Tuple
-
+import itertools
 import logging
 
 from llama_cpp import Llama
@@ -20,9 +20,8 @@ class LlamaCppExperiment(Experiment):
     Used to experiment across parameters for a local model, supported by LlamaCpp and GGML.
     """
 
-    PARAMETER_NAMES = (
+    MODEL_PARAMETERS = (
         "model_path",
-        "prompt",
         "lora_path",
         "lora_base",
         "n_ctx",
@@ -37,6 +36,10 @@ class LlamaCppExperiment(Experiment):
         "use_mmap",
         "last_n_tokens_size",
         "verbose",
+    )
+
+    CALL_PARAMETERS = (
+        "prompt",
         "suffix",
         "max_tokens",
         "temperature",
@@ -47,9 +50,6 @@ class LlamaCppExperiment(Experiment):
         "repeat_penalty",
         "top_k",
     )
-
-    MODEL_PARAMETERS = PARAMETER_NAMES[2:15]
-    CALL_PARAMETERS = ("prompt",) + PARAMETER_NAMES[16:]
 
     DEFAULT = {
         "lora_path": [None],
@@ -81,21 +81,37 @@ class LlamaCppExperiment(Experiment):
         self,
         model_path: List[str],
         prompt: List[str],
-        **kwargs: Dict[str, object],
-        # TODO: Refactor **kwargs to `model_params` and `call_params`
+        model_params: Dict[str, object] = {},
+        call_params: Dict[str, object] = {},
     ):
         self.completion_fn = self.llama_completion_fn
-        self.all_args = []
-        self.all_args.append(model_path)
-        self.all_args.append(prompt)
-        for param in self.PARAMETER_NAMES[2:]:
-            if param in kwargs:
-                self.all_args.append(kwargs[param])
-            elif param in self.DEFAULT:
-                self.all_args.append(self.DEFAULT[param])
-            elif param == "prompt":
-                self.all_args.append(prompt)
+        self.model_params = model_params
+        self.call_params = call_params
+        self.model_params["model_path"] = model_path
+        self.call_params["prompt"] = prompt
+
+        # Set defaults
+        for param in self.MODEL_PARAMETERS:
+            if param not in self.model_params:
+                self.model_params[param] = self.DEFAULT[param]
+        for param in self.CALL_PARAMETERS:
+            if param not in self.call_params:
+                self.call_params[param] = self.DEFAULT[param]
+        self.all_args = self.model_params | self.call_params
         super().__init__()
+
+    def prepare(self) -> None:
+        r"""
+        Creates argument combinations by taking the cartesian product of all inputs.
+        """
+        self.model_argument_combos = [
+            dict(zip(self.model_params, val))
+            for val in itertools.product(*self.model_params.values())
+        ]
+        self.call_argument_combos = [
+            dict(zip(self.call_params, val))
+            for val in itertools.product(*self.call_params.values())
+        ]
 
     def llama_completion_fn(
         self,
@@ -104,11 +120,9 @@ class LlamaCppExperiment(Experiment):
         r"""
         Local model helper function to make request
         """
-        model_params = {k: v for k, v in params.items() if k in self.MODEL_PARAMETERS}
-        call_params = {k: v for k, v in params.items() if k in self.CALL_PARAMETERS}
-        client = Llama(model_path=params["model_path"], **model_params)
+        client = params["client"]
+        call_params = {k: v for k, v in params.items() if k != "client"}
         response = client(**call_params)
-        logging.info(response)
         return response
 
     def run(
@@ -125,16 +139,16 @@ class LlamaCppExperiment(Experiment):
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
-        # TODO: Separate into two `for` loops, one initialize different models and the inner loop will test
-        #       different `call_parameters`
-        for combo in self.argument_combos:
-            for _ in range(runs):
-                start = perf_counter()
-                res = self.completion_fn(
-                    **self._create_args_dict(combo, tagname, input_pairs)
-                )
-                self.results.append(res)
-                self.scores["latency"] = perf_counter() - start
+        for model_combo in self.model_argument_combos:
+            client = Llama(**model_combo)
+            for call_combo in self.call_argument_combos:
+                for _ in range(runs):
+                    call_combo["client"] = client
+                    start = perf_counter()
+                    res = self.completion_fn(**call_combo)
+                    self.scores["latency"].append(perf_counter() - start)
+                    self.results.append(res)
+                    self.argument_combos.append(model_combo | call_combo)
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException

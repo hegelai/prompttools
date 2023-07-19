@@ -56,7 +56,7 @@ def compute(doc1, doc2, use_chroma=True):
     Args:
         doc1 (str): The first document.
         doc2 (str): The second document.
-        use_chroma (bool): Indicates whether or not to use Chroma. 
+        use_chroma (bool): Indicates whether or not to use Chroma.
             If false, uses HuggingFace sentence_transformers.
     """
     if use_chroma:

@@ -19,24 +19,6 @@ class OpenAICompletionExperiment(Experiment):
     a cartesian product of those arguments, and gets results for each.
     """
 
-    PARAMETER_NAMES = (
-        "model",
-        "prompt",
-        "suffix",
-        "max_tokens",
-        "temperature",
-        "top_p",
-        "n",
-        "stream",
-        "logprobs",
-        "echo",
-        "stop",
-        "presence_penalty",
-        "frequency_penalty",
-        "best_of",
-        "logit_bias",
-    )
-
     def __init__(
         self,
         model: List[str],
@@ -58,22 +40,23 @@ class OpenAICompletionExperiment(Experiment):
         self.completion_fn = openai.Completion.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_completion_fn
-        self.all_args = []
-        self.all_args.append(model)
-        self.all_args.append(prompt)
-        self.all_args.append(suffix)
-        self.all_args.append(max_tokens)
-        self.all_args.append(temperature)
-        self.all_args.append(top_p)
-        self.all_args.append(n)
-        self.all_args.append(stream)
-        self.all_args.append(logprobs)
-        self.all_args.append(echo)
-        self.all_args.append(stop)
-        self.all_args.append(presence_penalty)
-        self.all_args.append(frequency_penalty)
-        self.all_args.append(best_of)
-        self.all_args.append(logit_bias)
+        self.all_args = dict(
+            model=model,
+            prompt=prompt,
+            suffix=suffix,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            n=n,
+            stream=stream,
+            logprobs=logprobs,
+            echo=echo,
+            stop=stop,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            best_of=best_of,
+            logit_bias=logit_bias,
+        )
         super().__init__()
 
     @staticmethod
