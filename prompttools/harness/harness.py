@@ -35,12 +35,7 @@ class ExperimentationHarness:
         r"""
         Runs the underlying experiment.
         """
-        if self.input_pairs_dict:
-            self.experiment.run(
-                self.PIVOT_COLUMNS[0], self.input_pairs_dict, runs=self.runs
-            )
-        else:
-            self.experiment.run(runs=self.runs)
+        self.experiment.run(runs=self.runs)
 
     def evaluate(
         self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True
