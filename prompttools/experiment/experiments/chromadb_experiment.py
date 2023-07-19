@@ -11,7 +11,7 @@ import chromadb
 import itertools
 import logging
 from prompttools.mock.mock import mock_chromadb_fn
-from .experiments.experiment import Experiment
+from .experiment import Experiment
 
 VALID_TASKS = [""]
 

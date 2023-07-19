@@ -6,13 +6,15 @@
 
 import os
 from typing import Dict, Tuple
-import prompttools.testing.prompttest as prompttest
+import prompttools.prompttest as prompttest
 from prompttools.utils import similarity
 from prompttools.experiment import ChromaDBExperiment
 
 EXPECTED = {"Who was the first president of the USA?": "George Washington"}
 
-if not (("CHROMADB_API_TOKEN" in os.environ) or ("DEBUG" in os.environ)): # placeholder api naming
+if not (
+    ("CHROMADB_API_TOKEN" in os.environ) or ("DEBUG" in os.environ)
+):  # placeholder api naming
     print(
         "Error: This example requires you to set either your CHROMADB_API_TOKEN or DEBUG=1"
     )
@@ -20,8 +22,8 @@ if not (("CHROMADB_API_TOKEN" in os.environ) or ("DEBUG" in os.environ)): # plac
 
 
 def extract_chromadb_dists(output: Dict[str, object]) -> list[str]:
-        return output
+    return output
 
 
-def measure_fn(): # Do we want to build a separate framework from prompttest that handles vectors?
+def measure_fn():  # TODO: Do we want to build a separate framework from prompttest that handles vectors?
     pass

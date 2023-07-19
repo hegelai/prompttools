@@ -10,7 +10,7 @@ from .experiments.openai_chat_experiment import OpenAIChatExperiment
 from .experiments.openai_completion_experiment import OpenAICompletionExperiment
 from .experiments.huggingface_hub_experiment import HuggingFaceHubExperiment
 from .experiments.llama_cpp_experiment import LlamaCppExperiment
-from .chromadb_experiment import ChromaDBExperiment
+from .experiments.chromadb_experiment import ChromaDBExperiment
 
 __all__ = [
     "ChromaDBExperiment",
