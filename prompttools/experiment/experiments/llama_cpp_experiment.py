@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 import itertools
 import logging
 
@@ -127,8 +127,6 @@ class LlamaCppExperiment(Experiment):
 
     def run(
         self,
-        tagname: Optional[str] = "",
-        input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
         runs: int = 1,
     ) -> None:
         r"""

@@ -115,8 +115,6 @@ class Experiment:
 
     def run(
         self,
-        tagname: Optional[str] = "",
-        input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
         runs: int = 1,
     ) -> None:
         r"""
