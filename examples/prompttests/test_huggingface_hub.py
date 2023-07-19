@@ -23,7 +23,7 @@ def extract_responses(output) -> list[str]:
     r"""
     Helper function to unwrap the Hugging Face Hub repsonse object.
     """
-    return output["generated_text"]
+    return [choice["generated_text"] for choice in output]
 
 
 @prompttest.prompttest(
@@ -42,7 +42,7 @@ def measure_similarity(
     """
     expected = EXPECTED[input_pair[1]["input"]]
     scores = [
-        similarity.compute(expected, response, use_chroma=False)
+        similarity.compute(expected, response)
         for response in extract_responses(results)
     ]
     return max(scores)

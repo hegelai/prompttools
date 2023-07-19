@@ -48,4 +48,4 @@ def mock_completion_fn(**kwargs):
 
 
 def mock_hf_completion_fn(**kwargs):
-    return {"generated_text": "George Washington"}
+    return [{"generated_text": "George Washington"}]
