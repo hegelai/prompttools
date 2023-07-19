@@ -21,7 +21,7 @@ You can run a simple example of a `prompttools` with the following
 DEBUG=1 python examples/prompttests/test_openai_chat.py
 ```
 
-To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key. 
+To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key.
 This is because `prompttools` makes a call to OpenAI from your machine. For example:
 
 ```
@@ -35,12 +35,12 @@ You can see the full example [here](/examples/prompttests/test_openai_chat.py).
 
 There are primarily two ways you can use `prompttools` in your LLM workflow:
 
-1. Run experiments in [notebooks](/examples/notebooks/).
-1. Write [unit tests](/examples/prompttests/test_openai_chat.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/post-commit.yaml).
+1. Run experiments in [notebooks](/examples/notebooks/) and evaluate the outputs.
+2. Turn evaluations into [unit tests](/examples/prompttests/test_openai_chat.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/ci.yml).
 
 ### Notebooks
 
-There are a few different ways to run an experiment in a notebook. 
+There are a few different ways to run an experiment in a notebook.
 
 The simplest way is to define an experimentation harness and an evaluation function:
 
@@ -53,17 +53,17 @@ def eval_fn(prompt: str, results: Dict, metadata: Dict) -> float:
     pass
 
 prompt_templates = [
-    "Answer the following question: {{input}}", 
+    "Answer the following question: {{input}}",
     "Respond the following query: {{input}}"
 ]
 
 user_inputs = [
-    {"input": "Who was the first president?"}, 
+    {"input": "Who was the first president?"},
     {"input": "Who was the first president of India?"}
 ]
 
-harness = PromptTemplateExperimentationHarness("text-davinci-003", 
-                                               prompt_templates, 
+harness = PromptTemplateExperimentationHarness("text-davinci-003",
+                                               prompt_templates,
                                                user_inputs)
 
 
@@ -76,7 +76,7 @@ harness.visualize()  # The results will be displayed as a table in your notebook
 
 If you are interested to compare different models, the [ModelComparison example](/examples/notebooks/ModelComparison.ipynb) may be of interest.
 
-For an example of built-in evaluation function, please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details. 
+For an example of built-in evaluation function, please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details.
 
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
 
