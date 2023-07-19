@@ -70,17 +70,17 @@ evaluation function:
        pass
 
    prompt_templates = [
-       "Answer the following question: {{input}}", 
+       "Answer the following question: {{input}}",
        "Respond the following query: {{input}}"
    ]
 
    user_inputs = [
-       {"input": "Who was the first president?"}, 
+       {"input": "Who was the first president?"},
        {"input": "Who was the first president of India?"}
    ]
 
-   harness = PromptTemplateExperimentationHarness("text-davinci-003", 
-                                                  prompt_templates, 
+   harness = PromptTemplateExperimentationHarness("text-davinci-003",
+                                                  prompt_templates,
                                                   user_inputs)
 
 
@@ -88,8 +88,8 @@ evaluation function:
    harness.evaluate("metric_name", eval_fn)
    harness.visualize()  # The results will be displayed as a table in your notebook
 
-.. figure:: img/table.png
-   :alt: image
+.. figure:: ../img/table.png
+   :alt: The visualized table in your notebook.
 
    image
 
@@ -105,10 +105,10 @@ details.
 You can also manually enter feedback to evaluate prompts, see
 `HumanFeedback.ipynb <https://github.com/hegelai/prompttools/tree/main/examples/notebooks/HumanFeedback.ipynb>`__.
 
-.. figure:: img/feedback.png
-   :alt: image
+.. figure:: ../img/feedback.png
+   :alt: You can annotate feedback directly within the notebook.
 
-   image
+
 
 ..
 
