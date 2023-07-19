@@ -20,23 +20,36 @@ class OpenAIChatExperiment(Experiment):
     a cartesian product of those arguments, and gets results for each.
     """
 
-    PARAMETER_NAMES = ["model", "prompt"]
-
     def __init__(
         self,
         model: List[str],
-        prompt: List[str],
-        **kwargs: Dict[str, object],
+        messages: List[List[Dict[str, str]]],
+        temperature: Optional[List[float]] = [1.0],
+        top_p: Optional[List[float]] = [1.0],
+        n: Optional[List[int]] = [1],
+        stream: Optional[List[bool]] = [False],
+        stop: Optional[List[List[str]]] = [None],
+        max_tokens: Optional[List[int]] = [float("inf")],
+        presence_penalty: Optional[List[float]] = [0],
+        frequency_penalty: Optional[List[float]] = [0],
+        logit_bias: Optional[Dict] = [None],
     ):
         self.completion_fn = openai.ChatCompletion.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_chat_completion_fn
-        self.all_args = []
-        self.all_args.append(model)
-        self.all_args.append(prompt)
-        for k, v in kwargs.items():
-            self.PARAMETER_NAMES.append(k)
-            self.all_args.append(v)
+        self.all_args = dict(
+            model=model,
+            messages=messages,
+            temperature=temperature,
+            top_p=top_p,
+            n=n,
+            stream=stream,
+            stop=stop,
+            max_token=max_tokens,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            logit_bias=logit_bias,
+        )
         super().__init__()
 
     @staticmethod

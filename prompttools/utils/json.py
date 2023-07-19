@@ -4,6 +4,7 @@ import re
 
 KEY_EXTRACTION_REGEX = r'"([^"]+?)"\s*:'
 
+
 def validate(text: str):
     r"""
     Validates that the generated text is JSON.
@@ -16,6 +17,7 @@ def validate(text: str):
     except ValueError:
         return 0.0
     return 1.0
+
 
 def validate_keys(text: str, valid_keys: List[str]):
     r"""
@@ -30,4 +32,3 @@ def validate_keys(text: str, valid_keys: List[str]):
         if group not in valid_keys:
             return 0.0
     return 1.0
-    

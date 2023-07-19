@@ -27,8 +27,7 @@ class Experiment:
     """
 
     completion_fn: Callable
-    PARAMETER_NAMES: tuple
-    all_args: list
+    all_args: Dict
 
     def __init__(self):
         self.queue = RequestQueue()
@@ -46,7 +45,7 @@ class Experiment:
 
     def _is_chat(self):
         return False
-    
+
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
             self.scores["feedback"][i] = change["new"]
@@ -54,8 +53,6 @@ class Experiment:
         return listener
 
     def _get_comparison_listener(self, index: int) -> Callable:
-        # TODO: Map this index to the original index of the primary model
-        # so we can submit feedback for the row
         def listener(change):
             new_index = self.comparison_index_translation(index)
             self.scores["comparison"][new_index] = change["new"]
@@ -107,19 +104,14 @@ class Experiment:
         )
         return sorted_scores
 
-    def _create_args_dict(
-        self, args: Dict[str, object], tagname: str, input_pairs: Dict[str, object]
-    ) -> Dict[str, object]:
-        args = {self.PARAMETER_NAMES[i]: arg for i, arg in enumerate(args)}
-        return {name: arg for name, arg in args.items() if arg and arg != float("inf")}
-
     def prepare(self) -> None:
         r"""
         Creates argument combinations by taking the cartesian product of all inputs.
         """
-        self.argument_combos = []
-        for combo in itertools.product(*self.all_args):
-            self.argument_combos.append(combo)
+        self.argument_combos = [
+            dict(zip(self.all_args, val))
+            for val in itertools.product(*self.all_args.values())
+        ]
 
     def run(
         self,
@@ -138,7 +130,7 @@ class Experiment:
             for _ in range(runs):
                 self.queue.enqueue(
                     self.completion_fn,
-                    self._create_args_dict(combo, tagname, input_pairs),
+                    combo,
                 )
         self.results = self.queue.results()
         self.scores["latency"] = self.queue.latencies()
@@ -161,12 +153,14 @@ class Experiment:
         if metric_name in self.scores:
             logging.warning(metric_name + " is already present, skipping.")
             return
+
+        input_key = "messages" if self._is_chat() else "prompt"
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
             score = eval_fn(
-                input_pairs[self.argument_combos[i][1]]
+                input_pairs[self.argument_combos[i][input_key]]
                 if input_pairs
-                else self.argument_combos[i][1],
+                else self.argument_combos[i][input_key],
                 result,
                 {
                     name: self.scores[name][i]
@@ -183,8 +177,9 @@ class Experiment:
         This method creates a table of the experiment data. It can also be used
         to create a pivot table, or a table for gathering human feedback.
         """
+        input_key = "messages" if self._is_chat() else "prompt"
         data = {
-            "messages" if self._is_chat() else "prompt": [str(combo[1]) for combo in self.argument_combos],
+            input_key: [combo[input_key] for combo in self.argument_combos],
             "response(s)": [self._extract_responses(result) for result in self.results],
             "latency": self.scores["latency"],
         }
@@ -193,17 +188,17 @@ class Experiment:
             if metric_name != "comparison":
                 data[metric_name] = evals
         # Add other args as cols if there was more than 1 input
-        for i, args in enumerate(self.all_args):
+        for k, args in self.all_args.items():
             if len(args) > 1:
-                data[self.PARAMETER_NAMES[i]] = [
-                    combo[i] for combo in self.argument_combos
-                ]
+                data[k] = [combo[k] for combo in self.argument_combos]
         if pivot_data:
             data[pivot_columns[0]] = [
-                str(pivot_data[str(combo[1])][0]) for combo in self.argument_combos
+                str(pivot_data[str(combo[input_key])][0])
+                for combo in self.argument_combos
             ]
             data[pivot_columns[1]] = [
-                str(pivot_data[str(combo[1])][1]) for combo in self.argument_combos
+                str(pivot_data[str(combo[input_key])][1])
+                for combo in self.argument_combos
             ]
         df = pd.DataFrame(data)
         if pivot:

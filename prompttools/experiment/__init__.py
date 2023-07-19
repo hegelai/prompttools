@@ -13,9 +13,9 @@ from .experiments.llama_cpp_experiment import LlamaCppExperiment
 
 
 __all__ = [
-    "Experiment", 
-    "LlamaCppExperiment", 
-    "HuggingFaceHubExperiment", 
-    "OpenAIChatExperiment", 
-    "OpenAICompletionExperiment"
+    "Experiment",
+    "LlamaCppExperiment",
+    "HuggingFaceHubExperiment",
+    "OpenAIChatExperiment",
+    "OpenAICompletionExperiment",
 ]

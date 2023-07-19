@@ -5,6 +5,7 @@ import logging
 
 PROMPTTOOLS_TMP = "prompttools_tmp.py"
 
+
 def validate(text: str):
     r"""
     Validates that the generated text is python.
@@ -19,7 +20,3 @@ def validate(text: str):
     pylint_stdout, _ = lint.py_run(PROMPTTOOLS_TMP, return_std=True)
     os.remove(PROMPTTOOLS_TMP)
     return 0.0 if "error" in pylint_stdout.getvalue() else 1.0
-
-
-
-
