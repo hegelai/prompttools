@@ -1,7 +1,13 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+
 import os
 from .error import PromptToolsUtilityError
 from pylint import epylint as lint
-import logging
 
 PROMPTTOOLS_TMP = "prompttools_tmp.py"
 
