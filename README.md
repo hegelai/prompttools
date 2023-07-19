@@ -93,6 +93,11 @@ Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest`
 To persist the results of your tests and experiments, one option is to enable `HegelScribe` (also developed by us at [Hegel AI](https://hegel-ai.com/)). It logs all the inferences from your LLM, along with metadata and custom metrics, for you to view on your [private dashboard](https://app.hegel-ai.com). We have a few early adopters right now, and
 we can further discuss your use cases, pain points, and how it may be useful for you.
 
+### Documentation
+
+Our [documentation website](https://prompttools.readthedocs.io/en/latest/index.html) contains the full API reference
+and more description of individual components. Check it out!
+
 ## Installation
 
 To install `prompttools` using pip:
