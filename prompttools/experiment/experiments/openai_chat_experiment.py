@@ -42,3 +42,6 @@ class OpenAIChatExperiment(Experiment):
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
         return [choice["message"]["content"] for choice in output["choices"]]
+
+    def _is_chat(self):
+        return True

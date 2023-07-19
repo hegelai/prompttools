@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from prompttools.testing.threshold_type import ThresholdType
+from prompttools.prompttest.threshold_type import ThresholdType
 
 
 class PromptTestSetupException(Exception):

@@ -4,8 +4,8 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Dict, List, Optional
-from .harness import ExperimentationHarness
+from typing import Dict, List, Optional, Type
+from .harness import ExperimentationHarness, Experiment
 
 
 class SystemPromptExperimentationHarness(ExperimentationHarness):
@@ -13,6 +13,8 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
     An experimentation harness used to test various system prompts.
 
     Args:
+        experiment (Type[Experiment]): The experiment that you would like to execute (e.g.
+            ``prompttools.experiment.OpenAICompletionExperiment``)
         model_name (str): The name of the model.
         system_prompts (List[str]): A list of system prompts
         human_messages (List[str]): A list of
@@ -24,12 +26,13 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
 
     def __init__(
         self,
+        experiment: Type[Experiment],
         model_name: str,
         system_prompts: List[str],
         human_messages: List[str],
         model_arguments: Optional[Dict[str, object]] = None,
     ):
-        self.experiment_classname = model_arguments["experiment_classname"]
+        self.experiment_cls_constructor = (experiment,)
         self.model_name = model_name
         self.system_prompts = system_prompts
         self.human_messages = human_messages
@@ -58,7 +61,7 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
                 ]
                 messages_to_try.append(history)
                 self.input_pairs_dict[str(history)] = (system_prompt, message)
-        self.experiment = self.experiment_classname(
+        self.experiment = self.experiment_cls_constructor(
             [self.model_name],
             messages_to_try,
             **self._prepare_arguments(self.model_arguments),

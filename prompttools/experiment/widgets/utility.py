@@ -6,7 +6,7 @@
 
 
 def is_interactive() -> bool:
-    """
+    r"""
     Used to determine if we are in a jupyter notebook, which
     determines how we present the visualizations.
     """

@@ -10,3 +10,5 @@ sentence_transformers
 huggingface_hub
 llama-cpp-python
 chromadb
+sphinx-rtd-theme
+pylint

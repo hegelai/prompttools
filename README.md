@@ -15,17 +15,17 @@ pip install prompttools
 You can run a simple example of a `prompttools` with the following
 
 ```
-DEBUG=1 python examples/prompttests/example.py
+DEBUG=1 python examples/prompttests/test_openai_chat.py
 ```
 
 To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key. 
 This is because `prompttools` makes a call to OpenAI from your machine. For example:
 
 ```
-OPENAI_API_KEY=sk-... python examples/prompttests/example.py
+OPENAI_API_KEY=sk-... python examples/prompttests/test_openai_chat.py
 ```
 
-You can see the full example [here](/examples/prompttests/example.py).
+You can see the full example [here](/examples/prompttests/test_openai_chat.py).
 
 
 ## Using `prompttools`
@@ -33,7 +33,7 @@ You can see the full example [here](/examples/prompttests/example.py).
 There are primarily two ways you can use `prompttools` in your LLM workflow:
 
 1. Run experiments in [notebooks](/examples/notebooks/).
-1. Write [unit tests](/examples/prompttests/example.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/post-commit.yaml).
+1. Write [unit tests](/examples/prompttests/test_openai_chat.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/post-commit.yaml).
 
 ### Notebooks
 
@@ -83,7 +83,7 @@ You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipy
 
 ### Unit Tests
 
-Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The `prompttest` framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/example.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).
+Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The `prompttest` framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/test_openai_chat.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).
 
 ### Persisting Results
 

@@ -6,7 +6,7 @@
 
 import os
 from typing import Dict, Tuple
-import prompttools.testing.prompttest as prompttest
+from prompttools import prompttest
 from prompttools.utils import similarity
 from prompttools.experiment import OpenAIChatExperiment
 
@@ -27,7 +27,7 @@ def extract_responses(output) -> list[str]:
 
 
 @prompttest.prompttest(
-    experiment_classname=OpenAIChatExperiment,
+    experiment=OpenAIChatExperiment,
     model_name="text-davinci-003",
     metric_name="similar_to_expected",
     prompt_template="Answer the following question: {{input}}",

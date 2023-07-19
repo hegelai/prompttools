@@ -4,17 +4,18 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Type
 from functools import wraps
 import logging
 
-from prompttools.testing.threshold_type import ThresholdType
-from prompttools.testing.error.failure import PromptTestSetupException
-from prompttools.testing.runner.prompt_template_runner import (
+from prompttools.experiment import Experiment
+from .threshold_type import ThresholdType
+from .error.failure import PromptTestSetupException
+from .runner.prompt_template_runner import (
     run_prompt_template_test,
     run_prompt_template_test_from_files,
 )
-from prompttools.testing.runner.system_prompt_runner import (
+from .runner.system_prompt_runner import (
     run_system_prompt_test,
     run_system_prompt_test_from_files,
 )
@@ -23,7 +24,7 @@ TESTS_TO_RUN = []
 
 
 def prompttest(
-    experiment_classname: Callable,
+    experiment: Type[Experiment],
     model_name: str,
     metric_name: str,
     threshold: float = 1.0,
@@ -45,13 +46,12 @@ def prompttest(
     This enables developers to create a prompt test suite from their evaluations.
     """
 
-    model_arguments["experiment_classname"] = experiment_classname
-
     def prompttest_decorator(eval_fn: Callable):
         @wraps(eval_fn)
         def runs_test():
             if prompt_template_file and user_input_file:
                 return run_prompt_template_test_from_files(
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -65,6 +65,7 @@ def prompttest(
                 )
             elif prompt_template and user_input:
                 return run_prompt_template_test(
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -78,6 +79,7 @@ def prompttest(
                 )
             elif system_prompt_file and human_messages_file:
                 return run_system_prompt_test_from_files(
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,
@@ -91,6 +93,7 @@ def prompttest(
                 )
             elif system_prompt and human_messages:
                 return run_system_prompt_test(
+                    experiment,
                     model_name,
                     metric_name,
                     eval_fn,

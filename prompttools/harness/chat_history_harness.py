@@ -26,7 +26,7 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
         chat_histories: List[List[Dict[str, str]]],
         model_arguments: Optional[Dict[str, object]] = None,
     ):
-        self.experiment_classname = OpenAIChatExperiment
+        self.experiment_cls_constructor = OpenAIChatExperiment
         self.model_name = model_name
         self.chat_histories = chat_histories
         self.model_arguments = {} if model_arguments is None else model_arguments
@@ -36,7 +36,7 @@ class ChatHistoryExperimentationHarness(ExperimentationHarness):
         r"""
         Initializes and prepares the experiment.
         """
-        self.experiment = self.experiment_classname(
+        self.experiment = self.experiment_cls_constructor(
             [self.model_name],
             self.chat_histories,
             **self._prepare_arguments(self.model_arguments),

@@ -11,6 +11,11 @@ import ipywidgets as widgets
 
 
 class FeedbackWidgetProvider:
+    r"""
+    Provides functionality for widgets to evaluate models. This includes
+    displaying widgets, and recording evaluations in the experiment.
+    """
+
     def __init__(self, completion_fn, agg_fn, eval_listener_fn):
         self.completion_fn = completion_fn
         self.agg_fn = agg_fn

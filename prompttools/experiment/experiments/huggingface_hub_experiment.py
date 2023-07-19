@@ -18,6 +18,8 @@ VALID_TASKS = ("text2text-generation", "text-generation", "summarization")
 class HuggingFaceHubExperiment(Experiment):
     r"""
     Experiment for Hugging Face Hub's API.
+    It accepts lists for each argument passed into Hugging Face Hub's API,
+    then creates a cartesian product of those arguments, and gets results for each.
     """
 
     PARAMETER_NAMES = ["repo_id", "prompt", "task"]
@@ -28,6 +30,7 @@ class HuggingFaceHubExperiment(Experiment):
         prompt: List[str],
         task: List[str] = ["text-generation"],
         **kwargs: Dict[str, object],
+        # TODO: Refactor **kwargs to `model_params` and `call_params`
     ):
         self.completion_fn = self.hf_completion_fn
         if os.getenv("DEBUG", default=False):
