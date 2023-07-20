@@ -343,12 +343,15 @@ class Experiment:
         **kwargs,
     ):
         r"""
-        path (str): path/buffer to write the CSV output
-        pivot_data (Dict[str, object]): optional dictionary that contains additional data or metadata
-            related to the input
-        pivot_columns (List[str]): optional two column names (first for pivot row, second for pivot column)
-            that serve as indices the pivot table
-        **kwargs: optional arguments passed to ``pd.DataFrame.to_csv()``
+        Export the results to a CSV file. If the experiment has not been executed, it will run.
+
+        Args:
+            path (str): path/buffer to write the CSV output
+            pivot_data (Dict[str, object]): optional dictionary that contains additional data or metadata
+                related to the input
+            pivot_columns (List[str]): optional two column names (first for pivot row, second for pivot column)
+                that serve as indices the pivot table
+            **kwargs: optional arguments passed to ``pd.DataFrame.to_csv()``
         """
         if not self.results:
             logging.info("Running first...")
@@ -356,30 +359,46 @@ class Experiment:
         table = self.get_table(
             pivot_data, pivot_columns, pivot=pivot_columns is not None
         )
-        return table.to_csv(path, **kwargs)
+        table.to_csv(path, **kwargs)
+
+    def to_pandas_df(self):
+        r"""
+        Return the results as a ``pandas.DataFrame``. If the experiment has not been executed, it will run.
+        """
+        if not self.results:
+            logging.info("Running first...")
+            self.run()
+        return self.get_table({}, [], pivot=False)
 
     def to_json(
         self,
-        path: str,
+        path: Optional[str] = None,
         pivot_data: Optional[Dict[str, object]] = None,
         pivot_columns: Optional[List[str]] = None,
         **kwargs,
     ):
         r"""
-        path (str): path/buffer to write the JSON output
-        pivot_data (Dict[str, object]): optional dictionary that contains additional data or metadata
-            related to the input
-        pivot_columns (List[str]): optional two column names (first for pivot row, second for pivot column)
-            that serve as indices the pivot table
-        **kwargs: optional arguments passed to ``pd.DataFrame.to_json()``
+        Export the results to a JSON file. If the experiment has not been executed, it will run.
+
+        Args:
+            path (Optional[str]): path/buffer to write the JSON output, defaults to ``None`` which returns
+                the JSON as a `dict`
+            pivot_data (Dict[str, object]): optional dictionary that contains additional data or metadata
+                related to the input
+            pivot_columns (List[str]): optional two column names (first for pivot row, second for pivot column)
+                that serve as indices the pivot table
+            **kwargs: optional arguments passed to ``pd.DataFrame.to_json()``
         """
         if not self.results:
             logging.info("Running first...")
-        self.run()
+            self.run()
         table = self.get_table(
             pivot_data, pivot_columns, pivot=pivot_columns is not None
         )
-        return table.to_json(path, **kwargs)
+        if path is None:
+            return table.to_json(**kwargs)
+        else:
+            return table.to_json(path, **kwargs)
 
     def _get_model_names(self):
         pass
