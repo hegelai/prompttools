@@ -358,6 +358,29 @@ class Experiment:
         )
         return table.to_csv(path, **kwargs)
 
+    def to_json(
+        self,
+        path: str,
+        pivot_data: Optional[Dict[str, object]] = None,
+        pivot_columns: Optional[List[str]] = None,
+        **kwargs,
+    ):
+        r"""
+        path (str): path/buffer to write the JSON output
+        pivot_data (Dict[str, object]): optional dictionary that contains additional data or metadata
+            related to the input
+        pivot_columns (List[str]): optional two column names (first for pivot row, second for pivot column)
+            that serve as indices the pivot table
+        **kwargs: optional arguments passed to ``pd.DataFrame.to_json()``
+        """
+        if not self.results:
+            logging.info("Running first...")
+        self.run()
+        table = self.get_table(
+            pivot_data, pivot_columns, pivot=pivot_columns is not None
+        )
+        return table.to_json(path, **kwargs)
+
     def _get_model_names(self):
         pass
 
