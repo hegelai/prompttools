@@ -4,7 +4,8 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple, Union
+from operator import itemgetter
 from collections import defaultdict
 import itertools
 import logging
@@ -399,6 +400,57 @@ class Experiment:
             return table.to_json(**kwargs)
         else:
             return table.to_json(path, **kwargs)
+
+    def to_lora_json(
+        self,
+        instruction_extract: Union[str, Callable],
+        input_extract: Union[str, Callable],
+        output_extract: Union[str, Callable],
+        path: Optional[str] = None,
+        **kwargs,
+    ):
+        r"""
+        Export the results to a LoRA-format JSON file for fine-tuning.
+        If the experiment has not been executed, it will run.
+
+        Args:
+            instruction_extract (Union[str, Callable]): column name, or an extractor function that will accept a row
+                of the result table and return a value assigned to ``"instruction"`` entry in the JSON file
+            input_extract (Union[str, Callable]): column name, or an extractor function that will accept a row
+                of the result table and return a value assigned to ``"input"`` entry in the JSON file
+            output_extract (Union[str, Callable]): column name, or an extractor function that will accept a row
+                of the result table and return a value assigned to ``"output"`` entry in the JSON file
+            path (Optional[str]): path/buffer to write the JSON output, defaults to ``None`` which returns
+                the JSON as a `dict`
+            **kwargs: optional arguments passed to ``pd.DataFrame.to_json()``
+        """
+        if not self.results:
+            logging.info("Running first...")
+            self.run()
+        if isinstance(instruction_extract, str):
+            instruction_extract = itemgetter(instruction_extract)
+        if isinstance(input_extract, str):
+            input_extract = itemgetter(input_extract)
+        if isinstance(output_extract, str):
+            output_extract = itemgetter(output_extract)
+        df = self.to_pandas_df()
+        extracted_data = df.apply(
+            lambda row: {
+                "instruction": instruction_extract(row),
+                "input": input_extract(row),
+                "output": output_extract(row),
+            },
+            axis=1,
+        )
+        if "orient" not in kwargs:
+            kwargs["orient"] = "records"
+        if "indent" not in kwargs:
+            kwargs["indent"] = 2
+
+        if path:
+            extracted_data.to_json(path, **kwargs)
+        else:
+            return extracted_data.to_json(**kwargs)
 
     def _get_model_names(self):
         pass
