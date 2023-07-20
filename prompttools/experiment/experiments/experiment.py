@@ -119,7 +119,9 @@ class Experiment:
     ) -> None:
         r"""
         Create tuples of input and output for every possible combination of arguments.
-        For each combination, it will execute `runs` times, default to 1.
+
+        Args:
+            runs (int): number of times to execute each possible combination of arguments, defaults to 1.
         """
         if not self.argument_combos:
             logging.info("Preparing first...")
@@ -144,6 +146,12 @@ class Experiment:
     ) -> None:
         """
         Using the given evaluation function, all input/response pairs are evaluated.
+
+        Args:
+            metric_name (str): name of the metric being computed
+            eval_fn (Callable): an evaluation function that takes in (input, result, other_scores) and return a score
+            input_pairs (Optional[Dict[str, Tuple[str, Dict[str, str]]]]): optional dictionary that holds the input data
+                along with additional context or metadata for each input
         """
         if not self.results:
             logging.info("Running first...")
@@ -155,16 +163,20 @@ class Experiment:
         input_key = "messages" if self._is_chat() else "prompt"
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
-            score = eval_fn(
+            extracted_input = (
                 input_pairs[self.argument_combos[i][input_key]]
                 if input_pairs
-                else self.argument_combos[i][input_key],
+                else self.argument_combos[i][input_key]
+            )
+            other_scores = {
+                name: self.scores[name][i]
+                for name in self.scores.keys()
+                if name is not metric_name
+            }
+            score = eval_fn(
+                extracted_input,
                 result,
-                {
-                    name: self.scores[name][i]
-                    for name in self.scores.keys()
-                    if name is not metric_name
-                },
+                other_scores,
             )
             self.scores[metric_name].append(score)
 
@@ -174,6 +186,12 @@ class Experiment:
         """
         This method creates a table of the experiment data. It can also be used
         to create a pivot table, or a table for gathering human feedback.
+
+        Args:
+            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
+            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
+                that serve as indices the pivot table
+            pivot (bool): determines whether to create a pivot table
         """
         input_key = "messages" if self._is_chat() else "prompt"
         data = {
@@ -214,6 +232,11 @@ class Experiment:
     ) -> None:
         """
         This method creates a table to gather human feedback from a notebook interface.
+
+        Args:
+            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
+            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
+                that serve as indices the pivot table
         """
         if not self.results:
             logging.info("Running first...")
@@ -257,6 +280,11 @@ class Experiment:
     ) -> None:
         """
         Creates and shows a table using the results produced.
+
+        Args:
+            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
+            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
+                that serve as indices the pivot table
         """
         if not self.results:
             logging.info("Running first...")
@@ -282,6 +310,13 @@ class Experiment:
         get scores, and sorts descending. For example, using pivot data of
         (prompt_template, user_input), a metric of latency, and is_average=True,
         we rank prompt templates by their average latency in the test set.
+
+        Args:
+            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
+            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
+                that serve as indices the pivot table
+            metric_name (str): metric to aggregate over
+            is_average (bool): if ``True``, compute the average for the metric, else compute the total
         """
         if metric_name not in self.scores:
             logging.warning(
