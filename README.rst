@@ -65,17 +65,17 @@ evaluation function:
        pass
 
    prompt_templates = [
-       "Answer the following question: {{input}}", 
+       "Answer the following question: {{input}}",
        "Respond the following query: {{input}}"
    ]
 
    user_inputs = [
-       {"input": "Who was the first president?"}, 
+       {"input": "Who was the first president?"},
        {"input": "Who was the first president of India?"}
    ]
 
-   harness = PromptTemplateExperimentationHarness("text-davinci-003", 
-                                                  prompt_templates, 
+   harness = PromptTemplateExperimentationHarness("text-davinci-003",
+                                                  prompt_templates,
                                                   user_inputs)
 
 
@@ -128,13 +128,9 @@ of that test being used as a Github Action
 Persisting Results
 ~~~~~~~~~~~~~~~~~~
 
-To persist the results of your tests and experiments, one option is to
-enable ``HegelScribe`` (also developed by us at `Hegel
-AI <https://hegel-ai.com/>`__). It logs all the inferences from your
-LLM, along with metadata and custom metrics, for you to view on your
-`private dashboard <https://app.hegel-ai.com>`__. We have a few early
-adopters right now, and we can further discuss your use cases, pain
-points, and how it may be useful for you.
+To persist the results of your tests and experiments, you can export your ``Experiment`` with the methods ``to_csv``,
+``to_json``, or ``to_lora_json``. We are happy to further discuss your use cases, pain points, and what export
+options may be useful for you.
 
 Installation
 ------------
