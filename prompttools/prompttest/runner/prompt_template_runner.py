@@ -26,16 +26,11 @@ class PromptTemplateTestRunner(PromptTestRunner):
         self.user_inputs = {}
         super().__init__()
 
-    def read(
-        self, prompt_template_file: str, user_input_file: str
-    ) -> Tuple[str, List[Dict[str, str]]]:
+    def read(self, prompt_template_file: str, user_input_file: str) -> Tuple[str, List[Dict[str, str]]]:
         """
         Reads data from files and parses it into a prompt template and user input.
         """
-        if (
-            prompt_template_file in self.prompt_templates
-            and user_input_file in self.user_inputs
-        ):
+        if prompt_template_file in self.prompt_templates and user_input_file in self.user_inputs:
             return (
                 self.prompt_templates[prompt_template_file],
                 self.user_inputs[user_input_file],
@@ -86,20 +81,13 @@ def run_prompt_template_test(
     """
     Runs the prompt test.
     """
-    key = prompt_template_test_runner.run(
-        experiment, model_name, prompt_template, user_inputs, model_args
-    )
+    key = prompt_template_test_runner.run(experiment, model_name, prompt_template, user_inputs, model_args)
     prompt_template_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = prompt_template_test_runner.rank(key, metric_name, is_average)
     if not scored_template:
-        logging.error(
-            "Something went wrong during testing. Make sure your API keys are set correctly."
-        )
+        logging.error("Something went wrong during testing. Make sure your API keys are set correctly.")
         raise PromptTestSetupException
-    if (
-        scored_template[prompt_template] < threshold
-        and threshold_type is ThresholdType.MINIMUM
-    ):
+    if scored_template[prompt_template] < threshold and threshold_type is ThresholdType.MINIMUM:
         log_failure(
             metric_name,
             threshold,
@@ -107,10 +95,7 @@ def run_prompt_template_test(
             threshold_type=threshold_type,
         )
         return 1
-    if (
-        scored_template[prompt_template] > threshold
-        and threshold_type is ThresholdType.MAXIMUM
-    ):
+    if scored_template[prompt_template] > threshold and threshold_type is ThresholdType.MAXIMUM:
         log_failure(
             metric_name,
             threshold,
@@ -137,9 +122,7 @@ def run_prompt_template_test_from_files(
     """
     Reads data in from files and runs the prompt test.
     """
-    prompt_template, user_inputs = prompt_template_test_runner.read(
-        prompt_template_file, user_input_file
-    )
+    prompt_template, user_inputs = prompt_template_test_runner.read(prompt_template_file, user_input_file)
     return run_prompt_template_test(
         experiment,
         model_name,

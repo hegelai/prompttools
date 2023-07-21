@@ -16,9 +16,7 @@ def _get_embedding_model():
     if len(EMBEDDING_MODEL) == 0:
         from sentence_transformers import SentenceTransformer
 
-        EMBEDDING_MODEL.append(
-            SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-        )
+        EMBEDDING_MODEL.append(SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2"))
     return EMBEDDING_MODEL[0]
 
 

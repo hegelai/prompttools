@@ -47,9 +47,7 @@ class RequestQueue:
             logging.error("Authentication error. Skipping request.")
 
     @retry_decorator
-    def _run(
-        self, fn: Callable, args: Dict[str, object]
-    ) -> Tuple[Dict[str, object], float]:
+    def _run(self, fn: Callable, args: Dict[str, object]) -> Tuple[Dict[str, object], float]:
         start = perf_counter()
         result = fn(**args)
         return result, perf_counter() - start

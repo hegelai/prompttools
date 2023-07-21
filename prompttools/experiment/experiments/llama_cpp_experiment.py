@@ -14,6 +14,7 @@ from time import perf_counter
 
 from .experiment import Experiment
 from .error import PromptExperimentException
+from prompttools.selector.prompt_selector import PromptSelector
 
 
 class LlamaCppExperiment(Experiment):
@@ -81,7 +82,7 @@ class LlamaCppExperiment(Experiment):
     def __init__(
         self,
         model_path: List[str],
-        prompt: List[str],
+        prompt: List[str] | List[PromptSelector],
         model_params: Dict[str, object] = {},
         call_params: Dict[str, object] = {},
     ):
@@ -89,7 +90,13 @@ class LlamaCppExperiment(Experiment):
         self.model_params = model_params
         self.call_params = call_params
         self.model_params["model_path"] = model_path
-        self.call_params["prompt"] = prompt
+
+        # If we are using a prompt selector, we need to
+        # render the prompts from the selector
+        if isinstance(prompt[0], PromptSelector):
+            self.call_params["prompt"] = [selector.for_llama() for selector in prompt]
+        else:
+            self.call_params["prompt"] = prompt
 
         # Set defaults
         for param in self.MODEL_PARAMETERS:
@@ -106,12 +113,10 @@ class LlamaCppExperiment(Experiment):
         Creates argument combinations by taking the cartesian product of all inputs.
         """
         self.model_argument_combos = [
-            dict(zip(self.model_params, val))
-            for val in itertools.product(*self.model_params.values())
+            dict(zip(self.model_params, val)) for val in itertools.product(*self.model_params.values())
         ]
         self.call_argument_combos = [
-            dict(zip(self.call_params, val))
-            for val in itertools.product(*self.call_params.values())
+            dict(zip(self.call_params, val)) for val in itertools.product(*self.call_params.values())
         ]
 
     def llama_completion_fn(
@@ -158,7 +163,7 @@ class LlamaCppExperiment(Experiment):
         return [choice["text"] for choice in output["choices"]]
 
     def _get_model_names(self):
-        return [os.path.basename(combo['model_path']) for combo in self.argument_combos]
-    
+        return [os.path.basename(combo["model_path"]) for combo in self.argument_combos]
+
     def _get_prompts(self):
-        return  [combo['prompt'] for combo in self.argument_combos]
+        return [combo["prompt"] for combo in self.argument_combos]

@@ -64,4 +64,4 @@ class OpenAICompletionExperiment(Experiment):
         return [choice["text"] for choice in output["choices"]]
 
     def _get_model_names(self):
-        return [combo['model'] for combo in self.argument_combos]
+        return [combo["model"] for combo in self.argument_combos]
