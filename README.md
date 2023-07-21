@@ -1,8 +1,14 @@
-# PromptTools
+<h1 align="center">
+PromptTools
+</h1>
+<p align="center">
+Test and experiment with prompts, LLMs, and vector databases.
+<p align="center">
+  <a href="http://prompttools.readthedocs.io/"><img src="https://img.shields.io/badge/View%20Documentation-Docs-yellow"></a>
+  <a href="https://discord.gg/7KeRPNHGdJ"><img src="https://img.shields.io/badge/Join%20our%20community-Discord-blue"></a>
+  <a href="https://twitter.com/hegel_ai"><img src="https://img.shields.io/twitter/follow/Hegel_AI?style=social"></a>
+</p>
 
-[![](https://img.shields.io/badge/View%20Documentation-Docs-yellow)](http://prompttools.readthedocs.io/)
-[![](https://img.shields.io/badge/Join%20our%20community-Discord-blue)](https://discord.gg/7KeRPNHGdJ)
-[![Twitter](https://img.shields.io/twitter/follow/Hegel_AI?style=social)](https://twitter.com/hegel_ai)
 
 Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of free, open-source tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
 
