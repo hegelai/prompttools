@@ -5,13 +5,10 @@
 # LICENSE file in the root directory of this source tree.
 
 TEMPLATE = """
-### INSTRUCTION
+<s>[INST] <<SYS>>
 {instruction}
-
-### INPUT
-{user_input}
-
-### OUTPUT
+<</SYS>
+{user_input} [/INST]
 """
 
 
