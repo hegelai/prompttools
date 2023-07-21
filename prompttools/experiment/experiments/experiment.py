@@ -32,7 +32,7 @@ class Experiment:
 
     def __init__(self):
         self.queue = RequestQueue()
-        self.argument_combos = []
+        self.argument_combos: list[dict] = []
         self.results = []
         self.scores = defaultdict(list)
         self.feedback_widget_provider = FeedbackWidgetProvider(
@@ -77,9 +77,7 @@ class Experiment:
         if is_average:
             for k, v in prompt_scores.items():
                 prompt_scores[k] = v / prompt_counts[k]
-        sorted_scores = dict(
-            sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True)
-        )
+        sorted_scores = dict(sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True))
         return sorted_scores
 
     def _aggregate_metric(
@@ -100,19 +98,14 @@ class Experiment:
         if is_average:
             for k, v in prompt_scores.items():
                 prompt_scores[k] = v / prompt_counts[k]
-        sorted_scores = dict(
-            sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True)
-        )
+        sorted_scores = dict(sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True))
         return sorted_scores
 
     def prepare(self) -> None:
         r"""
         Creates argument combinations by taking the cartesian product of all inputs.
         """
-        self.argument_combos = [
-            dict(zip(self.all_args, val))
-            for val in itertools.product(*self.all_args.values())
-        ]
+        self.argument_combos = [dict(zip(self.all_args, val)) for val in itertools.product(*self.all_args.values())]
 
     def run(
         self,
@@ -144,6 +137,7 @@ class Experiment:
         metric_name: str,
         eval_fn: Callable,
         input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
+        input_key: Optional[str] = None,
     ) -> None:
         """
         Using the given evaluation function, all input/response pairs are evaluated.
@@ -153,6 +147,7 @@ class Experiment:
             eval_fn (Callable): an evaluation function that takes in (input, result, other_scores) and return a score
             input_pairs (Optional[Dict[str, Tuple[str, Dict[str, str]]]]): optional dictionary that holds the input data
                 along with additional context or metadata for each input
+            input_key (str): input key name as it exists within input argument (e.g. "messages", "prompt")
         """
         if not self.results:
             logging.info("Running first...")
@@ -161,19 +156,14 @@ class Experiment:
             logging.warning(metric_name + " is already present, skipping.")
             return
 
-        input_key = "messages" if self._is_chat() else "prompt"
+        if input_key is None:
+            input_key = "messages" if self._is_chat() else "prompt"
         for i, result in enumerate(self.results):
             # Pass the messages and results into the eval function
             extracted_input = (
-                input_pairs[self.argument_combos[i][input_key]]
-                if input_pairs
-                else self.argument_combos[i][input_key]
+                input_pairs[self.argument_combos[i][input_key]] if input_pairs else self.argument_combos[i][input_key]
             )
-            other_scores = {
-                name: self.scores[name][i]
-                for name in self.scores.keys()
-                if name is not metric_name
-            }
+            other_scores = {name: self.scores[name][i] for name in self.scores.keys() if name is not metric_name}
             score = eval_fn(
                 extracted_input,
                 result,
@@ -181,9 +171,7 @@ class Experiment:
             )
             self.scores[metric_name].append(score)
 
-    def get_table(
-        self, pivot_data: Dict[str, object], pivot_columns: List[str], pivot: bool
-    ) -> pd.DataFrame:
+    def get_table(self, pivot_data: Dict[str, object], pivot_columns: List[str], pivot: bool) -> pd.DataFrame:
         """
         This method creates a table of the experiment data. It can also be used
         to create a pivot table, or a table for gathering human feedback.
@@ -209,14 +197,8 @@ class Experiment:
             if len(args) > 1:
                 data[k] = [combo[k] for combo in self.argument_combos]
         if pivot_data:
-            data[pivot_columns[0]] = [
-                str(pivot_data[str(combo[input_key])][0])
-                for combo in self.argument_combos
-            ]
-            data[pivot_columns[1]] = [
-                str(pivot_data[str(combo[input_key])][1])
-                for combo in self.argument_combos
-            ]
+            data[pivot_columns[0]] = [str(pivot_data[str(combo[input_key])][0]) for combo in self.argument_combos]
+            data[pivot_columns[1]] = [str(pivot_data[str(combo[input_key])][1]) for combo in self.argument_combos]
         df = pd.DataFrame(data)
         if pivot:
             df = pd.pivot_table(
@@ -228,9 +210,7 @@ class Experiment:
             )
         return df
 
-    def gather_feedback(
-        self, pivot_data: Dict[str, object], pivot_columns: List[str]
-    ) -> None:
+    def gather_feedback(self, pivot_data: Dict[str, object], pivot_columns: List[str]) -> None:
         """
         This method creates a table to gather human feedback from a notebook interface.
 
@@ -290,9 +270,7 @@ class Experiment:
         if not self.results:
             logging.info("Running first...")
             self.run()
-        table = self.get_table(
-            pivot_data, pivot_columns, pivot=pivot_columns is not None
-        )
+        table = self.get_table(pivot_data, pivot_columns, pivot=pivot_columns is not None)
         if is_interactive():
             display.display(table)
         else:
@@ -320,21 +298,15 @@ class Experiment:
             is_average (bool): if ``True``, compute the average for the metric, else compute the total
         """
         if metric_name not in self.scores:
-            logging.warning(
-                "Can't find " + metric_name + " in scores. Did you run `evaluate`?"
-            )
+            logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
         table = self.get_table(pivot_data, pivot_columns, pivot=False)
-        sorted_scores = self._aggregate_metric(
-            table, metric_name, pivot_columns[0], is_average
-        )
+        sorted_scores = self._aggregate_metric(table, metric_name, pivot_columns[0], is_average)
         return sorted_scores
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        raise NotImplementedError(
-            "This should be implemented by a subclass of `Experiment`."
-        )
+        raise NotImplementedError("This should be implemented by a subclass of `Experiment`.")
 
     def to_csv(
         self,
@@ -357,9 +329,7 @@ class Experiment:
         if not self.results:
             logging.info("Running first...")
             self.run()
-        table = self.get_table(
-            pivot_data, pivot_columns, pivot=pivot_columns is not None
-        )
+        table = self.get_table(pivot_data, pivot_columns, pivot=pivot_columns is not None)
         table.to_csv(path, **kwargs)
 
     def to_pandas_df(self):
@@ -393,9 +363,7 @@ class Experiment:
         if not self.results:
             logging.info("Running first...")
             self.run()
-        table = self.get_table(
-            pivot_data, pivot_columns, pivot=pivot_columns is not None
-        )
+        table = self.get_table(pivot_data, pivot_columns, pivot=pivot_columns is not None)
         if path is None:
             return table.to_json(**kwargs)
         else:
