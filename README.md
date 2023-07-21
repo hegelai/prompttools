@@ -2,10 +2,10 @@
   <a href="https://hegel-ai.com"><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Owl_of_Minerva.svg" width="75" height="75"></a>
 </p>
 <h1 align="center">
-:wrench: PromptTools
+ PromptTools 
 </h1>
 <p align="center">
-Test and experiment with prompts, LLMs, and vector databases.
+:wrench: Test and experiment with prompts, LLMs, and vector databases. :hammer:
 <p align="center">
   <a href="http://prompttools.readthedocs.io/"><img src="https://img.shields.io/badge/View%20Documentation-Docs-yellow"></a>
   <a href="https://discord.gg/7KeRPNHGdJ"><img src="https://img.shields.io/badge/Join%20our%20community-Discord-blue"></a>
