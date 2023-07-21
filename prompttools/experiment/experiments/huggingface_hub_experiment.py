@@ -52,9 +52,7 @@ class HuggingFaceHubExperiment(Experiment):
             token=os.environ.get("HUGGINGFACEHUB_API_TOKEN"),
             task=params["task"],
         )
-        model_kwargs = {
-            k: params[k] for k in params if k not in ["repo_id", "prompt", "task"]
-        }
+        model_kwargs = {k: params[k] for k in params if k not in ["repo_id", "prompt", "task"]}
         response = client(inputs=params["prompt"], params=model_kwargs)
         return response
 

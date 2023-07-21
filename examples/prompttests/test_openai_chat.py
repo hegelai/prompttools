@@ -13,9 +13,7 @@ from prompttools.experiment import OpenAICompletionExperiment
 EXPECTED = {"Who was the first president of the USA?": "George Washington"}
 
 if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
-    print(
-        "Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1"
-    )
+    print("Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1")
     exit(1)
 
 
@@ -33,18 +31,13 @@ def extract_responses(output) -> list[str]:
     prompt_template="Answer the following question: {{input}}",
     user_input=[{"input": "Who was the first president of the USA?"}],
 )
-def measure_similarity(
-    input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict
-) -> float:
+def measure_similarity(input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict) -> float:
     r"""
     A simple test that checks semantic similarity between the user input
     and the model's text responses.
     """
     expected = EXPECTED[input_pair[1]["input"]]
-    distances = [
-        similarity.compute(expected, response)
-        for response in extract_responses(results)
-    ]
+    distances = [similarity.compute(expected, response) for response in extract_responses(results)]
     return min(distances)
 
 

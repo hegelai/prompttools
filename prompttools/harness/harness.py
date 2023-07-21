@@ -37,9 +37,7 @@ class ExperimentationHarness:
         """
         self.experiment.run(runs=self.runs)
 
-    def evaluate(
-        self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True
-    ) -> None:
+    def evaluate(self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True) -> None:
         r"""
         Uses the given eval_fn to evaluate the results of the underlying experiment.
         """
@@ -65,6 +63,4 @@ class ExperimentationHarness:
         Scores and ranks the experiment inputs using the pivot columns,
         e.g. prompt templates or system prompts.
         """
-        return self.experiment.rank(
-            self.input_pairs_dict, self.PIVOT_COLUMNS, metric_name, is_average
-        )
+        return self.experiment.rank(self.input_pairs_dict, self.PIVOT_COLUMNS, metric_name, is_average)

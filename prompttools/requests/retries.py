@@ -15,9 +15,7 @@ import openai
 import logging
 
 
-def generate_retry_decorator(
-    wait_lower_bound: int = 3, wait_upper_bound: int = 12, max_retry_attempts: int = 5
-):
+def generate_retry_decorator(wait_lower_bound: int = 3, wait_upper_bound: int = 12, max_retry_attempts: int = 5):
     r"""
     Creates a retry decorator that can be used for requests. It looks for specific exceptions and waits for
     certain about of time before retrying. This improves the reliability of the request queue.

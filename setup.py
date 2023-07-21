@@ -31,11 +31,7 @@ def _get_version():
 
     sha = "Unknown"
     try:
-        sha = (
-            subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(ROOT_DIR))
-            .decode("ascii")
-            .strip()
-        )
+        sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(ROOT_DIR)).decode("ascii").strip()
     except Exception:
         pass
 

@@ -26,16 +26,11 @@ class SystemPromptTestRunner(PromptTestRunner):
         self.human_messages = {}
         super().__init__()
 
-    def read(
-        self, system_prompt_file: str, human_messages_file: str
-    ) -> Tuple[str, List[List[str]]]:
+    def read(self, system_prompt_file: str, human_messages_file: str) -> Tuple[str, List[List[str]]]:
         r"""
         Reads data from files and parses it into a system prompt and human messages.
         """
-        if (
-            system_prompt_file in self.system_prompts
-            and human_messages_file in self.human_messages
-        ):
+        if system_prompt_file in self.system_prompts and human_messages_file in self.human_messages:
             return (
                 self.system_prompts[system_prompt_file],
                 self.human_messages[human_messages_file],
@@ -84,20 +79,13 @@ def run_system_prompt_test(
     r"""
     Runs the prompt test.
     """
-    key = system_prompt_test_runner.run(
-        experiment, model_name, system_prompt, human_messages, model_args
-    )
+    key = system_prompt_test_runner.run(experiment, model_name, system_prompt, human_messages, model_args)
     system_prompt_test_runner.evaluate(key, metric_name, eval_fn, use_input_pairs)
     scored_template = system_prompt_test_runner.rank(key, metric_name, is_average)
     if not scored_template:
-        logging.error(
-            "Something went wrong during testing. Make sure your API keys are set correctly."
-        )
+        logging.error("Something went wrong during testing. Make sure your API keys are set correctly.")
         raise PromptTestSetupException
-    if (
-        scored_template[system_prompt] < threshold
-        and threshold_type is ThresholdType.MINIMUM
-    ):
+    if scored_template[system_prompt] < threshold and threshold_type is ThresholdType.MINIMUM:
         log_failure(
             metric_name,
             threshold,
@@ -105,10 +93,7 @@ def run_system_prompt_test(
             threshold_type=threshold_type,
         )
         return 1
-    if (
-        scored_template[system_prompt] > threshold
-        and threshold_type is ThresholdType.MAXIMUM
-    ):
+    if scored_template[system_prompt] > threshold and threshold_type is ThresholdType.MAXIMUM:
         log_failure(
             metric_name,
             threshold,
@@ -135,9 +120,7 @@ def run_system_prompt_test_from_files(
     r"""
     Reads data in from files and runs the prompt test.
     """
-    system_prompt, human_messages = system_prompt_test_runner.read(
-        system_prompt_file, human_messages_file
-    )
+    system_prompt, human_messages = system_prompt_test_runner.read(system_prompt_file, human_messages_file)
     return run_system_prompt_test(
         experiment,
         model_name,

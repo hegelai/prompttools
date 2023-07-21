@@ -21,9 +21,7 @@ class FeedbackWidgetProvider:
         self.agg_fn = agg_fn
         self.eval_listener_fn = eval_listener_fn
 
-    def _get_feedback_submission_listener(
-        self, table: pd.DataFrame, pivot_columns: List[str]
-    ) -> Callable:
+    def _get_feedback_submission_listener(self, table: pd.DataFrame, pivot_columns: List[str]) -> Callable:
         def on_click(b):
             sorted_scores = self.agg_fn(table, "feedback", pivot_columns[0])
             data = {
@@ -48,21 +46,9 @@ class FeedbackWidgetProvider:
 
     def get_row_widgets(self, index, row):
         items = [
-            widgets.HTML(
-                value="<style>p{word-wrap: break-word}</style> <p>"
-                + row[self.pivot_columns[0]]
-                + " </p>"
-            ),
-            widgets.HTML(
-                value="<style>p{word-wrap: break-word}</style> <p>"
-                + row[self.pivot_columns[1]]
-                + " </p>"
-            ),
-            widgets.HTML(
-                value="<style>p{word-wrap: break-word}</style> <p>"
-                + ", ".join(row["response(s)"])
-                + " </p>"
-            ),
+            widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row[self.pivot_columns[0]] + " </p>"),
+            widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row[self.pivot_columns[1]] + " </p>"),
+            widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + ", ".join(row["response(s)"]) + " </p>"),
         ]
         feedback_dropdown = widgets.Dropdown(
             options=[("\U0001F44D", 1), ("\U0001F44E", 0)],
@@ -80,9 +66,7 @@ class FeedbackWidgetProvider:
             button_style="success",
             tooltip="Submit",
         )
-        submit_button.on_click(
-            self._get_feedback_submission_listener(table, self.pivot_columns)
-        )
+        submit_button.on_click(self._get_feedback_submission_listener(table, self.pivot_columns))
         return [
             widgets.Label(""),
             widgets.Label(""),

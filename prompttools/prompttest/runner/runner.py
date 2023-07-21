@@ -57,6 +57,4 @@ class PromptTestRunner:
         user_inputs: List[Dict[str, str]],
         model_args: Dict[str, object],
     ):
-        raise NotImplementedError(
-            "This should be implemented by a subclass of `PromptTestRunner`."
-        )
+        raise NotImplementedError("This should be implemented by a subclass of `PromptTestRunner`.")

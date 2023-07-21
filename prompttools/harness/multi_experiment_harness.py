@@ -3,7 +3,8 @@ from collections import defaultdict
 from prompttools.experiment import Experiment
 import pandas as pd
 
-class MultiExperimentHarness():
+
+class MultiExperimentHarness:
     def __init__(self, experiments: List[Experiment], prompts: List[str] = []):
         self.experiments = experiments
         self.prompts = prompts
@@ -16,9 +17,7 @@ class MultiExperimentHarness():
         for experiment in self.experiments:
             experiment.run()
 
-    def evaluate(
-        self, metric_name: str, eval_fn: Callable
-    ) -> None:
+    def evaluate(self, metric_name: str, eval_fn: Callable) -> None:
         for experiment in self.experiments:
             experiment.evaluate(metric_name, eval_fn)
 
@@ -28,13 +27,15 @@ class MultiExperimentHarness():
     def _get_argument_combos(self):
         tmp = [combo for experiment in self.experiments for combo in experiment.argument_combos]
         return tmp
-    
+
     def _get_prompts(self):
         tmp = [combo for experiment in self.experiments for combo in experiment._get_prompts()]
         return tmp
 
     def _get_results(self):
-        tmp = [experiment._extract_responses(result) for experiment in self.experiments for result in experiment.results]
+        tmp = [
+            experiment._extract_responses(result) for experiment in self.experiments for result in experiment.results
+        ]
         return tmp
 
     def _get_scores(self):
@@ -43,19 +44,19 @@ class MultiExperimentHarness():
             for name, score in experiment.scores.items():
                 scores[name].extend(score)
         return scores
-    
+
     def _get_experiment_names(self):
         tmp = [name for experiment in self.experiments for name in experiment._get_model_names()]
-        return tmp 
+        return tmp
 
     def visualize(self, colname: str = None) -> None:
         argument_combos = self._get_argument_combos()
         scores = self._get_scores()
         data = {
-            'prompt': self._get_prompts(),
+            "prompt": self._get_prompts(),
             "response(s)": self._get_results(),
             "latency": scores["latency"],
-            "model": self._get_experiment_names()
+            "model": self._get_experiment_names(),
         }
         # Add scores for each eval fn, including feedback
         for metric_name, evals in scores.items():
@@ -66,8 +67,8 @@ class MultiExperimentHarness():
             df = pd.pivot_table(
                 df,
                 values=colname,
-                index=['prompt'],
-                columns=['model'],
+                index=["prompt"],
+                columns=["model"],
                 aggfunc=lambda x: x.iloc[0],
             )
         return df

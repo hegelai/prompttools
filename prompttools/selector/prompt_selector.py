@@ -14,23 +14,23 @@ TEMPLATE = """
 ### OUTPUT
 """
 
+
 class PromptSelector:
     r"""
-    An abstraction for rendering the same prompt 
-    for different models, e.g. OpenAI Chat models 
+    An abstraction for rendering the same prompt
+    for different models, e.g. OpenAI Chat models
     and Llama models
     """
+
     def __init__(self, instruction: str, user_input: str):
         self.instruction = instruction
         self.user_input = user_input
-        
+
     def for_openai_chat(self):
         return [
             {"role": "system", "content": self.instruction},
             {"role": "user", "content": self.user_input},
         ]
-    
+
     def for_llama(self):
-        return TEMPLATE.format(instruction=self.instruction, 
-                               user_input=self.user_input)
-        
+        return TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)

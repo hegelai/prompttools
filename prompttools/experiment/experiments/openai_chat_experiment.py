@@ -42,7 +42,9 @@ class OpenAIChatExperiment(Experiment):
         # messages, as well as create prompt_keys to map the messages
         # to corresponding prompts in other models.
         if isinstance(messages[0], PromptSelector):
-            self.prompt_keys = {str(selector.for_openai_chat()[-1]["content"]): selector.for_llama() for selector in messages}
+            self.prompt_keys = {
+                str(selector.for_openai_chat()[-1]["content"]): selector.for_llama() for selector in messages
+            }
             messages = [selector.for_openai_chat() for selector in messages]
         else:
             self.prompt_keys = messages
@@ -70,7 +72,7 @@ class OpenAIChatExperiment(Experiment):
         return True
 
     def _get_model_names(self):
-        return [combo['model'] for combo in self.argument_combos]
-    
+        return [combo["model"] for combo in self.argument_combos]
+
     def _get_prompts(self):
-        return [self.prompt_keys[str(combo['messages'][-1]["content"])] for combo in self.argument_combos]
+        return [self.prompt_keys[str(combo["messages"][-1]["content"])] for combo in self.argument_combos]
