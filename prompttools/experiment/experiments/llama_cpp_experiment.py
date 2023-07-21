@@ -14,6 +14,7 @@ from time import perf_counter
 
 from .experiment import Experiment
 from .error import PromptExperimentException
+from prompttools.selector.prompt_selector import PromptSelector
 
 
 class LlamaCppExperiment(Experiment):
@@ -81,7 +82,7 @@ class LlamaCppExperiment(Experiment):
     def __init__(
         self,
         model_path: List[str],
-        prompt: List[str],
+        prompt: List[str] | List[PromptSelector],
         model_params: Dict[str, object] = {},
         call_params: Dict[str, object] = {},
     ):
@@ -89,7 +90,13 @@ class LlamaCppExperiment(Experiment):
         self.model_params = model_params
         self.call_params = call_params
         self.model_params["model_path"] = model_path
-        self.call_params["prompt"] = prompt
+
+        # If we are using a prompt selector, we need to 
+        # render the prompts from the selector
+        if isinstance(prompt[0], PromptSelector):
+            self.call_params["prompt"] = [selector.for_llama() for selector in prompt]
+        else:
+            self.call_params["prompt"] = prompt
 
         # Set defaults
         for param in self.MODEL_PARAMETERS:

@@ -131,7 +131,8 @@ class Experiment:
             for _ in range(runs):
                 self.queue.enqueue(
                     self.completion_fn,
-                    combo,
+                    # We need to filter out defaults that are invalid JSON from the request
+                    {k: v for k, v in combo.items() if v and v != float("inf")},
                 )
         self.results = self.queue.results()
         self.scores["latency"] = self.queue.latencies()
