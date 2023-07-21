@@ -1,5 +1,8 @@
+<p align="center">
+  <a href="https://hegel-ai.com"><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Owl_of_Minerva.svg" width="75" height="75"></a>
+</p>
 <h1 align="center">
-PromptTools
+:wrench: PromptTools
 </h1>
 <p align="center">
 Test and experiment with prompts, LLMs, and vector databases.
