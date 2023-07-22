@@ -9,6 +9,7 @@
 <p align="center">
   <a href="http://prompttools.readthedocs.io/"><img src="https://img.shields.io/badge/View%20Documentation-Docs-yellow"></a>
   <a href="https://discord.gg/7KeRPNHGdJ"><img src="https://img.shields.io/badge/Join%20our%20community-Discord-blue"></a>
+  <a href="https://pepy.tech/project/prompttools" target="_blank"><img src="https://pepy.tech/badge/prompttools" alt="Total Downloads"/></a>
   <a href="https://pepy.tech/project/prompttools">
     <img src="https://static.pepy.tech/badge/prompttools/month" />
   </a>
