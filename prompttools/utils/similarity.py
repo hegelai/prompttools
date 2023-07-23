@@ -65,10 +65,9 @@ def compute(doc1, doc2, use_chroma=True):
         return _from_huggingface(doc1, doc2)
 
 
-def evaluate(prompt: str, responses: List[str], metadata: Dict, expected: str) -> float:
+def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float:
     r"""
     A simple test that checks semantic similarity between the user input
     and the model's text responses.
     """
-    scores = [compute(expected, response) for response in responses]
-    return max(scores)
+    return compute(expected, response)
