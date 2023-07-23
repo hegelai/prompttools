@@ -14,6 +14,7 @@ if not (("HUGGINGFACEHUB_API_TOKEN" in os.environ) or ("DEBUG" in os.environ)):
     print("Error: This example requires you to set either your HUGGINGFACEHUB_API_TOKEN or DEBUG=1")
     exit(1)
 
+
 @prompttest.prompttest(
     experiment=HuggingFaceHubExperiment,
     model_name="google/flan-t5-xxl",

@@ -15,6 +15,7 @@ if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
     print("Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1")
     exit(1)
 
+
 @prompttest.prompttest(
     experiment=OpenAICompletionExperiment,
     model_name="text-davinci-003",
@@ -29,6 +30,7 @@ def prompt_provider():
     template = environment.from_string(prompt_template)
     prompt = template.render(**user_input)
     return [prompt]
+
 
 if __name__ == "__main__":
     prompttest.main()

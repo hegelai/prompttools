@@ -13,11 +13,6 @@ from prompttools.prompttest.error.failure import log_failure
 from prompttools.experiment import Experiment
 from prompttools.prompttest.error.failure import PromptTestSetupException
 
-from prompttools.prompttest.threshold_type import ThresholdType
-from prompttools.prompttest.error.failure import log_failure
-from prompttools.experiment import Experiment
-from prompttools.prompttest.error.failure import PromptTestSetupException
-
 class PromptTestRunner:
     r"""
     Base class for prompt test runners. Please use the subclass instead.s
