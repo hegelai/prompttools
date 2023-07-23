@@ -11,6 +11,7 @@ from .experiments.openai_completion_experiment import OpenAICompletionExperiment
 from .experiments.huggingface_hub_experiment import HuggingFaceHubExperiment
 from .experiments.llama_cpp_experiment import LlamaCppExperiment
 from .experiments.chromadb_experiment import ChromaDBExperiment
+from .experiments.weaviate_experiment import WeaviateExperiment
 
 __all__ = [
     "ChromaDBExperiment",
@@ -19,4 +20,5 @@ __all__ = [
     "HuggingFaceHubExperiment",
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
+    "WeaviateExperiment",
 ]
