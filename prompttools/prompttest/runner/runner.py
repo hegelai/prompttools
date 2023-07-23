@@ -46,6 +46,16 @@ class PromptTestRunner:
         """
         self.experiments[key].evaluate(metric_name, eval_fn, expected=expected)
 
+
+    def visualize(
+        self,
+        key: str
+    ) -> None:
+        r"""
+        Evaluates the test results using the given ``eval_fn``.
+        """
+        self.experiments[key].visualize()
+
     def scores(self, key):
         r"""
         Returns the scores for the underlying experiment at the 
@@ -84,6 +94,7 @@ def run_prompttest(
     """
     key = prompt_test_runner.run(experiment, model_name, prompts, model_arguments)
     prompt_test_runner.evaluate(key, metric_name, eval_fn, expected=expected)
+    prompt_test_runner.visualize(key)
     scores = prompt_test_runner.scores(key)
     if not scores:
         logging.error("Something went wrong during testing. Make sure your API keys are set correctly.")
