@@ -106,7 +106,6 @@ class Experiment:
         Creates argument combinations by taking the cartesian product of all inputs.
         """
         self.argument_combos = [dict(zip(self.all_args, val)) for val in itertools.product(*self.all_args.values())]
-        print(self.argument_combos)
 
     def run(
         self,

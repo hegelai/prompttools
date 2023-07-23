@@ -71,10 +71,4 @@ def evaluate(prompt: str, responses: List[str], metadata: Dict, expected: str) -
     and the model's text responses.
     """
     scores = [compute(expected, response) for response in responses]
-    print(scores)
     return max(scores)
-
-
-class SemanticSimilarityEvaluator:
-    def __init__(self):
-        pass
