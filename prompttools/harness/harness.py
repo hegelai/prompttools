@@ -40,7 +40,7 @@ class ExperimentationHarness:
     def evaluate(self,
                  metric_name: str, 
                  eval_fn: Callable, 
-                 use_input_pairs: bool = True, 
+                 use_input_pairs: bool = False, 
                  expected: str = None) -> None:
         r"""
         Uses the given eval_fn to evaluate the results of the underlying experiment.

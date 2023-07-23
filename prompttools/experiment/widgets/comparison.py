@@ -43,7 +43,7 @@ class ComparisonWidgetProvider:
     def get_row_widgets(self, index, row):
         items = [widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row.name + " </p>")]
         items += [
-            widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row[model][0] + " </p>")
+            widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row[model] + " </p>")
             for model in self.models
         ]
         feedback_dropdown = widgets.Dropdown(
