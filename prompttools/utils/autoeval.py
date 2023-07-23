@@ -50,7 +50,6 @@ def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
     evaluation = openai.ChatCompletion.create(model=model, messages=_get_messages(prompt, response))
     return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
 
-
 def evaluate(prompt: str, response: str, metadata: Dict) -> float:
     r"""
     Uses auto-evaluation to score the model response.
