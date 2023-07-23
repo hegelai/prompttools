@@ -44,7 +44,7 @@ class PromptTestRunner:
         r"""
         Evaluates the test results using the given ``eval_fn``.
         """
-        self.experiments[key].evaluate(metric_name, eval_fn)
+        self.experiments[key].evaluate(metric_name, eval_fn, expected=expected)
 
     def scores(self, key):
         r"""

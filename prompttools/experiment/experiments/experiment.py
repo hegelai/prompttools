@@ -140,6 +140,7 @@ class Experiment:
         eval_fn: Callable,
         input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
         input_key: Optional[str] = None,
+        expected: Optional[str] = None
     ) -> None:
         """
         Using the given evaluation function, all input/response pairs are evaluated.
@@ -166,11 +167,19 @@ class Experiment:
                 input_pairs[self.argument_combos[i][input_key]] if input_pairs else self.argument_combos[i][input_key]
             )
             other_scores = {name: self.scores[name][i] for name in self.scores.keys() if name is not metric_name}
-            score = eval_fn(
-                extracted_input,
-                self._extract_responses(result),
-                other_scores,
-            )
+            if expected:
+                score = eval_fn(
+                    extracted_input,
+                    self._extract_responses(result),
+                    other_scores,
+                    expected=expected
+                )
+            else:
+                score = eval_fn(
+                    extracted_input,
+                    self._extract_responses(result),
+                    other_scores,
+                )
             self.scores[metric_name].append(score)
 
     def get_table(self, pivot_data: Dict[str, object], pivot_columns: List[str], pivot: bool) -> pd.DataFrame:
