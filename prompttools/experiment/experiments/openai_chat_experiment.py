@@ -62,7 +62,6 @@ class OpenAIChatExperiment(Experiment):
             frequency_penalty=frequency_penalty,
             logit_bias=logit_bias,
         )
-        print(self.all_args)
         super().__init__()
 
     @staticmethod

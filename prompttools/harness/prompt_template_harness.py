@@ -52,7 +52,6 @@ class PromptTemplateExperimentationHarness(ExperimentationHarness):
         for pt in self.prompt_templates:
             for user_input in self.user_inputs:
                 template = self.environment.from_string(pt)
-                logging.info(user_input)
                 prompt = template.render(**user_input)
                 rendered_inputs.append(prompt)
                 self.input_pairs_dict[prompt] = (pt, user_input)
