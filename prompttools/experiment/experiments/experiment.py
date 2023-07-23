@@ -106,6 +106,7 @@ class Experiment:
         Creates argument combinations by taking the cartesian product of all inputs.
         """
         self.argument_combos = [dict(zip(self.all_args, val)) for val in itertools.product(*self.all_args.values())]
+        print(self.argument_combos)
 
     def run(
         self,
@@ -167,7 +168,7 @@ class Experiment:
             other_scores = {name: self.scores[name][i] for name in self.scores.keys() if name is not metric_name}
             score = eval_fn(
                 extracted_input,
-                result,
+                self._extract_responses(result),
                 other_scores,
             )
             self.scores[metric_name].append(score)
