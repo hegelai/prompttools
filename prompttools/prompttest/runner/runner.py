@@ -7,12 +7,19 @@
 from collections import defaultdict
 from typing import Callable, Dict, List, Optional, Type
 import logging
+<<<<<<< HEAD
 
 from prompttools.prompttest.threshold_type import ThresholdType
 from prompttools.prompttest.error.failure import log_failure
 from prompttools.experiment import Experiment
 from prompttools.prompttest.error.failure import PromptTestSetupException
+=======
+>>>>>>> a0b162d (Update prompttests to annotate prompt_provider, add similarity eval fn)
 
+from prompttools.prompttest.threshold_type import ThresholdType
+from prompttools.prompttest.error.failure import log_failure
+from prompttools.experiment import Experiment
+from prompttools.prompttest.error.failure import PromptTestSetupException
 
 class PromptTestRunner:
     r"""

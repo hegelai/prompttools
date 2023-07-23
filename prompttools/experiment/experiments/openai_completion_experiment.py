@@ -57,6 +57,7 @@ class OpenAICompletionExperiment(Experiment):
             best_of=best_of,
             logit_bias=logit_bias,
         )
+        print(self.all_args)
         super().__init__()
 
     @staticmethod
