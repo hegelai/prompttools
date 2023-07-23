@@ -58,4 +58,4 @@ class HuggingFaceHubExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> list[str]:
-        return [choice["generated_text"] for choice in output]
+        return [choice["generated_text"] for choice in output][0]

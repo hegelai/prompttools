@@ -61,7 +61,7 @@ class OpenAICompletionExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return [choice["text"] for choice in output["choices"]]
+        return [choice["text"] for choice in output["choices"]][0]
 
     def _get_model_names(self):
         return [combo["model"] for combo in self.argument_combos]
