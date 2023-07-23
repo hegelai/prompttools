@@ -13,6 +13,7 @@ from prompttools.prompttest.error.failure import log_failure
 from prompttools.experiment import Experiment
 from prompttools.prompttest.error.failure import PromptTestSetupException
 
+
 class PromptTestRunner:
     r"""
     Base class for prompt test runners. Please use the subclass instead.s
@@ -46,11 +47,7 @@ class PromptTestRunner:
         """
         self.experiments[key].evaluate(metric_name, eval_fn, expected=expected)
 
-
-    def visualize(
-        self,
-        key: str
-    ) -> None:
+    def visualize(self, key: str) -> None:
         r"""
         Evaluates the test results using the given ``eval_fn``.
         """
@@ -58,7 +55,7 @@ class PromptTestRunner:
 
     def scores(self, key):
         r"""
-        Returns the scores for the underlying experiment at the 
+        Returns the scores for the underlying experiment at the
         given key.
         """
         return self.experiments[key].scores
@@ -70,13 +67,11 @@ class PromptTestRunner:
         prompts: List[str],
         model_args: Dict[str, object],
     ) -> Experiment:
-        return experiment(
-            [model_name],
-            prompts,
-            **{k: [v] for k, v in model_args}
-        )
+        return experiment([model_name], prompts, **{k: [v] for k, v in model_args})
+
 
 prompt_test_runner = PromptTestRunner()
+
 
 def run_prompttest(
     experiment: Type[Experiment],

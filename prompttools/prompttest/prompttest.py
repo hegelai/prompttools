@@ -23,7 +23,7 @@ def prompttest(
     eval_fn: Callable,
     threshold: float = 1.0,
     threshold_type: ThresholdType = ThresholdType.MAXIMUM,
-    expected: Optional[str] = None, 
+    expected: Optional[str] = None,
     model_arguments: Dict[str, object] = {},
 ):
     r"""
@@ -35,15 +35,18 @@ def prompttest(
         @wraps(prompt_provider)
         def runs_test():
             prompts = prompt_provider()
-            return run_prompttest(experiment,
-                                  model_name,
-                                  metric_name,
-                                  eval_fn, 
-                                  threshold,
-                                  threshold_type,
-                                  prompts,
-                                  model_arguments=model_arguments,
-                                  expected=expected)
+            return run_prompttest(
+                experiment,
+                model_name,
+                metric_name,
+                eval_fn,
+                threshold,
+                threshold_type,
+                prompts,
+                model_arguments=model_arguments,
+                expected=expected,
+            )
+
         TESTS_TO_RUN.append(runs_test)
         return runs_test
 
