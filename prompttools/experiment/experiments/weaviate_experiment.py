@@ -7,8 +7,12 @@
 # LICENSE file in the root directory of this source tree.
 
 import pandas as pd
-from typing import Any, Callable, Dict, Optional
-import weaviate
+from typing import Callable, Dict, Optional
+
+try:
+    import weaviate
+except ImportError:
+    weaviate = None
 import logging
 
 from .experiment import Experiment
@@ -17,7 +21,7 @@ VALID_TASKS = [""]
 
 
 def default_query_builder(
-    client: weaviate.Client,
+    client: "weaviate.Client",
     class_name: str,
     property_names: list[str],
     text_query: str,
@@ -68,7 +72,7 @@ class WeaviateExperiment(Experiment):
 
     def __init__(
         self,
-        client: weaviate.Client,
+        client: "weaviate.Client",
         class_name: str,
         use_existing_data: bool,
         property_names: list[str],
@@ -80,7 +84,12 @@ class WeaviateExperiment(Experiment):
         distance_metrics: Optional[list[str]] = None,
         vectorIndexConfigs: Optional[list[dict]] = None,
     ):
-        self.client: weaviate.Client = client
+        if weaviate is None:
+            raise ModuleNotFoundError(
+                "Package `weaviate` is required to be installed to use this experiment."
+                "Please use `pip install weaviate-client` to install the package"
+            )
+        self.client = client
         self.completion_fn = self.weaviate_completion_fn
         # TODO: Add a mock function if needed
         # if os.getenv("DEBUG", default=False):
@@ -122,14 +131,14 @@ class WeaviateExperiment(Experiment):
 
     def weaviate_completion_fn(
         self,
-        # weaviate_class: weaviate.clas  .api.Collection,
-        **query_params: Dict[str, Any],
+        query_builder: Callable,
+        text_query: str,
     ):
         r"""
-        ChromaDB helper function to make request
+        Weaviate helper function to make request
         """
-        results = self.client.query(**query_params)
-        return results
+        query_obj = query_builder(self.client, self.class_name, self.property_names, text_query)
+        return query_obj.do()
 
     def prepare(self) -> None:
         r"""
@@ -182,8 +191,7 @@ class WeaviateExperiment(Experiment):
 
             # Query
             query_builder = self.query_builders[arg_dict["query_builder_name"]]
-            query_obj = query_builder(self.client, self.class_name, self.property_names, arg_dict["text_query"])
-            result = query_obj.do()
+            result = self.completion_fn(query_builder, arg_dict["text_query"])
             self.results.append(result)
 
             # Clean up
