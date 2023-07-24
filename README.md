@@ -90,7 +90,7 @@ harness = PromptTemplateExperimentationHarness("text-davinci-003",
 
 harness.run()
 harness.evaluate("metric_name", eval_fn)
-harness.visualize()  # The results will be displayed as a table in your notebook
+harness.visualize()
 ```
 
 ![image](img/table.png)
