@@ -12,6 +12,7 @@ import logging
 from IPython import display
 from tabulate import tabulate
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from prompttools.requests.request_queue import RequestQueue
 from ..widgets.feedback import FeedbackWidgetProvider
@@ -282,6 +283,26 @@ class Experiment:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
 
+    def aggregate(self, metric_name, column_name, is_average=False):
+        """
+        Aggregates a metric for a given column and displays to the user.
+
+         Args:
+            metric_name (str): metric to aggregate
+            column_name (str): column to based the aggregation on
+            is_average (bool): if ``True``, compute the average for the metric, else compute the total
+        """
+        if metric_name not in self.scores:
+            logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
+            return
+        table = self.get_table(pivot_data=None, pivot_columns=None, pivot=False)
+        sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
+        if is_interactive():
+            plt.bar(range(len(sorted_scores)), list(sorted_scores.values()), align='center')
+            plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
+            plt.show()
+
+    
     def rank(
         self,
         pivot_data: Dict[str, object],
