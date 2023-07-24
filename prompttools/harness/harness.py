@@ -37,14 +37,16 @@ class ExperimentationHarness:
         """
         self.experiment.run(runs=self.runs)
 
-    def evaluate(self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = True) -> None:
+    def evaluate(
+        self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = False, expected: str = None
+    ) -> None:
         r"""
         Uses the given eval_fn to evaluate the results of the underlying experiment.
         """
         if use_input_pairs:
-            self.experiment.evaluate(metric_name, eval_fn, self.input_pairs_dict)
+            self.experiment.evaluate(metric_name, eval_fn, self.input_pairs_dict, expected=expected)
         else:
-            self.experiment.evaluate(metric_name, eval_fn)
+            self.experiment.evaluate(metric_name, eval_fn, expected=expected)
 
     def gather_feedback(self) -> None:
         self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)

@@ -8,6 +8,8 @@ r"""
 Use a list to optionally hold a reference to the embedding model and client,
 allowing for lazy initialization.
 """
+from typing import Dict, List
+
 EMBEDDING_MODEL = []  #
 CHROMA_CLIENT = []
 
@@ -61,3 +63,11 @@ def compute(doc1, doc2, use_chroma=True):
         return _from_chroma(doc1, doc2)
     else:
         return _from_huggingface(doc1, doc2)
+
+
+def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float:
+    r"""
+    A simple test that checks semantic similarity between the user input
+    and the model's text responses.
+    """
+    return compute(expected, response)

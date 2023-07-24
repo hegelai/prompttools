@@ -37,7 +37,7 @@ def mock_completion_fn(**kwargs):
         "model": "text-davinci-003",
         "choices": [
             {
-                "text": "\n\nGeorge Washington",
+                "text": "{'text': 'George Washington'}",
                 "index": 0,
                 "logprobs": None,
                 "finish_reason": "length",

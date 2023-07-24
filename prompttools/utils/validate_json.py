@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from typing import List
+from typing import Dict, List
 import json
 import re
 
@@ -39,3 +39,7 @@ def validate_keys(text: str, valid_keys: List[str]):
         if group not in valid_keys:
             return 0.0
     return 1.0
+
+
+def evaluate(prompt: str, response: str, metadata: Dict) -> float:
+    return validate(response)

@@ -5,7 +5,13 @@
 # LICENSE file in the root directory of this source tree.
 
 from collections import defaultdict
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Optional, Type
+import logging
+
+from prompttools.prompttest.threshold_type import ThresholdType
+from prompttools.prompttest.error.failure import log_failure
+from prompttools.experiment import Experiment
+from prompttools.prompttest.error.failure import PromptTestSetupException
 
 
 class PromptTestRunner:
@@ -15,7 +21,7 @@ class PromptTestRunner:
 
     def __init__(self):
         self.ran = defaultdict(bool)
-        self.harnesses = dict()
+        self.experiments = dict()
 
     def run(self, *args, **kwargs) -> str:
         r"""
@@ -24,8 +30,8 @@ class PromptTestRunner:
         key = str(args)
         if self.ran[key]:
             return key
-        self.harnesses[key] = self._get_harness(*args, **kwargs)
-        self.harnesses[key].run()
+        self.experiments[key] = self._get_experiment(*args, **kwargs)
+        self.experiments[key].run()
         self.ran[key] = True
         return key
 
@@ -34,27 +40,63 @@ class PromptTestRunner:
         key: str,
         metric_name: str,
         eval_fn: Callable,
-        use_input_pairs: Dict[str, Tuple[str, Dict[str, str]]],
+        expected: Optional[str] = None,
     ) -> None:
         r"""
-        Evaluates the test results.
+        Evaluates the test results using the given ``eval_fn``.
         """
-        self.harnesses[key].evaluate(metric_name, eval_fn, use_input_pairs)
+        self.experiments[key].evaluate(metric_name, eval_fn, expected=expected)
 
-    def rank(self, key: str, metric_name: str, is_average: bool) -> Dict[str, float]:
+    def visualize(self, key: str) -> None:
         r"""
-        Uses evaluations to "rank" the template or system prompt.
-        This creates an overall score (sum or average) across all
-        test inputs, which can be compared against a threshold.
+        Evaluates the test results using the given ``eval_fn``.
         """
-        return self.harnesses[key].rank(metric_name, is_average)
+        self.experiments[key].visualize()
+
+    def scores(self, key):
+        r"""
+        Returns the scores for the underlying experiment at the
+        given key.
+        """
+        return self.experiments[key].scores
 
     @staticmethod
-    def _get_harness(
-        experiment,
+    def _get_experiment(
+        experiment: Type[Experiment],
         model_name: str,
-        prompt_template: str,
-        user_inputs: List[Dict[str, str]],
+        prompts: List[str],
         model_args: Dict[str, object],
-    ):
-        raise NotImplementedError("This should be implemented by a subclass of `PromptTestRunner`.")
+    ) -> Experiment:
+        return experiment([model_name], prompts, **{k: [v] for k, v in model_args})
+
+
+prompt_test_runner = PromptTestRunner()
+
+
+def run_prompttest(
+    metric_name: str,
+    eval_fn: Callable,
+    threshold: float,
+    threshold_type: ThresholdType,
+    prompts: List[str],
+    results: List[str],
+    expected: Optional[List[str]],
+) -> int:
+    """
+    Runs the prompt test evaluation.
+    """
+    scores = []
+    for i, result in enumerate(results):
+        if expected:
+            score = eval_fn(prompts[i], result, metadata={}, expected=expected[i])
+        else:
+            score = eval_fn(prompts[i], result, metadata={})
+        scores.append(score)
+    if not scores:
+        logging.error("Something went wrong during testing. Make sure your API keys are set correctly.")
+        raise PromptTestSetupException
+    for score in scores:
+        if not (score <= threshold if threshold_type == ThresholdType.MAXIMUM else score >= threshold):
+            log_failure(metric_name, threshold, score, threshold_type)
+            return 1
+    return 0

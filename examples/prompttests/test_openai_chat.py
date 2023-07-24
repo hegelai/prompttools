@@ -5,40 +5,62 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Dict, Tuple
+import openai
+import jinja2
 from prompttools import prompttest
+from prompttools.prompttest.threshold_type import ThresholdType
 from prompttools.utils import similarity
-from prompttools.experiment import OpenAICompletionExperiment
-
-EXPECTED = {"Who was the first president of the USA?": "George Washington"}
+from prompttools.utils import validate_json
+from prompttools.mock.mock import mock_completion_fn
 
 if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
     print("Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1")
     exit(1)
 
 
-def extract_responses(output) -> list[str]:
-    r"""
-    Helper function to unwrap the OpenAI repsonse object.
-    """
-    return [choice["text"] for choice in output["choices"]]
+def create_json_prompt():
+    prompt_template = "Answer the following question using a valid JSON format: {{ input }}"
+    user_input = {"input": "Who was the first president?"}
+    environment = jinja2.Environment()
+    template = environment.from_string(prompt_template)
+    return template.render(**user_input)
+
+def create_prompt():
+    prompt_template = "Answer the following question: {{ input }}"
+    user_input = {"input": "Who was the first president of the USA?"}
+    environment = jinja2.Environment()
+    template = environment.from_string(prompt_template)
+    return template.render(**user_input)
 
 
 @prompttest.prompttest(
-    experiment=OpenAICompletionExperiment,
-    model_name="text-davinci-003",
-    metric_name="similar_to_expected",
-    prompt_template="Answer the following question: {{input}}",
-    user_input=[{"input": "Who was the first president of the USA?"}],
+    metric_name="is_valid_json",
+    eval_fn=validate_json.evaluate,
+    prompts=[create_json_prompt()],
 )
-def measure_similarity(input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict) -> float:
-    r"""
-    A simple test that checks semantic similarity between the user input
-    and the model's text responses.
-    """
-    expected = EXPECTED[input_pair[1]["input"]]
-    distances = [similarity.compute(expected, response) for response in extract_responses(results)]
-    return min(distances)
+def json_completion_fn(prompt: str):
+    response = None
+    if os.getenv("DEBUG", default=False):
+        response = mock_completion_fn(**{"prompt": prompt})
+    else:
+        response = openai.Completion.create(prompt)
+    return response["choices"][0]["text"]
+
+@prompttest.prompttest(
+    metric_name="similar_to_expected",
+    eval_fn=similarity.evaluate,
+    prompts=[create_prompt()],
+    expected=["George Washington"],
+    threshold=1.0,
+    threshold_type=ThresholdType.MAXIMUM
+)
+def completion_fn(prompt: str):
+    response = None
+    if os.getenv("DEBUG", default=False):
+        response = mock_completion_fn(**{"prompt": prompt})
+    else:
+        response = openai.Completion.create(prompt)
+    return response["choices"][0]["text"]
 
 
 if __name__ == "__main__":

@@ -4,110 +4,43 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional, Type
+from typing import Callable, List, Optional
 from functools import wraps
 import logging
 
-from prompttools.experiment import Experiment
 from .threshold_type import ThresholdType
 from .error.failure import PromptTestSetupException
-from .runner.prompt_template_runner import (
-    run_prompt_template_test,
-    run_prompt_template_test_from_files,
-)
-from .runner.system_prompt_runner import (
-    run_system_prompt_test,
-    run_system_prompt_test_from_files,
-)
+from .runner.runner import run_prompttest
 
 TESTS_TO_RUN = []
 
 
 def prompttest(
-    experiment: Type[Experiment],
-    model_name: str,
     metric_name: str,
+    eval_fn: Callable,
+    prompts: List[str],
     threshold: float = 1.0,
-    prompt_template_file: str = None,
-    user_input_file: str = None,
-    system_prompt_file: str = None,
-    human_messages_file: str = None,
-    prompt_template: str = None,
-    user_input: Optional[List[Dict[str, str]]] = None,
-    system_prompt: str = None,
-    human_messages: Optional[List[str]] = None,
-    is_average: bool = False,
-    use_input_pairs: bool = True,
-    threshold_type: ThresholdType = ThresholdType.MAXIMUM,
-    model_arguments: Dict[str, object] = {},
+    threshold_type: ThresholdType = ThresholdType.MINIMUM,
+    expected: Optional[List[str]] = None,
 ):
     r"""
     Creates a decorator for prompt tests, which can annotate evaluation functions.
     This enables developers to create a prompt test suite from their evaluations.
     """
 
-    def prompttest_decorator(eval_fn: Callable):
-        @wraps(eval_fn)
+    def prompttest_decorator(completion_fn: Callable):
+        @wraps(completion_fn)
         def runs_test():
-            if prompt_template_file and user_input_file:
-                return run_prompt_template_test_from_files(
-                    experiment,
-                    model_name,
-                    metric_name,
-                    eval_fn,
-                    threshold,
-                    threshold_type,
-                    is_average,
-                    prompt_template_file,
-                    user_input_file,
-                    use_input_pairs,
-                    model_arguments,
-                )
-            elif prompt_template and user_input:
-                return run_prompt_template_test(
-                    experiment,
-                    model_name,
-                    metric_name,
-                    eval_fn,
-                    threshold,
-                    threshold_type,
-                    is_average,
-                    prompt_template,
-                    user_input,
-                    use_input_pairs,
-                    model_arguments,
-                )
-            elif system_prompt_file and human_messages_file:
-                return run_system_prompt_test_from_files(
-                    experiment,
-                    model_name,
-                    metric_name,
-                    eval_fn,
-                    threshold,
-                    threshold_type,
-                    is_average,
-                    system_prompt_file,
-                    human_messages_file,
-                    use_input_pairs,
-                    model_arguments,
-                )
-            elif system_prompt and human_messages:
-                return run_system_prompt_test(
-                    experiment,
-                    model_name,
-                    metric_name,
-                    eval_fn,
-                    threshold,
-                    threshold_type,
-                    is_average,
-                    system_prompt,
-                    human_messages,
-                    use_input_pairs,
-                    model_arguments,
-                )
-            else:
-                logging.error("Bad configuration for metric: " + metric_name)
-                raise PromptTestSetupException
+            results = [completion_fn(prompt) for prompt in prompts]
+            return run_prompttest(
+                metric_name,
+                eval_fn,
+                threshold,
+                threshold_type,
+                prompts,
+                results,
+                expected=expected,
+            )
 
         TESTS_TO_RUN.append(runs_test)
         return runs_test
@@ -118,7 +51,7 @@ def prompttest(
 def main():
     logging.getLogger().setLevel(logging.WARNING)
     print("Running " + str(len(TESTS_TO_RUN)) + " test(s)")
-    failures = sum([test() for test in TESTS_TO_RUN])
+    failures = int(sum([test() for test in TESTS_TO_RUN]))
     if failures == 0:
         print("All " + str(len(TESTS_TO_RUN)) + " test(s) passed!")
         exit(0)

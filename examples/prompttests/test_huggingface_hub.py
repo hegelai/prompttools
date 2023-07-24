@@ -5,40 +5,46 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Dict, Tuple
+import jinja2
 import prompttools.prompttest as prompttest
 from prompttools.utils import similarity
-from prompttools.experiment import HuggingFaceHubExperiment
 
-EXPECTED = {"Who was the first president of the USA?": "George Washington"}
+from prompttools.mock.mock import mock_hf_completion_fn
+from huggingface_hub.inference_api import InferenceApi
 
 if not (("HUGGINGFACEHUB_API_TOKEN" in os.environ) or ("DEBUG" in os.environ)):
     print("Error: This example requires you to set either your HUGGINGFACEHUB_API_TOKEN or DEBUG=1")
     exit(1)
 
 
-def extract_responses(output) -> list[str]:
-    r"""
-    Helper function to unwrap the Hugging Face Hub repsonse object.
-    """
-    return [choice["generated_text"] for choice in output]
+client = InferenceApi(
+    repo_id="google/flan-t5-xxl",
+    token=os.environ.get("HUGGINGFACEHUB_API_TOKEN"),
+    task="text2text-generation",
+)
+
+
+def create_prompt():
+    prompt_template = "Answer the following question: {{ input }}"
+    user_input = {"input": "Who was the first president of the USA?"}
+    environment = jinja2.Environment()
+    template = environment.from_string(prompt_template)
+    return template.render(**user_input)
 
 
 @prompttest.prompttest(
-    experiment=HuggingFaceHubExperiment,
-    model_name="google/flan-t5-xxl",
     metric_name="similar_to_expected",
-    prompt_template="Question: {{input}}",
-    user_input=[{"input": "Who was the first president of the USA?"}],
+    eval_fn=similarity.evaluate,
+    prompts=[create_prompt()],
+    expected=["George Washington"],
 )
-def measure_similarity(input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict) -> float:
-    r"""
-    A simple test that checks semantic similarity between the user input
-    and the model's text responses.
-    """
-    expected = EXPECTED[input_pair[1]["input"]]
-    scores = [similarity.compute(expected, response) for response in extract_responses(results)]
-    return max(scores)
+def completion_fn(prompt: str):
+    response = None
+    if os.getenv("DEBUG", default=False):
+        response = mock_hf_completion_fn(**{"inputs": prompt})
+    else:
+        response = client(inputs=prompt)
+    return response[0]["generated_text"]
 
 
 if __name__ == "__main__":
