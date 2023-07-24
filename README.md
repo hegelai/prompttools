@@ -38,6 +38,10 @@ You can run a simple example of a `prompttools` with the following
 DEBUG=1 python examples/prompttests/test_openai_chat.py
 ```
 
+You should see the following output:
+
+![image](img/prompttest.png)
+
 To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key.
 This is because `prompttools` makes a call to OpenAI from your machine. For example:
 
