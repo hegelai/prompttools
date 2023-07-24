@@ -45,7 +45,7 @@ You can also run the notebook in [Google Colab](https://colab.research.google.co
 
 There are primarily two ways you can use `prompttools` in your LLM workflow:
 
-1. Run experiments in [notebooks](/examples/notebooks/) and evaluate the outputs.
+1. Run experiments on top of LLMs or vector databases in [notebooks](/examples/notebooks/) and evaluate the outputs.
 2. Turn evaluations into [unit tests](/examples/prompttests/test_openai_chat.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/ci.yml).
 
 ### Notebooks
@@ -84,7 +84,15 @@ You should get a table that looks like this.
 
 For a full example, please see this [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb).
 
+All our [notebook examples are here](/examples/notebooks/):
+
+
+
 If you are interested to compare different models, the [ModelComparison example](/examples/notebooks/ModelComparison.ipynb) may be of interest.
+
+For an example of built-in evaluation function, please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details.
+
+We also have examples assessing the outputs of vector databases (e.g. [Chroma](/examples/notebooks/ChromaDBExperiment.ipynb) and [Weaviate](/examples/notebooks/WeaviateExperiment.ipynb)).
 
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
 
@@ -124,6 +132,27 @@ You will find [more examples of these in our notebooks](/examples/notebooks/).
 
 Our [documentation website](https://prompttools.readthedocs.io/en/latest/index.html) contains the full API reference
 and more description of individual components. Check it out!
+
+## Supported Integrations
+
+Here is a list of APIs that we support with our experiments:
+
+LLMs
+- OpenAI (Completion, ChatCompletion) - **Supported**
+- LLaMA.Cpp (LLaMA 1, LLaMA 2) - **Supported**
+- HuggingFace (Hub API, Inference Endpoints) - **Supported**
+- Anthropic - Planned
+- Google PaLM API - Planned
+
+Vector Databases
+- Chroma - **Supported**
+- Weaviate - **Supported**
+- Milvus - Exploratory
+- Pinecone - Exploratory
+- LanceDB - Exploratory
+
+If you have any API that you'd like to see being supported soon, please open an issue or
+a PR to add it. Feel free to discuss in our Discord channel as well.
 
 ## Installation
 
