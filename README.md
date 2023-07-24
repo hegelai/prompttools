@@ -2,7 +2,7 @@
   <a href="https://hegel-ai.com"><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Owl_of_Minerva.svg" width="75" height="75"></a>
 </p>
 <h1 align="center">
- PromptTools 
+ PromptTools
 </h1>
 <p align="center">
 :wrench: Test and experiment with prompts, LLMs, and vector databases. :hammer:
@@ -32,25 +32,12 @@ To install `prompttools`, you can use `pip`:
 pip install prompttools
 ```
 
-You can run a simple example of a `prompttools` with the following
+You can run a simple example of a `prompttools` locally with the following
 
 ```
-DEBUG=1 python examples/prompttests/test_openai_chat.py
+git clone https://github.com/hegelai/prompttools.git
+cd prompttools && jupyter notebook examples/notebooks/OpenAIChatExperiment.ipynb
 ```
-
-You should see the following output:
-
-![image](img/prompttest.png)
-
-To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key.
-This is because `prompttools` makes a call to OpenAI from your machine. For example:
-
-```
-OPENAI_API_KEY=sk-... python examples/prompttests/test_openai_chat.py
-```
-
-You can see the full example [here](/examples/prompttests/test_openai_chat.py).
-
 
 ## Using `prompttools`
 
@@ -101,9 +88,9 @@ You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipy
 
 ![image](img/feedback.png)
 
-> Note: Above we used an `ExperimentationHarness`. Under the hood, that harness uses an `Experiment` to construct and make API calls to LLMs. The harness is responsible for managing higher level abstractions, like prompt templates or system prompts. To see how experiments work at a low level, [see this example](/examples/notebooks/BasicExperiment.ipynb).
+> Note: Above we used an `ExperimentationHarness`. Under the hood, that harness uses an `Experiment` to construct and make API calls to LLMs. The harness is responsible for managing higher level abstractions, like prompt templates or system prompts. To see how experiments work at a low level, [see this example](/examples/notebooks/OpenAIChatExperiment.ipynb).
 
-### Unit Tests
+### Using `prompttools` for Continuous Testing
 
 Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The `prompttest` framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/test_openai_chat.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).
 
@@ -112,6 +99,24 @@ Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest`
 To persist the results of your tests and experiments, you can export your `Experiment` with the methods `to_csv`,
 `to_json`, or `to_lora_json`. We are happy to further discuss your use cases, pain points, and what export
 options may be useful for you.
+
+### Setting API keys
+
+If you would like to use a remote API (e.g. OpenAI, Anthropic), you will need to bring your own OpenAI API key.
+This is because `prompttools` makes a call to those APIs directly from your machine.
+
+In Python, you can set:
+```python
+import os
+os.environ['OPENAI_API_KEY'] = ""
+```
+
+In command line:
+```
+OPENAI_API_KEY=sk-... python examples/prompttests/test_openai_chat.py
+```
+
+You will find [more examples of these in our notebooks](/examples/notebooks/).
 
 ### Documentation
 
@@ -136,8 +141,11 @@ You can then proceed to run [our examples](/examples/notebooks/).
 
 ### Frequently Asked Questions (FAQs)
 
-1. Will this library forward my LLM calls to a server before sending it to OpenAI/Anthropic/etc?
+1. Will this library forward my LLM calls to a server before sending it to OpenAI, Anthropic, and etc.?
     - No, the source code will be executed on your machine. Any call to LLM APIs will be directly executed from your machine without any forwarding.
+
+2. Does `prompttools` store my API keys or LLM inputs and outputs to a server?
+    - No, all data stay on your local machine.
 
 ## Contributing
 
