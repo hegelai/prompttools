@@ -87,13 +87,16 @@ def run_prompttest(
     """
     scores = []
     for i, result in enumerate(results):
-        score = eval_fn(prompts[i], result, metadata={}, expected=expected[i])
+        if expected:
+            score = eval_fn(prompts[i], result, metadata={}, expected=expected[i])
+        else:
+            score = eval_fn(prompts[i], result, metadata={})
         scores.append(score)
     if not scores:
         logging.error("Something went wrong during testing. Make sure your API keys are set correctly.")
         raise PromptTestSetupException
     for score in scores:
         if not (score <= threshold if threshold_type == ThresholdType.MAXIMUM else score >= threshold):
-            log_failure(metric_name, threshold, score)
+            log_failure(metric_name, threshold, score, threshold_type)
             return 1
     return 0

@@ -20,7 +20,7 @@ def prompttest(
     eval_fn: Callable,
     prompts: List[str],
     threshold: float = 1.0,
-    threshold_type: ThresholdType = ThresholdType.MAXIMUM,
+    threshold_type: ThresholdType = ThresholdType.MINIMUM,
     expected: Optional[List[str]] = None,
 ):
     r"""
