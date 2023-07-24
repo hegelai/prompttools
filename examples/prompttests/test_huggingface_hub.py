@@ -8,7 +8,7 @@ import os
 import jinja2
 import prompttools.prompttest as prompttest
 from prompttools.utils import similarity
-
+from prompttools.prompttest.threshold_type import ThresholdType
 from prompttools.mock.mock import mock_hf_completion_fn
 from huggingface_hub.inference_api import InferenceApi
 
@@ -37,6 +37,8 @@ def create_prompt():
     eval_fn=similarity.evaluate,
     prompts=[create_prompt()],
     expected=["George Washington"],
+    threshold=1.0,
+    threshold_type=ThresholdType.MAXIMUM
 )
 def completion_fn(prompt: str):
     response = None
