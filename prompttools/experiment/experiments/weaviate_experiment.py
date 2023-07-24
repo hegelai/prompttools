@@ -72,7 +72,7 @@ class WeaviateExperiment(Experiment):
           `the default one as seen here`_.
 
     .. _the default one as seen here:
-        https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+        https://github.com/hegelai/prompttools/blob/main/prompttools/experiment/experiments/weaviate_experiment.py
     """
 
     def __init__(
