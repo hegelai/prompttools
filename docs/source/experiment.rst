@@ -23,3 +23,5 @@ using those potential inputs. An example of using experiment is `here <https://g
 .. autoclass:: LlamaCppExperiment
 
 .. autoclass:: ChromaDBExperiment
+
+.. autoclass:: WeaviateExperiment

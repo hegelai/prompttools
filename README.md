@@ -1,8 +1,24 @@
-# PromptTools
+<p align="center">
+  <a href="https://hegel-ai.com"><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Owl_of_Minerva.svg" width="75" height="75"></a>
+</p>
+<h1 align="center">
+ PromptTools 
+</h1>
+<p align="center">
+:wrench: Test and experiment with prompts, LLMs, and vector databases. :hammer:
+<p align="center">
+  <a href="http://prompttools.readthedocs.io/"><img src="https://img.shields.io/badge/View%20Documentation-Docs-yellow"></a>
+  <a href="https://discord.gg/7KeRPNHGdJ"><img src="https://img.shields.io/badge/Join%20our%20community-Discord-blue"></a>
+  <a href="https://pepy.tech/project/prompttools" target="_blank"><img src="https://pepy.tech/badge/prompttools" alt="Total Downloads"/></a>
+  <a href="https://pepy.tech/project/prompttools">
+    <img src="https://static.pepy.tech/badge/prompttools/month" />
+  </a>
+  <a href="https://github.com/hegelai/prompttools">
+      <img src="https://img.shields.io/github/stars/hegelai/prompttools" />
+  </a>
+  <a href="https://twitter.com/hegel_ai"><img src="https://img.shields.io/twitter/follow/Hegel_AI?style=social"></a>
+</p>
 
-[![](https://img.shields.io/badge/View%20Documentation-Docs-yellow)](http://prompttools.readthedocs.io/)
-[![](https://img.shields.io/badge/Join%20our%20community-Discord-blue)](https://discord.gg/7KeRPNHGdJ)
-[![Twitter](https://img.shields.io/twitter/follow/Hegel_AI?style=social)](https://twitter.com/hegel_ai)
 
 Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of free, open-source tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
 
@@ -21,6 +37,10 @@ You can run a simple example of a `prompttools` with the following
 ```
 DEBUG=1 python examples/prompttests/test_openai_chat.py
 ```
+
+You should see the following output:
+
+![image](img/prompttest.png)
 
 To run the example outside of `DEBUG` mode, you'll need to bring your own OpenAI API key.
 This is because `prompttools` makes a call to OpenAI from your machine. For example:

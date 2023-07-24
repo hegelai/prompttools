@@ -26,13 +26,13 @@ class ChromaDBExperiment(Experiment):
     Args:
         chroma_client (chromadb.Client): ChromaDB client to interact with your database
         collection_name (str): the collection that you will get or create
+        use_existing_collection (bool): determines whether to create a new collection or use
+            an existing one
         query_collection_params (dict[str, list]): parameters used to query the collection
             Each value is expected to be a list to create all possible combinations
         embedding_fns (list[Callable]): embedding functions to test in the experiment
             by default only uses the default one in ChromaDB
         embedding_fn_names (list[str]): names of the embedding functions
-        use_existing_collection (bool): determines whether to create a new collection or use
-            an existing one, defaults to ``True``
         add_to_collection_params (Optional[dict]): documents or embeddings that will be added to
             the newly created collection
     """
@@ -43,10 +43,10 @@ class ChromaDBExperiment(Experiment):
         self,
         chroma_client: chromadb.Client,
         collection_name: str,
+        use_existing_collection: bool,
         query_collection_params: dict,
         embedding_fns: list[Callable] = [chromadb.utils.embedding_functions.DefaultEmbeddingFunction],
         embedding_fn_names: list[str] = ["default"],
-        use_existing_collection: bool = True,
         add_to_collection_params: Optional[dict] = None,
     ):
         self.chroma_client: chromadb.Client = chroma_client

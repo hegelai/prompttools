@@ -88,6 +88,9 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Chroma
+.chroma
+
 # IPython
 profile_default/
 ipython_config.py
