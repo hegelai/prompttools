@@ -66,8 +66,13 @@ class WeaviateExperiment(Experiment):
         - If ``use_existing_data`` is ``False``, the experiment will create a new Weaviate class and insert
           ``data_objects`` into it. The class and ``data_objects`` will be automatically cleaned up at the end of the
           experiment.
-        - Either use existing data or specify ``data_objs``` and ``vectorizers`` for insertion.
+        - Either use existing data or specify ``data_objs`` and ``vectorizers`` for insertion.
         - Either ``distance_metrics`` or ``vectorIndexConfigs`` should be provided if necessary, not both.
+        - If you pass in a custom ``query_builder`` function, it should accept the same parameters as
+          `the default one as seen here`_.
+
+    .. _the default one as seen here:
+        https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
     """
 
     def __init__(
