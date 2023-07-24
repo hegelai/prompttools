@@ -39,6 +39,8 @@ git clone https://github.com/hegelai/prompttools.git
 cd prompttools && jupyter notebook examples/notebooks/OpenAIChatExperiment.ipynb
 ```
 
+You can also run the notebook in [Google Colab](https://colab.research.google.com/drive/1YVcpBew8EqbhXFN8P5NaFrOIqc1FKWeS?usp=sharing)
+
 ## Using `prompttools`
 
 There are primarily two ways you can use `prompttools` in your LLM workflow:
