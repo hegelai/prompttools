@@ -67,11 +67,7 @@ The simplest way is to define an experimentation harness and an evaluation funct
 
 ```python
 from prompttools.harness import PromptTemplateExperimentationHarness
-
-
-def eval_fn(prompt: str, results: Dict, metadata: Dict) -> float:
-    # Your logic here, or use a built-in one such as `prompttools.utils.similarity`.
-    pass
+from prompttools.utils import similarity
 
 prompt_templates = [
     "Answer the following question: {{input}}",
@@ -89,15 +85,17 @@ harness = PromptTemplateExperimentationHarness("text-davinci-003",
 
 
 harness.run()
-harness.evaluate("metric_name", eval_fn)
+harness.evaluate("semantic_similarity", similarity.evaluate)
 harness.visualize()
 ```
 
+You should get a table that looks like this.
+
 ![image](img/table.png)
 
-If you are interested to compare different models, the [ModelComparison example](/examples/notebooks/ModelComparison.ipynb) may be of interest.
+For a full example, please see this [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb).
 
-For an example of built-in evaluation function, please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details.
+If you are interested to compare different models, the [ModelComparison example](/examples/notebooks/ModelComparison.ipynb) may be of interest.
 
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
 
