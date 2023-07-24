@@ -40,5 +40,6 @@ def validate_keys(text: str, valid_keys: List[str]):
             return 0.0
     return 1.0
 
+
 def evaluate(prompt: str, response: str, metadata: Dict) -> float:
     return validate(response)

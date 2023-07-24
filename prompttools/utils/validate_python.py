@@ -28,5 +28,6 @@ def validate(text: str):
     os.remove(PROMPTTOOLS_TMP)
     return 0.0 if "error" in pylint_stdout.getvalue() else 1.0
 
+
 def evaluate(prompt: str, response: str, metadata: Dict) -> float:
     return validate(response)

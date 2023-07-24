@@ -4,11 +4,10 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional, Type
+from typing import Callable, List, Optional
 from functools import wraps
 import logging
 
-from prompttools.experiment import Experiment
 from .threshold_type import ThresholdType
 from .error.failure import PromptTestSetupException
 from .runner.runner import run_prompttest
@@ -17,33 +16,29 @@ TESTS_TO_RUN = []
 
 
 def prompttest(
-    experiment: Type[Experiment],
-    model_name: str,
     metric_name: str,
     eval_fn: Callable,
+    prompts: List[str],
     threshold: float = 1.0,
     threshold_type: ThresholdType = ThresholdType.MAXIMUM,
-    expected: Optional[str] = None,
-    model_arguments: Dict[str, object] = {},
+    expected: Optional[List[str]] = None,
 ):
     r"""
     Creates a decorator for prompt tests, which can annotate evaluation functions.
     This enables developers to create a prompt test suite from their evaluations.
     """
 
-    def prompttest_decorator(prompt_provider: Callable):
-        @wraps(prompt_provider)
+    def prompttest_decorator(completion_fn: Callable):
+        @wraps(completion_fn)
         def runs_test():
-            prompts = prompt_provider()
+            results = [completion_fn(prompt) for prompt in prompts]
             return run_prompttest(
-                experiment,
-                model_name,
                 metric_name,
                 eval_fn,
                 threshold,
                 threshold_type,
                 prompts,
-                model_arguments=model_arguments,
+                results,
                 expected=expected,
             )
 

@@ -13,6 +13,7 @@ from prompttools.prompttest.error.failure import log_failure
 from prompttools.experiment import Experiment
 from prompttools.prompttest.error.failure import PromptTestSetupException
 
+
 class PromptTestRunner:
     r"""
     Base class for prompt test runners. Please use the subclass instead.s
@@ -73,27 +74,25 @@ prompt_test_runner = PromptTestRunner()
 
 
 def run_prompttest(
-    experiment: Type[Experiment],
-    model_name: str,
     metric_name: str,
     eval_fn: Callable,
     threshold: float,
     threshold_type: ThresholdType,
     prompts: List[str],
-    model_arguments: Optional[Dict[str, object]] = None,
-    expected: Optional[str] = None,
+    results: List[str],
+    expected: Optional[List[str]],
 ) -> int:
     """
-    Runs the prompt test.
+    Runs the prompt test evaluation.
     """
-    key = prompt_test_runner.run(experiment, model_name, prompts, model_arguments)
-    prompt_test_runner.evaluate(key, metric_name, eval_fn, expected=expected)
-    prompt_test_runner.visualize(key)
-    scores = prompt_test_runner.scores(key)
+    scores = []
+    for i, result in enumerate(results):
+        score = eval_fn(prompts[i], result, metadata={}, expected=expected[i])
+        scores.append(score)
     if not scores:
         logging.error("Something went wrong during testing. Make sure your API keys are set correctly.")
         raise PromptTestSetupException
-    for score in scores[metric_name]:
+    for score in scores:
         if not (score <= threshold if threshold_type == ThresholdType.MAXIMUM else score >= threshold):
             log_failure(metric_name, threshold, score)
             return 1
