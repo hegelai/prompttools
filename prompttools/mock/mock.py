@@ -7,7 +7,7 @@
 r"""
 These mock functions exist for testing and demo purposes.
 """
-
+import json
 
 def mock_chat_completion_fn(**kwargs):
     return {
@@ -37,7 +37,7 @@ def mock_completion_fn(**kwargs):
         "model": "text-davinci-003",
         "choices": [
             {
-                "text": "{'text': 'George Washington'}",
+                "text": json.dumps({'text': 'George Washington'}),
                 "index": 0,
                 "logprobs": None,
                 "finish_reason": "length",
