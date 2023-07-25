@@ -11,7 +11,7 @@ from prompttools import prompttest
 from prompttools.prompttest.threshold_type import ThresholdType
 from prompttools.utils import similarity
 from prompttools.utils import validate_json
-from prompttools.mock.mock import mock_completion_fn
+from prompttools.mock.mock import mock_openai_completion_fn
 
 if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
     print("Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1")
@@ -24,6 +24,7 @@ def create_json_prompt():
     environment = jinja2.Environment()
     template = environment.from_string(prompt_template)
     return template.render(**user_input)
+
 
 def create_prompt():
     prompt_template = "Answer the following question: {{ input }}"
@@ -41,10 +42,11 @@ def create_prompt():
 def json_completion_fn(prompt: str):
     response = None
     if os.getenv("DEBUG", default=False):
-        response = mock_completion_fn(**{"prompt": prompt})
+        response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
         response = openai.Completion.create(prompt)
     return response["choices"][0]["text"]
+
 
 @prompttest.prompttest(
     metric_name="similar_to_expected",
@@ -52,12 +54,12 @@ def json_completion_fn(prompt: str):
     prompts=[create_prompt()],
     expected=["George Washington"],
     threshold=1.0,
-    threshold_type=ThresholdType.MAXIMUM
+    threshold_type=ThresholdType.MAXIMUM,
 )
 def completion_fn(prompt: str):
     response = None
     if os.getenv("DEBUG", default=False):
-        response = mock_completion_fn(**{"prompt": prompt})
+        response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
         response = openai.Completion.create(prompt)
     return response["choices"][0]["text"]

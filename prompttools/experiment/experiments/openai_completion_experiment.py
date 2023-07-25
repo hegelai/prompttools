@@ -8,13 +8,13 @@ import os
 from typing import Dict, List, Optional
 import openai
 
-from prompttools.mock.mock import mock_completion_fn
+from prompttools.mock.mock import mock_openai_completion_fn
 from .experiment import Experiment
 
 
 class OpenAICompletionExperiment(Experiment):
     r"""
-    This class defines an experiment for OpenAI's chat completion API.
+    This class defines an experiment for OpenAI's completion API.
     It accepts lists for each argument passed into OpenAI's API, then creates
     a cartesian product of those arguments, and gets results for each.
     """
@@ -39,7 +39,7 @@ class OpenAICompletionExperiment(Experiment):
     ):
         self.completion_fn = openai.Completion.create
         if os.getenv("DEBUG", default=False):
-            self.completion_fn = mock_completion_fn
+            self.completion_fn = mock_openai_completion_fn
         self.all_args = dict(
             model=model,
             prompt=prompt,

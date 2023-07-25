@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 import openai
 
 from prompttools.selector.prompt_selector import PromptSelector
-from prompttools.mock.mock import mock_chat_completion_fn
+from prompttools.mock.mock import mock_openai_chat_completion_fn
 from .experiment import Experiment
 
 
@@ -36,7 +36,7 @@ class OpenAIChatExperiment(Experiment):
     ):
         self.completion_fn = openai.ChatCompletion.create
         if os.getenv("DEBUG", default=False):
-            self.completion_fn = mock_chat_completion_fn
+            self.completion_fn = mock_openai_chat_completion_fn
 
         # If we are using a prompt selector, we need to render
         # messages, as well as create prompt_keys to map the messages
