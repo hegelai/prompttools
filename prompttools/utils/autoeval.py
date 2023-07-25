@@ -6,7 +6,7 @@
 
 
 import os
-from typing import Dict, List
+from typing import Dict
 import openai
 import jinja2
 from .error import PromptToolsUtilityError
@@ -51,8 +51,14 @@ def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
     return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
 
 
-def evaluate(prompt: str, response: str, metadata: Dict) -> float:
+# TODO: After we refactor experiment.evaluate()
+#       Rename these functions to make it easier for users to distinguish between different utils functions
+def evaluate(prompt: str, response: str, _metadata: Dict) -> float:
     r"""
-    Uses auto-evaluation to score the model response.
+    Uses auto-evaluation to score the model response, using "gpt-4".
+
+    Args:
+        prompt (str): The input prompt.
+        response (str): The model response.
     """
     return compute(prompt, response)

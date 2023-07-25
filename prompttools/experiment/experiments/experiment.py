@@ -126,7 +126,7 @@ class Experiment:
                 self.queue.enqueue(
                     self.completion_fn,
                     # We need to filter out defaults that are invalid JSON from the request
-                    {k: v for k, v in combo.items() if (v != None) and (v != float("inf"))},
+                    {k: v for k, v in combo.items() if (v is not None) and (v != float("inf"))},
                 )
         self.results = self.queue.results()
         self.scores["latency"] = self.queue.latencies()
@@ -134,6 +134,7 @@ class Experiment:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
 
+    # TODO: Ideally, `eval_fn` should accept one row at a time, compute the metric, and add that to the row.
     def evaluate(
         self,
         metric_name: str,
@@ -298,11 +299,10 @@ class Experiment:
         table = self.get_table(pivot_data=None, pivot_columns=None, pivot=False)
         sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
         if is_interactive():
-            plt.bar(range(len(sorted_scores)), list(sorted_scores.values()), align='center')
+            plt.bar(range(len(sorted_scores)), list(sorted_scores.values()), align="center")
             plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
             plt.show()
 
-    
     def rank(
         self,
         pivot_data: Dict[str, object],
