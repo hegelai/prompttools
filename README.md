@@ -54,7 +54,7 @@ There are primarily two ways you can use `prompttools` in your LLM workflow:
 
 There are a few different ways to run an experiment in a notebook.
 
-The simplest way is to define an experimentation harness and an evaluation function:
+The simplest way is to define an experiment and an evaluation function:
 
 ```python
 from typing import Dict, List
