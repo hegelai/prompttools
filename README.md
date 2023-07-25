@@ -57,50 +57,35 @@ There are a few different ways to run an experiment in a notebook.
 The simplest way is to define an experimentation harness and an evaluation function:
 
 ```python
-from prompttools.harness import PromptTemplateExperimentationHarness
+from typing import Dict, List
+from prompttools.experiment import OpenAIChatExperiment
 from prompttools.utils import similarity
 
-prompt_templates = [
-    "Answer the following question: {{input}}",
-    "Respond the following query: {{input}}"
+models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0613"]
+messages = [
+    [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Who was the first president?"},
+    ]
 ]
+temperatures = [0.0, 1.0]
+# You can add more parameters that you'd like to test here.
 
-user_inputs = [
-    {"input": "Who was the first president?"},
-    {"input": "Who was the first president of India?"}
-]
-
-harness = PromptTemplateExperimentationHarness("text-davinci-003",
-                                               prompt_templates,
-                                               user_inputs)
-
-
-harness.run()
-harness.evaluate("semantic_similarity", similarity.evaluate)
-harness.visualize()
+experiment = OpenAIChatExperiment(models, messages, temperature=temperatures)
+experiment.run()
+experiment.evaluate("similar_to_expected", similarity.evaluate, expected=["George Washington"])
+experiment.visualize()
 ```
 
 You should get a table that looks like this.
 
 ![image](img/table.png)
 
-For a full example, please see this [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb).
-
-All our [notebook examples are here](/examples/notebooks/):
-
-
-
-If you are interested to compare different models, the [ModelComparison example](/examples/notebooks/ModelComparison.ipynb) may be of interest.
-
-For an example of built-in evaluation function, please see this example of [semantic similarity comparison](/examples/notebooks/SemanticSimilarity.ipynb) for details.
-
-We also have examples assessing the outputs of vector databases (e.g. [Chroma](/examples/notebooks/ChromaDBExperiment.ipynb) and [Weaviate](/examples/notebooks/WeaviateExperiment.ipynb)).
-
 You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
 
 ![image](img/feedback.png)
 
-> Note: Above we used an `ExperimentationHarness`. Under the hood, that harness uses an `Experiment` to construct and make API calls to LLMs. The harness is responsible for managing higher level abstractions, like prompt templates or system prompts. To see how experiments work at a low level, [see this example](/examples/notebooks/OpenAIChatExperiment.ipynb).
+The rest of our notebook examples, including evaluation of vector databases, can be found [here](/examples/notebooks/).
 
 ### Using `prompttools` for Continuous Testing
 
