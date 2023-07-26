@@ -8,6 +8,7 @@ import os
 from typing import Dict, List, Optional
 import openai
 
+from prompttools.selector.prompt_selector import PromptSelector
 from prompttools.mock.mock import mock_openai_completion_fn
 from .experiment import Experiment
 
@@ -45,6 +46,18 @@ class OpenAICompletionExperiment(Experiment):
         self.completion_fn = openai.Completion.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_openai_completion_fn
+
+        # If we are using a prompt selector, we need to render
+        # messages, as well as create prompt_keys to map the messages
+        # to corresponding prompts in other models.
+        if isinstance(prompt[0], PromptSelector):
+            self.prompt_keys = {
+                selector.for_openai_completion(): selector.for_openai_completion() for selector in prompt
+            }
+            prompt = [selector.for_openai_completion() for selector in prompt]
+        else:
+            self.prompt_keys = prompt
+
         self.all_args = dict(
             model=model,
             prompt=prompt,
