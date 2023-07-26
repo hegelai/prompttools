@@ -50,7 +50,7 @@ def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> 
         raise PromptToolsUtilityError
     evaluation = openai.ChatCompletion.create(model=model, messages=_get_messages(prompt, expected, response))
     return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
- 
+
 
 def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float:
     r"""

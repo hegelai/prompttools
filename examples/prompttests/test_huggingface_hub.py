@@ -38,7 +38,7 @@ def create_prompt():
     prompts=[create_prompt()],
     expected=["George Washington"],
     threshold=1.0,
-    threshold_type=ThresholdType.MAXIMUM
+    threshold_type=ThresholdType.MAXIMUM,
 )
 def completion_fn(prompt: str):
     response = None
