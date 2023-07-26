@@ -32,8 +32,8 @@ jobs:
        uses: actions/github-script@v6
        with:
          script: |
-           import { readFile } from 'fs'
-           readFile('./markdown.md', 'utf8', (err, data) => {
+           const fs = require('fs')
+           fs.readFile('./markdown.md', 'utf8', (err, data) => {
              github.rest.issues.createComment({
                issue_number: context.issue.number,
                owner: context.repo.owner,
