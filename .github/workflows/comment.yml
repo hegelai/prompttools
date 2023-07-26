@@ -10,8 +10,6 @@ jobs:
   comment:
     permissions: write-all
     runs-on: ubuntu-latest
-    env:
-      OPENAI_API_KEY: ${{ secrets.GHA_OPENAI_API_KEY }}
     steps:
      - name: Check out source repository
        uses: actions/checkout@v3
@@ -29,7 +27,7 @@ jobs:
          pip3 install .
      - name: Create markdown
        run: |
-         python scripts/create_comment.py
+         DEBUG=1 python scripts/create_comment.py
      - name: Write comment
        uses: actions/github-script@v6
        with:
