@@ -1,0 +1,21 @@
+name: PromptTools
+
+on:
+  # Trigger the workflow on push or pull request
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Thanks for reporting!'
+            })
