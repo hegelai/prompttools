@@ -6,8 +6,14 @@
 import logging
 import os
 from typing import Dict
-import anthropic
-from anthropic import Anthropic
+
+try:
+    import anthropic
+    from anthropic import Anthropic
+except ImportError:
+    anthropic = None
+    Anthropic = None
+
 
 from prompttools.mock.mock import mock_anthropic_completion_fn
 from .experiment import Experiment
@@ -75,6 +81,11 @@ class AnthropicCompletionExperiment(Experiment):
         # extra_query=None,
         # extra_body=None,
     ):
+        if anthropic is None or Anthropic is None:
+            raise ModuleNotFoundError(
+                "Package `anthropic` is required to be installed to use this experiment."
+                "Please use `pip install anthropic` to install the package"
+            )
         self.client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
         self.completion_fn = self.anthropic_completion_fn
         if os.getenv("DEBUG", default=False):
