@@ -60,3 +60,13 @@ def mock_chromadb_fn(**kwargs):
         "metadatas": [[{"source": "my_source"}]],
         "distances": [[0.5932742953300476]],
     }
+
+
+def mock_anthropic_completion_fn(**kwargs):
+    return {
+        "id": "cmpl-6L7J9GfXgcYBEZa8zcjj1oJrqtX",
+        "object": "conversation",
+        "created": 1674647865,
+        "model": "claude-standard-v1",
+        "choices": [{"index": 0, "message": {"role": "assistant", "content": "I'm doing well, thanks for asking!"}}],
+    }

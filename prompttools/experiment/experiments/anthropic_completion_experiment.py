@@ -9,7 +9,7 @@ from typing import Dict
 import anthropic
 from anthropic import Anthropic
 
-# from prompttools.mock.mock import mock_anthropic_completion_fn
+from prompttools.mock.mock import mock_anthropic_completion_fn
 from .experiment import Experiment
 
 
@@ -77,8 +77,8 @@ class AnthropicCompletionExperiment(Experiment):
     ):
         self.client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
         self.completion_fn = self.client.completions.create
-        # if os.getenv("DEBUG", default=False):
-        #     self.completion_fn = mock_anthropic_completion_fn
+        if os.getenv("DEBUG", default=False):
+            self.completion_fn = mock_anthropic_completion_fn
         self.all_args = dict(
             max_tokens_to_sample=max_tokens_to_sample,
             model=model,
@@ -108,7 +108,7 @@ class AnthropicCompletionExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return [choice["message"]["content"] for choice in output["choices"]][0]
+        return [choice["message"]["content"] for choice in output["choices"]]
 
     def _get_model_names(self):
         return [combo["model"] for combo in self.argument_combos]
