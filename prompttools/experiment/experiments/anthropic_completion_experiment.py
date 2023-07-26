@@ -3,7 +3,7 @@
 #
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
-
+import logging
 import os
 from typing import Dict
 import anthropic
@@ -54,7 +54,7 @@ class AnthropicCompletionExperiment(Experiment):
         top_p (list[float], optional):
             use nucleus sampling.
 
-        timeout (list of float, optional):
+        timeout (list[float], optional):
            Override the client-level default timeout for this request, in seconds. Defaults to [600.0].
     """
 
@@ -76,7 +76,7 @@ class AnthropicCompletionExperiment(Experiment):
         # extra_body=None,
     ):
         self.client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-        self.completion_fn = self.client.completions.create
+        self.completion_fn = self.anthropic_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_anthropic_completion_fn
         self.all_args = dict(
@@ -95,16 +95,16 @@ class AnthropicCompletionExperiment(Experiment):
 
     def anthropic_completion_fn(self, **input_args):
         try:
-            self.client.completions.create(**input_args)
+            return self.client.completions.create(**input_args)
         except anthropic.APIConnectionError as e:
-            print("The server could not be reached")
-            print(e.__cause__)  # an underlying Exception, likely raised within httpx.
+            logging.error("The server could not be reached")
+            logging.error(e.__cause__)  # an underlying Exception, likely raised within httpx.
         except anthropic.RateLimitError:
-            print("A 429 rate limit status code was received; we should back off a bit.")
+            logging.error("A 429 rate limit status code was received; we should back off a bit.")
         except anthropic.APIStatusError as e:
-            print("Another non-200-range status code was received")
-            print(e.status_code)
-            print(e.response)
+            logging.error("Another non-200-range status code was received")
+            logging.error(e.status_code)
+            logging.error(e.response)
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
