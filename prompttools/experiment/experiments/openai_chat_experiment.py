@@ -18,6 +18,11 @@ class OpenAIChatExperiment(Experiment):
     This class defines an experiment for OpenAI's chat completion API.
     It accepts lists for each argument passed into OpenAI's API, then creates
     a cartesian product of those arguments, and gets results for each.
+
+    Note:
+        - All arguments here should be a ``list``, even if you want to keep the argument frozen
+          (i.e. ``temperature=[1.0]``), because the experiment will try all possible combination
+          of the input arguments.
     """
 
     def __init__(

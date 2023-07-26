@@ -13,17 +13,51 @@ from anthropic import Anthropic
 from .experiment import Experiment
 
 
-r"""
-    This class defines an experiment for Anthropic's completion API.
-    It accepts lists for each argument passed into Anthropic's API, then creates
-    a cartesian product of those arguments, and gets results for each.
+class AnthropicCompletionExperiment(Experiment):
+    r"""
+    This class defines an experiment for Anthropic's completion API. It accepts lists for each argument
+    passed into Anthropic's API, then creates a cartesian product of those arguments, and gets results for each.
 
-    Note that all arguments here should be a ``list``, because the experiment
-    will try all possible combination of the input arguments.
+    Note:
+        - All arguments here should be a ``list``, even if you want to keep the argument frozen
+          (i.e. ``temperature=[1.0]``), because the experiment will try all possible combination
+          of the input arguments.
+        - You should set ``os.environ["ANTHROPIC_API_KEY"] = YOUR_KEY`` in order to connect with Anthropic's API.
+
+    Args:
+        max_tokens_to_sample (list[int]):
+            A list of integers representing The maximum number of tokens to generate before stopping.
+
+        model (list[str]):
+            the model(s) that will complete your prompt (e.g. "claude-2", "claude-instant-1")
+
+        prompt (list[str]):
+            Input prompt. For proper response generation you will need to format your prompt as follows:
+            ``f"{HUMAN_PROMPT} USER_QUESTION {AI_PROMPT}"``, you can get built-in string by importing
+            ``from anthropic HUMAN_PROMPT, AI_PROMPT``
+
+        metadata (list):
+            list of object(s) describing metadata about the request.
+
+        stop_sequences (list[list[str]], optional):
+            Sequences that will cause the model to stop generating completion text
+
+        stream (list[bool], optional):
+            Whether to incrementally stream the response using server-sent events.
+
+        temperature (list[float], optional):
+             The amount of randomness injected into the response
+
+        top_k (list[int], optional):
+            Only sample from the top K options for each subsequent token.
+
+        top_p (list[float], optional):
+            use nucleus sampling.
+
+        timeout (list of float, optional):
+           Override the client-level default timeout for this request, in seconds. Defaults to [600.0].
     """
 
-
-class AnthropicCompletionExperiment(Experiment):
     def __init__(
         self,
         max_tokens_to_sample: list[int],

@@ -24,6 +24,11 @@ class HuggingFaceHubExperiment(Experiment):
     Experiment for Hugging Face Hub's API.
     It accepts lists for each argument passed into Hugging Face Hub's API,
     then creates a cartesian product of those arguments, and gets results for each.
+
+    Note:
+        - All arguments here should be a ``list``, even if you want to keep the argument frozen
+          (i.e. ``temperature=[1.0]``), because the experiment will try all possible combination
+          of the input arguments.
     """
 
     MODEL_PARAMETERS = ["repo_id", "task"]
@@ -80,7 +85,7 @@ class HuggingFaceHubExperiment(Experiment):
         r"""
         Create tuples of input and output for every possible combination of arguments.
         For each combination, it will execute `runs` times, default to 1.
-        # TODO This can be done with an async queue 
+        # TODO This can be done with an async queue
         """
         if not self.argument_combos:
             logging.info("Preparing first...")
@@ -103,7 +108,6 @@ class HuggingFaceHubExperiment(Experiment):
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
-
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> list[str]:

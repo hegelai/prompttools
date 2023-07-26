@@ -20,6 +20,11 @@ from prompttools.selector.prompt_selector import PromptSelector
 class LlamaCppExperiment(Experiment):
     r"""
     Used to experiment across parameters for a local model, supported by LlamaCpp and GGML.
+
+    Note:
+        - All arguments here should be a ``list``, even if you want to keep the argument frozen
+          (i.e. ``temperature=[1.0]``), because the experiment will try all possible combination
+          of the input arguments.
     """
 
     MODEL_PARAMETERS = (
