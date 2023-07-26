@@ -450,6 +450,7 @@ class Experiment:
         if not self.results:
             logging.info("Running first...")
             self.run()
+        self.results = [result.replace('\n', '<br />') for result in self.results]
         markdown = self.to_pandas_df().to_markdown()
         print(markdown)
         return markdown
