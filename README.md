@@ -141,8 +141,8 @@ LLMs
 - OpenAI (Completion, ChatCompletion) - **Supported**
 - LLaMA.Cpp (LLaMA 1, LLaMA 2) - **Supported**
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
-- Anthropic - Planned
-- Google PaLM API - Planned
+- Anthropic - **Supported**
+- Google PaLM API - **Supported**
 
 Vector Databases
 - Chroma - **Supported**

@@ -18,7 +18,11 @@ using those potential inputs. An example of using experiment is `here <https://g
 
 .. autoclass:: OpenAICompletionExperiment
 
+.. autoclass:: AnthropicCompletionExperiment
+
 .. autoclass:: HuggingFaceHubExperiment
+
+.. autoclass:: GooglePaLMCompletionExperiment
 
 .. autoclass:: LlamaCppExperiment
 
