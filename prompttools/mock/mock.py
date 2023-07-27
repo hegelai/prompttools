@@ -70,3 +70,14 @@ def mock_anthropic_completion_fn(**kwargs):
         "model": "claude-standard-v1",
         "choices": [{"index": 0, "message": {"role": "assistant", "content": "I'm doing well, thanks for asking!"}}],
     }
+
+
+# TODO: Need to find an example
+# def mock_palm_completion_fn(**kwargs):
+#     return {
+#         "id": "cmpl-6L7J9GfXgcYBEZa8zcjj1oJrqtX",
+#         "object": "conversation",
+#         "created": 1674647865,
+#         "model": "claude-standard-v1",
+#         "choices": [{"index": 0, "message": {"role": "assistant", "content": "I'm doing well, thanks for asking!"}}],
+#     }
