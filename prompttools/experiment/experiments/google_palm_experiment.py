@@ -9,7 +9,7 @@ try:
 except ImportError:
     palm = None
 
-# from prompttools.mock.mock import mock_palm_completion_fn
+from prompttools.mock.mock import mock_palm_completion_fn
 from .experiment import Experiment
 from typing import Optional, Union, Iterable
 import os
@@ -27,7 +27,7 @@ class GooglePaLMCompletionExperiment(Experiment):
         - You should set ``os.environ["GOOGLE_PALM_API_KEY"] = YOUR_KEY`` in order to connect with PaLM's API.
 
     Args:
-        model (list[str]): Which model to call, as a string or a `types.Model`.
+        model (list[str]): Which model to call, as a string or a ``types.Model`` (e.g. ``'models/text-bison-001'``).
 
         prompt (list[str]): Free-form input text given to the model. Given a prompt, the model will
             generate text that completes the input text.
@@ -74,8 +74,8 @@ class GooglePaLMCompletionExperiment(Experiment):
             )
         palm.configure(api_key=os.environ["GOOGLE_PALM_API_KEY"])
         self.completion_fn = self.palm_completion_fn
-        # if os.getenv("DEBUG", default=False):
-        #     self.completion_fn = mock_palm_completion_fn()
+        if os.getenv("DEBUG", default=False):
+            self.completion_fn = mock_palm_completion_fn()
         self.all_args = dict(
             model=model,
             prompt=prompt,

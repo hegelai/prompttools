@@ -72,12 +72,15 @@ def mock_anthropic_completion_fn(**kwargs):
     }
 
 
-# TODO: Need to find an example
-# def mock_palm_completion_fn(**kwargs):
-#     return {
-#         "id": "cmpl-6L7J9GfXgcYBEZa8zcjj1oJrqtX",
-#         "object": "conversation",
-#         "created": 1674647865,
-#         "model": "claude-standard-v1",
-#         "choices": [{"index": 0, "message": {"role": "assistant", "content": "I'm doing well, thanks for asking!"}}],
-#     }
+class _mock_PaLM_Completion_Object(object):
+    def __init__(self, candidates: list[dict], result: str, filters: list = [], safety_feedback: list = []):
+        self.candidates = candidates
+        self.result = result
+        self.filters = filters
+        self.safety_feedback = safety_feedback
+
+
+def mock_palm_completion_fn(**kwargs):
+    return _mock_PaLM_Completion_Object(
+        candidates=[{"output": "How are you today?", "safety_ratings": []}], result="How are you today?"
+    )
