@@ -6,8 +6,7 @@
 
 import jinja2
 
-LLAMA_TEMPLATE = """
-<s>[INST] <<SYS>>
+LLAMA_TEMPLATE = """<s>[INST] <<SYS>>
 {instruction}
 <</SYS>
 {user_input} [/INST]
