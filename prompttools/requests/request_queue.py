@@ -44,9 +44,8 @@ class RequestQueue:
             self.request_results.append(res[0])
             self.request_latencies.append(res[1])
         # TODO: If we get an unexpected error here, the queue will hang
-        except openai.error.AuthenticationError as e:
+        except openai.error.AuthenticationError:
             logging.error("Authentication error. Skipping request.")
-            logging.error(e)
 
     @retry_decorator
     def _run(self, fn: Callable, args: Dict[str, object]) -> Tuple[Dict[str, object], float]:
