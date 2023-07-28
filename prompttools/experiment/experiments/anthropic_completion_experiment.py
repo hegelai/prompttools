@@ -5,7 +5,6 @@
 # LICENSE file in the root directory of this source tree.
 import logging
 import os
-from typing import Dict
 
 try:
     import anthropic
@@ -118,8 +117,8 @@ class AnthropicCompletionExperiment(Experiment):
             logging.error(e.response)
 
     @staticmethod
-    def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return [choice["message"]["content"] for choice in output["choices"]]
+    def _extract_responses(completion_response: "anthropic.types.Completion") -> list[str]:
+        return [completion_response.completion]
 
     def _get_model_names(self):
         return [combo["model"] for combo in self.argument_combos]
