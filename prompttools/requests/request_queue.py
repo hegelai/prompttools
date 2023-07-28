@@ -4,6 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 from typing import Callable, Dict, List, Tuple
 from queue import Queue, Empty
 from time import perf_counter
@@ -43,11 +44,15 @@ class RequestQueue:
             self.request_results.append(res[0])
             self.request_latencies.append(res[1])
         # TODO: If we get an unexpected error here, the queue will hang
-        except openai.error.AuthenticationError:
+        except openai.error.AuthenticationError as e:
             logging.error("Authentication error. Skipping request.")
+            logging.error(e)
 
     @retry_decorator
     def _run(self, fn: Callable, args: Dict[str, object]) -> Tuple[Dict[str, object], float]:
+        # TODO: For the streamlit app, we need to set the api key this way.
+        # Ideally, OpenAI should be able to use the env var.
+        openai.api_key = os.environ["OPENAI_API_KEY"]
         start = perf_counter()
         result = fn(**args)
         return result, perf_counter() - start
