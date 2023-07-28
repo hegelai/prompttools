@@ -14,9 +14,33 @@ def load_data(instructions, user_inputs, temperature=0.0):
 
 
 with st.sidebar:
-    model = st.selectbox(
+    model_type = st.selectbox(
         'Model Type',
         ('Llama 2 Chat', 'OpenAI Chat', 'OpenAI Completion', 'Anthropic', 'Google PaLM', 'HuggingFace Hub'))
+    if model_type == 'Llama 2 Chat':
+        path = st.text_input('Local Model Path', key=f"llama_cpp_model_path")
+    if model_type == 'HuggingFace Hub':
+        path = st.text_input('Repo ID', key=f"hf_model_id")
+    if model_type == 'OpenAI Chat':
+         model_type = st.selectbox(
+            'Model',
+            ('gpt-3.5-turbo', 
+             'gpt-3.5-turbo-16k', 
+             'gpt-3.5-turbo-0613',
+             'gpt-3.5-turbo-16k-0613',
+             'gpt-3.5-turbo-0301',
+             'gpt-4', 
+             'gpt-4-0613', 
+             'gpt-4-32k', 
+             'gpt-4-32k-0613',
+             'gpt-4-0314',
+             'gpt-4-32k-0314'))
+    if model_type == 'OpenAI Completion':
+         model_type = st.selectbox(
+            'Model',
+            ('text-davinci-003', 
+             'text-davinci-002', 
+             'code-davinci-002'))
     temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
     instruction_count = st.number_input("Add Instruction", step=1, min_value=1, max_value=10)
     prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
