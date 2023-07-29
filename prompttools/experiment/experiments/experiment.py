@@ -14,6 +14,12 @@ from tabulate import tabulate
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
+try:
+    import pymongo
+except ImportError:
+    pymongo = None
+
 from prompttools.requests.request_queue import RequestQueue
 from ..widgets.feedback import FeedbackWidgetProvider
 from ..widgets.comparison import ComparisonWidgetProvider
@@ -476,6 +482,34 @@ class Experiment:
             extracted_data.to_json(path, **kwargs)
         else:
             return extracted_data.to_json(**kwargs)
+
+    def to_mongo_db(self, mongo_uri: str, database_name: str, collection_name: str) -> None:
+        r"""
+        Insert the results of the experiment into MongoDB for persistence.
+
+        Note:
+            - You need to install the ``pymongo`` package to use this method.
+            - You need to run a local or remote instance of MongoDB in order to store the data.
+
+        Args:
+            mongo_uri (str): a connection string to the target MongoDB
+            database_name (str): name of the MongoDB database
+            collection_name (str): name of the MongoDB collection
+        """
+        if pymongo is None:
+            raise ModuleNotFoundError(
+                "Package `pymongo` is required to be installed to use this method."
+                "Please use `pip install pymongo` to install the package"
+            )
+        if not self.results:
+            logging.info("Running first...")
+            self.run()
+        client = pymongo.MongoClient(mongo_uri)
+        db = client[database_name]
+        collection = db[collection_name]
+        collection.insert_many(self.results)
+        logging.info(f"Inserted results in {database_name}'s collection {collection_name}.")
+        client.close()
 
     def to_markdown(self):
         if not self.results:
