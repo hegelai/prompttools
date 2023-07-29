@@ -6,6 +6,13 @@
 
 import jinja2
 
+GENERIC_TEMPLATE = """INSTRUCTION:
+{instruction}
+PROMPT:
+{user_input}
+RESPONSE:
+"""
+
 LLAMA_TEMPLATE = """<s>[INST] <<SYS>>
 {instruction}
 <</SYS>
@@ -31,10 +38,10 @@ class PromptSelector:
         ]
 
     def for_openai_completion(self):
-        environment = jinja2.Environment()
-        template = environment.from_string(self.instruction)
-        prompt = template.render(**self.user_input)
-        return prompt
+        return GENERIC_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)
+
+    def for_huggingface_hub(self):
+        return GENERIC_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)
 
     def for_llama(self):
         return LLAMA_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)
