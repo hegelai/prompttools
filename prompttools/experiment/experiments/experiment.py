@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union, final
 from operator import itemgetter
 from collections import defaultdict
 import itertools
@@ -44,6 +44,37 @@ class Experiment:
             self._aggregate_comparison,
             self._get_comparison_listener,
         )
+
+    @classmethod
+    @final
+    def initialize(cls, test_parameters: dict[str, list], frozen_parameters: dict):
+        r"""
+        An alternate way to initialize an experiment by specifying which parameters should be tested
+        and which ones should be frozen. If a parameter is not specified, the default value (if exists)
+        for the parameter will be used.
+
+        This allows you to easily initialize an experiment **without** wrapping every parameter in a list.
+
+        Note:
+            - For a given experiment, some parameters must be specified (e.g. the ``model`` parameter
+              for OpenAI Chat Experiment). See the experiment's ``__init__`` method.
+            - Each of ``test_parameters``'s values should be a ``list``, but not for ``frozen_parameters``.
+
+        Args:
+            test_parameters (dict[str, list]): parameters that are being tested. A list of multiple test values
+                should be the value (e.g. ``{model: ["gpt-3.5-turbo", "gpt-4"], temperature: [0,0. 1.0]}``)
+            frozen_parameters (dict): parameters that are intended to be frozen across different configuration.
+                There is no need to wrap the value in a list. (e.g. ``{top_p: 1.0, presence_penalty: 0.0}``)
+
+        Example:
+            >>> from prompttools.experiment import OpenAIChatExperiment
+            >>> test_parameters = {"model": ["gpt-3.5-turbo", "gpt-4"]}
+            >>> messages = [{"role": "user", "content": "Who was the first president?"}]
+            >>> frozen_parameters = {"top_p": 1.0, "messages": messages}
+            >>> experiment = OpenAIChatExperiment.initialize(test_parameters, frozen_parameters)
+        """
+        frozen_parameters = {k: [v] for k, v in frozen_parameters.items()}
+        return cls(**test_parameters, **frozen_parameters)
 
     def _is_chat(self):
         return False
