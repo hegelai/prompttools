@@ -62,14 +62,19 @@ def mock_chromadb_fn(**kwargs):
     }
 
 
+class _mock_Anthropic_Completion_Object(object):
+    def __init__(self, completion: str, model: str, stop_reason: str):
+        self.completion = completion
+        self.model = model
+        self.stop_reason = stop_reason
+
+
 def mock_anthropic_completion_fn(**kwargs):
-    return {
-        "id": "cmpl-6L7J9GfXgcYBEZa8zcjj1oJrqtX",
-        "object": "conversation",
-        "created": 1674647865,
-        "model": "claude-standard-v1",
-        "choices": [{"index": 0, "message": {"role": "assistant", "content": "I'm doing well, thanks for asking!"}}],
-    }
+    return _mock_Anthropic_Completion_Object(
+        completion='{"name": "John", "age": 30, "city": "New York", "interests": ["reading","hiking","coding"]}',
+        model="claude-2.0",
+        stop_reason="stop_sequence",
+    )
 
 
 class _mock_PaLM_Completion_Object(object):
