@@ -55,7 +55,7 @@ You can also run the notebook in [Google Colab](https://colab.research.google.co
 
 ## Playground
 
-![image](img/playground.gif)
+<img align="center" src="img/playground.gif">
 
 If you want to interact with `prompttools` using our playground interface, you can launch it with the following commands.
 
