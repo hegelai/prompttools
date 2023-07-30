@@ -10,9 +10,6 @@
   <a href="http://prompttools.readthedocs.io/"><img src="https://img.shields.io/badge/View%20Documentation-Docs-yellow"></a>
   <a href="https://discord.gg/7KeRPNHGdJ"><img src="https://img.shields.io/badge/Join%20our%20community-Discord-blue"></a>
   <a href="https://pepy.tech/project/prompttools" target="_blank"><img src="https://pepy.tech/badge/prompttools" alt="Total Downloads"/></a>
-  <a href="https://pepy.tech/project/prompttools">
-    <img src="https://static.pepy.tech/badge/prompttools/month" />
-  </a>
   <a href="https://github.com/hegelai/prompttools">
       <img src="https://img.shields.io/github/stars/hegelai/prompttools" />
   </a>
@@ -56,77 +53,24 @@ cd prompttools && jupyter notebook examples/notebooks/OpenAIChatExperiment.ipynb
 
 You can also run the notebook in [Google Colab](https://colab.research.google.com/drive/1YVcpBew8EqbhXFN8P5NaFrOIqc1FKWeS?usp=sharing)
 
-## Using `prompttools`
+## Playground
 
-There are primarily two ways you can use `prompttools` in your LLM workflow:
+![image](img/playground.gif)
 
-1. Run experiments on top of LLMs or vector databases in [notebooks](/examples/notebooks/) and evaluate the outputs.
-2. Turn evaluations into [unit tests](/examples/prompttests/test_openai_chat.py) and integrate them into your CI/CD workflow [via Github Actions](/.github/workflows/ci.yml).
+If you want to interact with `prompttools` using our playground interface, you can launch it with the following commands.
 
-### Notebooks
+First, install prompttools:
 
-There are a few different ways to run an experiment in a notebook.
-
-The simplest way is to define an experiment and an evaluation function:
-
-```python
-from typing import Dict, List
-from prompttools.experiment import OpenAIChatExperiment
-from prompttools.utils import similarity
-
-models = ["gpt-3.5-turbo", "gpt-3.5-turbo-0613"]
-messages = [
-    [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Who was the first president?"},
-    ]
-]
-temperatures = [0.0, 1.0]
-# You can add more parameters that you'd like to test here.
-
-experiment = OpenAIChatExperiment(models, messages, temperature=temperatures)
-experiment.run()
-experiment.evaluate("similar_to_expected", similarity.evaluate, expected=["George Washington"])
-experiment.visualize()
+```
+pip install prompttools
 ```
 
-You should get a table that looks like this.
+Then, clone the git repo and launch the streamlit app:
 
-![image](img/table.png)
-
-You can also manually enter feedback to evaluate prompts, see [HumanFeedback.ipynb](/examples/notebooks/HumanFeedback.ipynb).
-
-![image](img/feedback.png)
-
-The rest of our notebook examples, including evaluation of vector databases, can be found [here](/examples/notebooks/).
-
-### Using `prompttools` for Continuous Testing
-
-Unit tests in `prompttools` are called `prompttests`. They use the `@prompttest` annotation to transform an evaluation function into an efficient unit test. The `prompttest` framework executes and evaluates experiments so you can test prompts over time. You can see an example test [here](/examples/prompttests/test_openai_chat.py) and an example of that test being used as a Github Action [here](/.github/workflows/post-commit.yaml).
-
-### Persisting Results
-
-To persist the results of your tests and experiments, you can export your `Experiment` with the methods `to_csv`,
-`to_json`, or `to_lora_json`. We are happy to further discuss your use cases, pain points, and what export
-options may be useful for you.
-
-### Setting API keys
-
-If you would like to use a remote API (e.g. OpenAI, Anthropic), you will need to bring your own OpenAI API key.
-This is because `prompttools` makes a call to those APIs directly from your machine.
-
-In Python, you can set:
-```python
-import os
-os.environ['OPENAI_API_KEY'] = ""
 ```
-
-In command line:
+git clone https://github.com/hegelai/prompttools.git
+cd prompttools && streamlit run ui/playground.py
 ```
-OPENAI_API_KEY=sk-... python examples/prompttests/test_openai_chat.py
-```
-
-You will find [more examples of these in our notebooks](/examples/notebooks/).
 
 ### Documentation
 
@@ -153,22 +97,6 @@ Vector Databases
 
 If you have any API that you'd like to see being supported soon, please open an issue or
 a PR to add it. Feel free to discuss in our Discord channel as well.
-
-## Installation
-
-To install `prompttools` using pip:
-
-```bash
-pip install prompttools
-```
-
-To install from source, first clone this GitHub repo to your local machine, then, from the repo, run:
-
-```bash
-pip install .
-```
-
-You can then proceed to run [our examples](/examples/notebooks/).
 
 ### Frequently Asked Questions (FAQs)
 
