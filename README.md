@@ -100,7 +100,7 @@ Vector Databases
 If you have any API that you'd like to see being supported soon, please open an issue or
 a PR to add it. Feel free to discuss in our Discord channel as well.
 
-### Frequently Asked Questions (FAQs)
+## Frequently Asked Questions (FAQs)
 
 1. Will this library forward my LLM calls to a server before sending it to OpenAI, Anthropic, and etc.?
     - No, the source code will be executed on your machine. Any call to LLM APIs will be directly executed from your machine without any forwarding.
