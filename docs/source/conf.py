@@ -6,6 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+from sphinx.builders.html import StandaloneHTMLBuilder
+
 project = "prompttools"
 copyright = "2023, Hegel AI"
 author = "Hegel AI"
@@ -61,3 +63,10 @@ autodoc_typehints = "description"
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
+
+StandaloneHTMLBuilder.supported_image_types = [
+    'image/svg+xml',
+    'image/gif',
+    'image/png',
+    'image/jpeg'
+]
