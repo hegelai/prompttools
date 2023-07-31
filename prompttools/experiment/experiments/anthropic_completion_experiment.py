@@ -85,10 +85,11 @@ class AnthropicCompletionExperiment(Experiment):
                 "Package `anthropic` is required to be installed to use this experiment."
                 "Please use `pip install anthropic` to install the package"
             )
-        self.client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-        self.completion_fn = self.anthropic_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_anthropic_completion_fn
+        else:
+            self.client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+            self.completion_fn = self.anthropic_completion_fn
         self.all_args = dict(
             max_tokens_to_sample=max_tokens_to_sample,
             model=model,

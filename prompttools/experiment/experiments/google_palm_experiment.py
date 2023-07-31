@@ -72,10 +72,11 @@ class GooglePaLMCompletionExperiment(Experiment):
                 "Package `google.generativeai` is required to be installed to use PaLM API in this experiment."
                 "Please use `pip install google.generativeai` to install the package"
             )
-        palm.configure(api_key=os.environ["GOOGLE_PALM_API_KEY"])
-        self.completion_fn = self.palm_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_palm_completion_fn()
+        else:
+            self.completion_fn = self.palm_completion_fn
+            palm.configure(api_key=os.environ["GOOGLE_PALM_API_KEY"])
         self.all_args = dict(
             model=model,
             prompt=prompt,
