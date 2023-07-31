@@ -3,7 +3,7 @@ Playground
 
 If you want to interact with `prompttools` using our playground interface, you can launch it with the following commands.
 
-.. figure:: ../img/playground.gif
+.. image:: ../img/playground.gif
    :alt: The prompttools playground.
 
 First, install prompttools:
