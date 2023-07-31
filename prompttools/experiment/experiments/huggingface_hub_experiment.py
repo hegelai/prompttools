@@ -11,6 +11,7 @@ from huggingface_hub.inference_api import InferenceApi
 from time import perf_counter
 import logging
 
+from prompttools.selector.prompt_selector import PromptSelector
 from prompttools.mock.mock import mock_hf_completion_fn
 
 from .experiment import Experiment
@@ -38,7 +39,7 @@ class HuggingFaceHubExperiment(Experiment):
     def __init__(
         self,
         repo_id: List[str],
-        prompt: List[str],
+        prompt: List[str] | List[PromptSelector],
         task: List[str] = ["text-generation"],
         **kwargs: Dict[str, object],
     ):
@@ -46,6 +47,17 @@ class HuggingFaceHubExperiment(Experiment):
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_hf_completion_fn
         self.model_params = dict(repo_id=repo_id, task=task)
+
+        # If we are using a prompt selector, we need to render
+        # messages, as well as create prompt_keys to map the messages
+        # to corresponding prompts in other models.
+        if isinstance(prompt[0], PromptSelector):
+            self.prompt_keys = {
+                selector.for_huggingface_hub(): selector.for_huggingface_hub() for selector in prompt
+            }
+            prompt = [selector.for_huggingface_hub() for selector in prompt]
+        else:
+            self.prompt_keys = prompt
 
         self.call_params = dict(prompt=prompt)
         for k, v in kwargs.items():

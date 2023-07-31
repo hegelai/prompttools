@@ -165,7 +165,7 @@ class LlamaCppExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return [choice["text"] for choice in output["choices"]]
+        return [choice["text"] for choice in output["choices"]][0]
 
     def _get_model_names(self):
         return [os.path.basename(combo["model_path"]) for combo in self.argument_combos]

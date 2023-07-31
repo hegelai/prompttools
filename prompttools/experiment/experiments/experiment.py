@@ -229,7 +229,7 @@ class Experiment:
         input_key = "messages" if self._is_chat() else "prompt"
         data = {
             input_key: [str(combo[input_key]) for combo in self.argument_combos],
-            "response(s)": [self._extract_responses(result) for result in self.results],
+            "response": [self._extract_responses(result) for result in self.results],
             "latency": self.scores["latency"],
         }
         # Add scores for each eval fn, including feedback

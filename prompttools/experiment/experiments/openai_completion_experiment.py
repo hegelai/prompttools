@@ -85,7 +85,7 @@ class OpenAICompletionExperiment(Experiment):
     def __init__(
         self,
         model: List[str],
-        prompt: List[str],
+        prompt: List[str] | List[PromptSelector],
         suffix: Optional[List[str]] = [None],
         max_tokens: Optional[List[int]] = [float("inf")],
         temperature: Optional[List[float]] = [1.0],

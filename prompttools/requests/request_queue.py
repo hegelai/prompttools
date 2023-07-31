@@ -4,6 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 from typing import Callable, Dict, List, Tuple
 from queue import Queue, Empty
 from time import perf_counter
@@ -39,6 +40,10 @@ class RequestQueue:
 
     def _do_task(self, fn: Callable, args: Dict[str, object]) -> None:
         try:
+            # TODO: For the streamlit app, we need to set the api key this way.
+            # Ideally, OpenAI should be able to use the env var.
+            if "OPENAI_API_KEY" in os.environ:
+                openai.api_key = os.environ["OPENAI_API_KEY"]
             res = self._run(fn, args)
             self.request_results.append(res[0])
             self.request_latencies.append(res[1])

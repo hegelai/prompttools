@@ -48,7 +48,7 @@ class FeedbackWidgetProvider:
         items = [
             widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row[self.pivot_columns[0]] + " </p>"),
             widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row[self.pivot_columns[1]] + " </p>"),
-            widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + ", ".join(row["response(s)"]) + " </p>"),
+            widgets.HTML(value="<style>p{word-wrap: break-word}</style> <p>" + row["response(s)"] + " </p>"),
         ]
         feedback_dropdown = widgets.Dropdown(
             options=[("\U0001F44D", 1), ("\U0001F44E", 0)],
