@@ -59,7 +59,7 @@ class ChromaDBExperiment(Experiment):
                 "Package `chromadb` is required to be installed to use this experiment."
                 "Please use `pip install chromadb` to install the package"
             )
-        self.chroma_client: chromadb.Client = chroma_client
+        self.chroma_client: "chromadb.Client" = chroma_client
         self.completion_fn = self.chromadb_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_chromadb_fn
@@ -80,7 +80,7 @@ class ChromaDBExperiment(Experiment):
 
     def chromadb_completion_fn(
         self,
-        collection: chromadb.api.Collection,
+        collection: "chromadb.api.Collection",
         **query_params: Dict[str, Any],
     ):
         r"""
