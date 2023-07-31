@@ -11,6 +11,7 @@ try:
     from anthropic._types import NOT_GIVEN
 except ImportError:
     anthropic = None
+    NOT_GIVEN = None
 
 
 from prompttools.mock.mock import mock_anthropic_completion_fn
