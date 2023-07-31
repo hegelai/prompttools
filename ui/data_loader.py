@@ -5,6 +5,7 @@ import streamlit as st
 from prompttools.selector.prompt_selector import PromptSelector
 from ui.constants import ENVIRONMENT_VARIABLE, EXPERIMENTS
 
+
 def render_prompts(templates, vars):
     prompts = []
     for i, template in enumerate(templates):
@@ -30,6 +31,7 @@ def load_data(model_type, model, instructions, user_inputs, temperature=0.0, api
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
     return experiment.to_pandas_df()
 
+
 @st.cache_data
 def run_multiple():
-   pass
+    pass

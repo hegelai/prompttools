@@ -7,20 +7,20 @@ from ui.constants import EXPERIMENTS
 
 
 with st.sidebar:
-    mode = st.radio(
-        "Choose a mode",
-        ('Instruction', 'Prompt Template', 'Model Comparison'))
+    mode = st.radio("Choose a mode", ("Instruction", "Prompt Template", "Model Comparison"))
 
-    if mode != 'Model Comparison':
+    if mode != "Model Comparison":
         model_type = st.selectbox(
             "Model Type",
-            ("OpenAI Chat", 
-            "OpenAI Completion", 
-            "Anthropic", 
-            "Google PaLM", 
-            "LlamaCpp Chat", 
-            "LlamaCpp Completion", 
-            "HuggingFace Hub"),
+            (
+                "OpenAI Chat",
+                "OpenAI Completion",
+                "Anthropic",
+                "Google PaLM",
+                "LlamaCpp Chat",
+                "LlamaCpp Completion",
+                "HuggingFace Hub",
+            ),
         )
         model, api_key = None, None
         if model_type in {"LlamaCpp Chat", "LlamaCpp Completion"}:
@@ -57,46 +57,28 @@ with st.sidebar:
             api_key = st.text_input("OpenAI API Key")
         temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
         variable_count = 0
-        if mode == 'Prompt Template':
-            instruction_count = st.number_input(
-                "Add Template", step=1, min_value=1, max_value=5
-            )
-            prompt_count = st.number_input(
-                "Add User Input", step=1, min_value=1, max_value=10
-            )
-            variable_count = st.number_input(
-                "Add Variable", step=1, min_value=1, max_value=10
-            )
+        if mode == "Prompt Template":
+            instruction_count = st.number_input("Add Template", step=1, min_value=1, max_value=5)
+            prompt_count = st.number_input("Add User Input", step=1, min_value=1, max_value=10)
+            variable_count = st.number_input("Add Variable", step=1, min_value=1, max_value=10)
         elif model_type == "OpenAI Chat":
-            instruction_count = st.number_input(
-                "Add System Prompt", step=1, min_value=1, max_value=5
-            )
-            prompt_count = st.number_input(
-                "Add User Message", step=1, min_value=1, max_value=10
-            )
+            instruction_count = st.number_input("Add System Prompt", step=1, min_value=1, max_value=5)
+            prompt_count = st.number_input("Add User Message", step=1, min_value=1, max_value=10)
         else:
-            instruction_count = st.number_input(
-                "Add Instruction", step=1, min_value=1, max_value=5
-            )
-            prompt_count = st.number_input(
-                "Add Prompt", step=1, min_value=1, max_value=10
-            )
+            instruction_count = st.number_input("Add Instruction", step=1, min_value=1, max_value=5)
+            prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
         var_names = []
         for i in range(variable_count):
             var_names.append(st.text_input(f"Variable {i+1} Name", value=f"Variable {i+1}", key=f"varname_{i}"))
     else:
-        model_count = st.number_input(
-            "Add Model", step=1, min_value=1, max_value=5
-        )
-        prompt_count = st.number_input(
-            "Add Prompt", step=1, min_value=1, max_value=10
-        )
+        model_count = st.number_input("Add Model", step=1, min_value=1, max_value=5)
+        prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
         openai_api_key = st.text_input("OpenAI API Key")
         anthropic_api_key = st.text_input("Anthropic Key")
         google_api_key = st.text_input("Google PaLM Key")
         hf_api_key = st.text_input("HuggingFace Hub Key")
 
-if mode == 'Instruction':
+if mode == "Instruction":
     placeholders = [[st.empty() for _ in range(instruction_count + 1)] for _ in range(prompt_count)]
 
     cols = st.columns(instruction_count + 1)
@@ -125,7 +107,7 @@ if mode == 'Instruction':
         for i in range(len(prompts)):
             for j in range(len(instructions)):
                 placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
-elif mode == 'Prompt Template':
+elif mode == "Prompt Template":
     instruction = None
     if model_type == "LlamaCpp Chat":
         instruction = st.text_area("Instruction", key="instruction")
@@ -141,9 +123,7 @@ elif mode == 'Prompt Template':
     templates = []
     for j in range(variable_count, instruction_count + variable_count):
         with cols[j]:
-            templates.append(
-                st.text_area("Prompt Template", key=f"col_{j-variable_count}")
-            )
+            templates.append(st.text_area("Prompt Template", key=f"col_{j-variable_count}"))
 
     vars = []
     for i in range(prompt_count):
@@ -163,7 +143,7 @@ elif mode == 'Prompt Template':
         for i in range(len(prompts)):
             for j in range(len(templates)):
                 placeholders[i][j + variable_count].markdown(df["response"][i + len(prompts) * j])
-elif mode == 'Model Comparison':
+elif mode == "Model Comparison":
     placeholders = [[st.empty() for _ in range(model_count + 1)] for _ in range(prompt_count)]
 
     cols = st.columns(model_count + 1)
@@ -175,47 +155,53 @@ elif mode == 'Model Comparison':
     instructions = {}
     for j in range(1, model_count + 1):
         with cols[j]:
-            model_types.append(st.selectbox(
-                "Model Type",
-                ("OpenAI Chat", 
-                "OpenAI Completion", 
-                "Anthropic", 
-                "Google PaLM", 
-                "LlamaCpp Chat", 
-                "LlamaCpp Completion", 
-                "HuggingFace Hub"),
-                key = f"type_{j}"
-            ))
+            model_types.append(
+                st.selectbox(
+                    "Model Type",
+                    (
+                        "OpenAI Chat",
+                        "OpenAI Completion",
+                        "Anthropic",
+                        "Google PaLM",
+                        "LlamaCpp Chat",
+                        "LlamaCpp Completion",
+                        "HuggingFace Hub",
+                    ),
+                    key=f"type_{j}",
+                )
+            )
             model = None
-            if model_types[j-1] == "LlamaCpp Chat":
+            if model_types[j - 1] == "LlamaCpp Chat":
                 models.append(st.text_input("Local Model Path", key=f"path_{j}"))
                 instructions[j] = st.text_area("Instruction", key=f"instruction_{j}")
-            elif model_types[j-1] == "LlamaCpp Completion":
+            elif model_types[j - 1] == "LlamaCpp Completion":
                 models.append(st.text_input("Local Model Path", key=f"path_{j}"))
-            elif model_types[j-1] == "HuggingFace Hub":
+            elif model_types[j - 1] == "HuggingFace Hub":
                 models.append(st.text_input("Repo ID", key=f"model_id_{j}"))
-            elif model_types[j-1] == "Google PaLM":
+            elif model_types[j - 1] == "Google PaLM":
                 models.append(st.text_input("Model", key=f"palm_model_{j}"))
-            elif model_types[j-1] == "Anthropic":
+            elif model_types[j - 1] == "Anthropic":
                 models.append(st.selectbox("Model", ("claude-2", "claude-instant-1"), key=f"anthropic_{j}"))
-            elif model_types[j-1] == "OpenAI Chat":
-                models.append(st.selectbox(
-                    "Model",
-                    (
-                        "gpt-3.5-turbo",
-                        "gpt-3.5-turbo-16k",
-                        "gpt-3.5-turbo-0613",
-                        "gpt-3.5-turbo-16k-0613",
-                        "gpt-3.5-turbo-0301",
-                        "gpt-4",
-                        "gpt-4-0613",
-                        "gpt-4-32k",
-                        "gpt-4-32k-0613",
-                        "gpt-4-0314",
-                        "gpt-4-32k-0314",
-                    ),
-                    key=f"model_{j}"
-                ))
+            elif model_types[j - 1] == "OpenAI Chat":
+                models.append(
+                    st.selectbox(
+                        "Model",
+                        (
+                            "gpt-3.5-turbo",
+                            "gpt-3.5-turbo-16k",
+                            "gpt-3.5-turbo-0613",
+                            "gpt-3.5-turbo-16k-0613",
+                            "gpt-3.5-turbo-0301",
+                            "gpt-4",
+                            "gpt-4-0613",
+                            "gpt-4-32k",
+                            "gpt-4-32k-0613",
+                            "gpt-4-0314",
+                            "gpt-4-32k-0314",
+                        ),
+                        key=f"model_{j}",
+                    )
+                )
                 instructions[j] = st.text_area("System Prompt", key=f"instruction_{j}")
 
     prompts = []
@@ -230,16 +216,17 @@ elif mode == 'Model Comparison':
 
     if st.button("Run"):
         import os
+
         if openai_api_key:
             os.environ["OPENAI_API_KEY"] = openai_api_key
             os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
             os.environ["GOOGLE_PALM_API_KEY"] = google_api_key
-            os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_key 
+            os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_key
         dfs = []
         for i in range(len(models)):
             selectors = []
-            if i+1 in instructions:
-                selectors = [PromptSelector(instructions[i+1], prompt) for prompt in prompts]
+            if i + 1 in instructions:
+                selectors = [PromptSelector(instructions[i + 1], prompt) for prompt in prompts]
                 prompts = selectors
             # TODO Support temperature and other parameters
             experiment = EXPERIMENTS[model_types[i]]([models[i]], prompts)
