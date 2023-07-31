@@ -9,7 +9,11 @@ from typing import Any, Dict, List
 import itertools
 import logging
 
-from llama_cpp import Llama
+try:
+    from llama_cpp import Llama
+except ImportError:
+    Llama = None
+
 from time import perf_counter
 
 from .experiment import Experiment

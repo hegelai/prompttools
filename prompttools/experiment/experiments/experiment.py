@@ -12,8 +12,6 @@ import logging
 from IPython import display
 from tabulate import tabulate
 import pandas as pd
-import matplotlib.pyplot as plt
-
 
 try:
     import pymongo
@@ -336,6 +334,7 @@ class Experiment:
         table = self.get_table(pivot_data=None, pivot_columns=None, pivot=False)
         sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
         if is_interactive():
+            import matplotlib.pyplot as plt
             plt.bar(range(len(sorted_scores)), list(sorted_scores.values()), align="center")
             plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
             plt.show()

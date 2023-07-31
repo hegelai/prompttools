@@ -8,7 +8,7 @@ r"""
 Use a list to optionally hold a reference to the embedding model and client,
 allowing for lazy initialization.
 """
-from typing import Dict, List
+from typing import Dict
 
 EMBEDDING_MODEL = []  #
 CHROMA_CLIENT = []
