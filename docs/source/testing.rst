@@ -6,8 +6,8 @@ Testing and CI/CD
 After identifying the right evaluation/validation function for the outputs, you
 can easily create unit tests and add them to your CI/CD workflow.
 
-Unit tests in ``prompttools`` are called ``prompttests``. They use the ``@prompttest`` annotation to transform an
-evaluation function into an efficient unit test. The ``prompttest`` framework executes and evaluates experiments
+Unit tests in ``prompttools`` are called ``prompttests``. They use the ``@prompttest`` annotation to transform a
+completion function into an efficient unit test. The ``prompttest`` framework executes and evaluates experiments
 so you can test prompts over time. For example:
 
 .. code-block:: python
@@ -15,24 +15,17 @@ so you can test prompts over time. For example:
     import prompttools.prompttest as prompttest
 
     @prompttest.prompttest(
-        model_name="text-davinci-003",
-        metric_name="similar_to_expected",
-        prompt_template="Answer the following question: {{input}}",
-        user_input=[{"input": "Who was the first president of the USA?"}],
+        metric_name="is_valid_json",
+        eval_fn=validate_json.evaluate,
+        prompts=[create_json_prompt()],
     )
-    def measure_similarity(
-        input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict
-    ) -> float:
-        r"""
-        A simple test that checks semantic similarity between the user input
-        and the model's text responses.
-        """
-        expected = EXPECTED[input_pair[1]["input"]]
-        distances = [
-            similarity.compute(expected, response)
-            for response in extract_responses(results)
-        ]
-        return min(distances)
+    def json_completion_fn(prompt: str):
+        response = None
+        if os.getenv("DEBUG", default=False):
+            response = mock_openai_completion_fn(**{"prompt": prompt})
+        else:
+            response = openai.Completion.create(prompt)
+        return response["choices"][0]["text"]
 
 
 In the file, be sure to call the ``main()`` method of ``prompttest`` like you would for ``unittest``.
