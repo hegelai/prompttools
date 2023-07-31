@@ -48,6 +48,11 @@ class HuggingFaceHubExperiment(Experiment):
         task: List[str] = ["text-generation"],
         **kwargs: Dict[str, object],
     ):
+        if InferenceApi is None:
+            raise ModuleNotFoundError(
+                "Package `huggingface_hub` is required to be installed to use this experiment."
+                "Please use `pip install huggingface_hub` to install the package"
+            )
         self.completion_fn = self.hf_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_hf_completion_fn

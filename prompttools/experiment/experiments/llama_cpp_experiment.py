@@ -95,6 +95,11 @@ class LlamaCppExperiment(Experiment):
         model_params: Dict[str, object] = {},
         call_params: Dict[str, object] = {},
     ):
+        if Llama is None:
+            raise ModuleNotFoundError(
+                "Package `llama-cpp-python` is required to be installed to use this experiment."
+                "Please use `pip install llama-cpp-python` to install the package"
+            )
         self.completion_fn = self.llama_completion_fn
         self.model_params = model_params
         self.call_params = call_params

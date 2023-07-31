@@ -54,6 +54,11 @@ class ChromaDBExperiment(Experiment):
         embedding_fn_names: list[str] = ["default"],
         add_to_collection_params: Optional[dict] = None,
     ):
+        if chromadb is None:
+            raise ModuleNotFoundError(
+                "Package `chromadb` is required to be installed to use this experiment."
+                "Please use `pip install chromadb` to install the package"
+            )
         self.chroma_client: chromadb.Client = chroma_client
         self.completion_fn = self.chromadb_completion_fn
         if os.getenv("DEBUG", default=False):
