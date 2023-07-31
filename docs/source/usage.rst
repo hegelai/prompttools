@@ -75,24 +75,27 @@ You can also manually enter feedback to evaluate prompts, see
 Unit Tests
 ------------
 
-Unit tests in ``prompttools`` are called ``prompttests``. They use the
-``@prompttest`` annotation to transform an evaluation function into an
-efficient unit test. The ``prompttest`` framework executes and evaluates
-experiments so you can test prompts over time. To turn an evaluation
-function into a re-usable test, you can add the annotation like this:
+Unit tests in ``prompttools`` are called ``prompttests``. They use the ``@prompttest`` annotation to transform a
+completion function into an efficient unit test. The ``prompttest`` framework executes and evaluates experiments
+so you can test prompts over time. For example:
 
-.. code:: python
+.. code-block:: python
+
+    import prompttools.prompttest as prompttest
 
     @prompttest.prompttest(
-        experiment=OpenAICompletionExperiment,
-        model_name="text-davinci-003",
-        metric_name="similar_to_expected",
-        prompt_template="Answer the following question: {{input}}",
-        user_input=[{"input": "Who was the first president of the USA?"}],
+        metric_name="is_valid_json",
+        eval_fn=validate_json.evaluate,
+        prompts=[create_json_prompt()],
     )
-    def evaluation_fn(
-        input_pair: Tuple[str, Dict[str, str]], results: Dict, metadata: Dict
-    ) -> float:
+    def json_completion_fn(prompt: str):
+        response = None
+        if os.getenv("DEBUG", default=False):
+            response = mock_openai_completion_fn(**{"prompt": prompt})
+        else:
+            response = openai.Completion.create(prompt)
+        return response["choices"][0]["text"]
+
 
 The evaluation functions should accept one of the following as it's parameters:
 
