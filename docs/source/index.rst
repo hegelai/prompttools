@@ -13,8 +13,8 @@ offers a set of free, open-source tools for testing and experimenting with promp
 The core idea is to enable developers to evaluate prompts using familiar
 interfaces like *code* and *notebooks*.
 
-.. image:: ../img/demo.gif
-   :alt: The prompttools notebook demo.
+.. image:: ../../img/demo.gif
+   :alt: The prompttools notebook demog.
 
 There are primarily two ways you can use ``prompttools`` in your LLM workflow:
 
