@@ -52,9 +52,7 @@ class HuggingFaceHubExperiment(Experiment):
         # messages, as well as create prompt_keys to map the messages
         # to corresponding prompts in other models.
         if isinstance(prompt[0], PromptSelector):
-            self.prompt_keys = {
-                selector.for_huggingface_hub(): selector.for_huggingface_hub() for selector in prompt
-            }
+            self.prompt_keys = {selector.for_huggingface_hub(): selector.for_huggingface_hub() for selector in prompt}
             prompt = [selector.for_huggingface_hub() for selector in prompt]
         else:
             self.prompt_keys = prompt

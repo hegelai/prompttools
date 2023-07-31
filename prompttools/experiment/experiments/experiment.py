@@ -335,6 +335,7 @@ class Experiment:
         sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
         if is_interactive():
             import matplotlib.pyplot as plt
+
             plt.bar(range(len(sorted_scores)), list(sorted_scores.values()), align="center")
             plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
             plt.show()

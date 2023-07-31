@@ -22,7 +22,7 @@ def strip_outer_brackets(text: str) -> str:
     """
     first_brace = text.find("{")
     last_brace = text.rfind("}")
-    return text[first_brace: last_brace + 1]
+    return text[first_brace : last_brace + 1]
 
 
 def sample_pre_process_fn(text: str):

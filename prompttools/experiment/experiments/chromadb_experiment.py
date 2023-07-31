@@ -7,7 +7,12 @@
 import os
 import pandas as pd
 from typing import Any, Callable, Dict, Optional
-import chromadb
+
+try:
+    import chromadb
+except ImportError:
+    chromadb = None
+
 import itertools
 import logging
 from prompttools.mock.mock import mock_chromadb_fn
