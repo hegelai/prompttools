@@ -6,14 +6,13 @@
 
 
 import os
-from typing import Dict, List
 import openai
 import jinja2
 from .error import PromptToolsUtilityError
 
 EVALUATION_SYSTEM_PROMPT = """
 You are a grader evaluating responses to math questions.
-Given the PROMPT and EXPECTED, evalaute the ACTUAL answer.
+Given the PROMPT and EXPECTED, evaluate the ACTUAL answer.
 You should grade the response as either RIGHT or WRONG.
 """
 
@@ -47,12 +46,12 @@ def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> 
             Defaults to GPT-4.
     """
     if not os.environ["OPENAI_API_KEY"]:
-        raise PromptToolsUtilityError
+        raise PromptToolsUtilityError("Missing API key for evaluation.")
     evaluation = openai.ChatCompletion.create(model=model, messages=_get_messages(prompt, expected, response))
     return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
 
 
-def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float:
+def evaluate(prompt: str, response: str, metadata: dict, expected: str) -> float:
     r"""
     Uses auto-evaluation to score the model response.
     """
