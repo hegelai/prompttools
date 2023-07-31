@@ -5,5 +5,5 @@ pandas
 jinja2
 jupyterlab
 ipywidgets
-huggingface_hub
+sentence-transformers
 pylint

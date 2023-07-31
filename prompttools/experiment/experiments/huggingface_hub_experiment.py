@@ -7,7 +7,12 @@
 import os
 from typing import Any, Dict, List
 import itertools
-from huggingface_hub.inference_api import InferenceApi
+
+try:
+    from huggingface_hub.inference_api import InferenceApi
+except ImportError:
+    InferenceApi = None
+
 from time import perf_counter
 import logging
 

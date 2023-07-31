@@ -48,7 +48,7 @@ def _from_chroma(doc1, doc2):
     return query_results["distances"][0][0] / 2
 
 
-def compute(doc1, doc2, use_chroma=True):
+def compute(doc1, doc2, use_chroma=False):
     r"""
     Computes the semantic similarity between two documents, using either ChromaDB
     or HuggingFace sentence_transformers.
