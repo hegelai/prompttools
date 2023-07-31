@@ -63,7 +63,7 @@ Contributing
 
 We welcome PRs and suggestions! Don’t hesitate to open a PR/issue or to
 reach out to us `via email <mailto:team@hegel-ai.com>`__. Please have a
-look at our `contribution guide <CONTRIBUTING.md>`__ and `“Help Wanted”
+look at our `contribution guide <https://github.com/hegelai/prompttools/blob/main/CONTRIBUTING.md>`__ and `“Help Wanted”
 issues <https://github.com/hegelai/prompttools/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22>`__
 to get started!
 
