@@ -14,7 +14,8 @@ The core idea is to enable developers to evaluate prompts using familiar
 interfaces like *code* and *notebooks*.
 
 .. image:: ../../img/demo.gif
-   :alt: The prompttools notebook demog.
+   :alt: The prompttools notebook demo.
+   :align: center
 
 There are primarily two ways you can use ``prompttools`` in your LLM workflow:
 

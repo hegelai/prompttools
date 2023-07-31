@@ -5,6 +5,7 @@ If you want to interact with `prompttools` using our playground interface, you c
 
 .. image:: ../../img/playground.gif
    :alt: The prompttools playground.
+   :align: center
 
 First, install prompttools:
 
