@@ -14,6 +14,7 @@ from .experiments.google_palm_experiment import GooglePaLMCompletionExperiment
 from .experiments.llama_cpp_experiment import LlamaCppExperiment
 from .experiments.chromadb_experiment import ChromaDBExperiment
 from .experiments.weaviate_experiment import WeaviateExperiment
+from .experiments.mindsdb_experiment import MindsDBExperiment
 
 __all__ = [
     "AnthropicCompletionExperiment",
@@ -25,4 +26,5 @@ __all__ = [
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
     "WeaviateExperiment",
+    "MindsDBExperiment"
 ]
