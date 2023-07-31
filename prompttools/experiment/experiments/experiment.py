@@ -177,6 +177,7 @@ class Experiment:
         input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
         input_key: Optional[str] = None,
         expected: Optional[List[str]] = None,
+        eval_fn_kwargs: Optional[list[dict]] = None,
     ) -> None:
         """
         Using the given evaluation function, all input/response pairs are evaluated.
@@ -187,6 +188,10 @@ class Experiment:
             input_pairs (Optional[Dict[str, Tuple[str, Dict[str, str]]]]): optional dictionary that holds the input data
                 along with additional context or metadata for each input
             input_key (str): input key name as it exists within input argument (e.g. "messages", "prompt")
+            expected (Optional[List[str]]): List of expected response to be passed to the evaluation function.
+                The length of the list should be the same as the number of responses in the experiment's result.
+            eval_fn_kwargs (Optional[list[dict]]): List of keyword args to be passed to the evaluation function.
+                The length of the list should be the same as the number of responses in the experiment's result.
         """
         if not self.results:
             logging.info("Running first...")
@@ -203,8 +208,11 @@ class Experiment:
                 input_pairs[self.argument_combos[i][input_key]] if input_pairs else self.argument_combos[i][input_key]
             )
             other_scores = {name: self.scores[name][i] for name in self.scores.keys() if name is not metric_name}
-            if expected:
-                score = eval_fn(extracted_input, self._extract_responses(result), other_scores, expected=expected[i])
+            if expected or eval_fn_kwargs:
+                curr_eval_kwargs = {} if eval_fn_kwargs is None else eval_fn_kwargs[i]
+                if expected:
+                    curr_eval_kwargs["expected"] = expected[i]
+                score = eval_fn(extracted_input, self._extract_responses(result), other_scores, **curr_eval_kwargs)
             else:
                 score = eval_fn(
                     extracted_input,
