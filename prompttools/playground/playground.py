@@ -1,9 +1,6 @@
 import streamlit as st
 
-from prompttools.selector.prompt_selector import PromptSelector
-
-from prompttools.ui.data_loader import render_prompts, load_data, run_multiple
-from prompttools.ui.constants import EXPERIMENTS
+from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 st.header("PromptTools Playground")
 
@@ -25,12 +22,12 @@ with st.sidebar:
         )
         model, api_key = None, None
         if model_type in {"LlamaCpp Chat", "LlamaCpp Completion"}:
-            model = st.text_input("Local Model Path", key=f"llama_cpp_model_path")
+            model = st.text_input("Local Model Path", key="llama_cpp_model_path")
         elif model_type == "HuggingFace Hub":
-            model = st.text_input("Repo ID", key=f"hf_model_id")
+            model = st.text_input("Repo ID", key="hf_model_id")
             api_key = st.text_input("HuggingFace Hub API Key")
         elif model_type == "Google PaLM":
-            model = st.text_input("Model", key=f"palm_model")
+            model = st.text_input("Model", key="palm_model")
             api_key = st.text_input("Google PaLM API Key")
         elif model_type == "Anthropic":
             model = st.selectbox("Model", ("claude-2", "claude-instant-1"))
@@ -216,14 +213,9 @@ elif mode == "Model Comparison":
         st.divider()
 
     if st.button("Run"):
-        dfs = run_multiple(model_types,
-                           models, 
-                           instructions, 
-                           prompts, 
-                           openai_api_key,
-                           anthropic_api_key,
-                           google_api_key,
-                           hf_api_key)
+        dfs = run_multiple(
+            model_types, models, instructions, prompts, openai_api_key, anthropic_api_key, google_api_key, hf_api_key
+        )
         for i in range(len(prompts)):
             for j in range(len(models)):
                 placeholders[i][j + 1].markdown(dfs[j]["response"][i])

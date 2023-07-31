@@ -3,7 +3,7 @@ import jinja2
 import streamlit as st
 
 from prompttools.selector.prompt_selector import PromptSelector
-from prompttools.ui.constants import ENVIRONMENT_VARIABLE, EXPERIMENTS
+from prompttools.playground.constants import ENVIRONMENT_VARIABLE, EXPERIMENTS
 
 
 def render_prompts(templates, vars):
@@ -33,14 +33,16 @@ def load_data(model_type, model, instructions, user_inputs, temperature=0.0, api
 
 
 @st.cache_data
-def run_multiple(model_types,
-                 models, 
-                 instructions, 
-                 prompts, 
-                 openai_api_key=None,
-                 anthropic_api_key=None,
-                 google_api_key=None,
-                 hf_api_key=None):
+def run_multiple(
+    model_types,
+    models,
+    instructions,
+    prompts,
+    openai_api_key=None,
+    anthropic_api_key=None,
+    google_api_key=None,
+    hf_api_key=None,
+):
     import os
 
     if openai_api_key:
