@@ -2,9 +2,10 @@ import streamlit as st
 
 from prompttools.selector.prompt_selector import PromptSelector
 
-from prompttools.ui.data_loader import render_prompts, load_data
+from prompttools.ui.data_loader import render_prompts, load_data, run_multiple
 from prompttools.ui.constants import EXPERIMENTS
 
+st.header("PromptTools Playground")
 
 with st.sidebar:
     mode = st.radio("Choose a mode", ("Instruction", "Prompt Template", "Model Comparison"))
@@ -215,23 +216,14 @@ elif mode == "Model Comparison":
         st.divider()
 
     if st.button("Run"):
-        import os
-
-        if openai_api_key:
-            os.environ["OPENAI_API_KEY"] = openai_api_key
-            os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
-            os.environ["GOOGLE_PALM_API_KEY"] = google_api_key
-            os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_key
-        dfs = []
-        for i in range(len(models)):
-            selectors = []
-            if i + 1 in instructions:
-                selectors = [PromptSelector(instructions[i + 1], prompt) for prompt in prompts]
-                prompts = selectors
-            # TODO Support temperature and other parameters
-            experiment = EXPERIMENTS[model_types[i]]([models[i]], prompts)
-            dfs.append(experiment.to_pandas_df())
-
+        dfs = run_multiple(model_types,
+                           models, 
+                           instructions, 
+                           prompts, 
+                           openai_api_key,
+                           anthropic_api_key,
+                           google_api_key,
+                           hf_api_key)
         for i in range(len(prompts)):
             for j in range(len(models)):
                 placeholders[i][j + 1].markdown(dfs[j]["response"][i])

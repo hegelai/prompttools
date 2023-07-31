@@ -33,5 +33,29 @@ def load_data(model_type, model, instructions, user_inputs, temperature=0.0, api
 
 
 @st.cache_data
-def run_multiple():
-    pass
+def run_multiple(model_types,
+                 models, 
+                 instructions, 
+                 prompts, 
+                 openai_api_key=None,
+                 anthropic_api_key=None,
+                 google_api_key=None,
+                 hf_api_key=None):
+    import os
+
+    if openai_api_key:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+        os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
+        os.environ["GOOGLE_PALM_API_KEY"] = google_api_key
+        os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_key
+    dfs = []
+    for i in range(len(models)):
+        # TODO Support temperature and other parameters
+        selectors = []
+        if i + 1 in instructions:
+            selectors = [PromptSelector(instructions[i + 1], prompt) for prompt in prompts]
+            experiment = EXPERIMENTS[model_types[i]]([models[i]], selectors)
+        else:
+            experiment = EXPERIMENTS[model_types[i]]([models[i]], prompts)
+        dfs.append(experiment.to_pandas_df())
+    return dfs

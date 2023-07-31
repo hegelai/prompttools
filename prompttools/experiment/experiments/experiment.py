@@ -516,7 +516,6 @@ class Experiment:
             logging.info("Running first...")
             self.run()
         markdown = self.to_pandas_df().to_markdown()
-        print(markdown)
         return markdown
 
     def _get_model_names(self):
