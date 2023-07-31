@@ -7,7 +7,12 @@
 import os
 from typing import Any, Dict, List
 import itertools
-from huggingface_hub.inference_api import InferenceApi
+
+try:
+    from huggingface_hub.inference_api import InferenceApi
+except ImportError:
+    InferenceApi = None
+
 from time import perf_counter
 import logging
 
@@ -43,6 +48,11 @@ class HuggingFaceHubExperiment(Experiment):
         task: List[str] = ["text-generation"],
         **kwargs: Dict[str, object],
     ):
+        if InferenceApi is None:
+            raise ModuleNotFoundError(
+                "Package `huggingface_hub` is required to be installed to use this experiment."
+                "Please use `pip install huggingface_hub` to install the package"
+            )
         self.completion_fn = self.hf_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_hf_completion_fn
@@ -52,9 +62,7 @@ class HuggingFaceHubExperiment(Experiment):
         # messages, as well as create prompt_keys to map the messages
         # to corresponding prompts in other models.
         if isinstance(prompt[0], PromptSelector):
-            self.prompt_keys = {
-                selector.for_huggingface_hub(): selector.for_huggingface_hub() for selector in prompt
-            }
+            self.prompt_keys = {selector.for_huggingface_hub(): selector.for_huggingface_hub() for selector in prompt}
             prompt = [selector.for_huggingface_hub() for selector in prompt]
         else:
             self.prompt_keys = prompt

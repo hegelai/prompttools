@@ -8,7 +8,7 @@ r"""
 Use a list to optionally hold a reference to the embedding model and client,
 allowing for lazy initialization.
 """
-from typing import Dict, List
+from typing import Dict
 
 EMBEDDING_MODEL = []  #
 CHROMA_CLIENT = []
@@ -48,7 +48,7 @@ def _from_chroma(doc1, doc2):
     return query_results["distances"][0][0] / 2
 
 
-def compute(doc1, doc2, use_chroma=True):
+def compute(doc1, doc2, use_chroma=False):
     r"""
     Computes the semantic similarity between two documents, using either ChromaDB
     or HuggingFace sentence_transformers.

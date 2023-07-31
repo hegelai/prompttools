@@ -7,7 +7,12 @@
 import os
 import pandas as pd
 from typing import Any, Callable, Dict, Optional
-import chromadb
+
+try:
+    import chromadb
+except ImportError:
+    chromadb = None
+
 import itertools
 import logging
 from prompttools.mock.mock import mock_chromadb_fn
@@ -41,15 +46,20 @@ class ChromaDBExperiment(Experiment):
 
     def __init__(
         self,
-        chroma_client: chromadb.Client,
+        chroma_client: "chromadb.Client",
         collection_name: str,
         use_existing_collection: bool,
         query_collection_params: dict,
-        embedding_fns: list[Callable] = [chromadb.utils.embedding_functions.DefaultEmbeddingFunction],
+        embedding_fns: list[Callable] = [chromadb.utils.embedding_functions.DefaultEmbeddingFunction if chromadb else None],
         embedding_fn_names: list[str] = ["default"],
         add_to_collection_params: Optional[dict] = None,
     ):
-        self.chroma_client: chromadb.Client = chroma_client
+        if chromadb is None:
+            raise ModuleNotFoundError(
+                "Package `chromadb` is required to be installed to use this experiment."
+                "Please use `pip install chromadb` to install the package"
+            )
+        self.chroma_client: "chromadb.Client" = chroma_client
         self.completion_fn = self.chromadb_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_chromadb_fn
@@ -70,7 +80,7 @@ class ChromaDBExperiment(Experiment):
 
     def chromadb_completion_fn(
         self,
-        collection: chromadb.api.Collection,
+        collection: "chromadb.api.Collection",
         **query_params: Dict[str, Any],
     ):
         r"""
