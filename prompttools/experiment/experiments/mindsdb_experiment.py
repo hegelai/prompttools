@@ -9,7 +9,11 @@ from typing import Any, Dict, List, Tuple
 import itertools
 from time import perf_counter
 import logging
-from mysql.connector.connection_cext import CMySQLConnection
+
+try:
+    from mysql.connector.connection_cext import CMySQLConnection
+except ImportError:
+    CMySQLConnection = None
 
 from prompttools.mock.mock import mock_mindsdb_completion_fn
 
@@ -26,7 +30,7 @@ class MindsDBExperiment(Experiment):
 
     def __init__(
         self,
-        db_connector: CMySQLConnection,
+        db_connector: "CMySQLConnection",
         **kwargs: Dict[str, object],
     ):
         self.cursor = db_connector.cursor()

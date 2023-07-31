@@ -26,5 +26,5 @@ __all__ = [
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
     "WeaviateExperiment",
-    "MindsDBExperiment"
+    "MindsDBExperiment",
 ]

@@ -92,4 +92,8 @@ def mock_palm_completion_fn(**kwargs):
 
 
 def mock_mindsdb_completion_fn(**kwargs):
-    return [("The first president of the United States was George Washington. However, if you're referring to a different country, please specify so I can provide the correct information.",)]
+    return [
+        (
+            "The first president of the United States was George Washington. However, if you're referring to a different country, please specify so I can provide the correct information.",
+        )
+    ]

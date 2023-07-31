@@ -64,9 +64,4 @@ autodoc_typehints = "description"
 # -- Options for EPUB output
 epub_show_urls = "footnote"
 
-StandaloneHTMLBuilder.supported_image_types = [
-    'image/svg+xml',
-    'image/gif',
-    'image/png',
-    'image/jpeg'
-]
+StandaloneHTMLBuilder.supported_image_types = ["image/svg+xml", "image/gif", "image/png", "image/jpeg"]
