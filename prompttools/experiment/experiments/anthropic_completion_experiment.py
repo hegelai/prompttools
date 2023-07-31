@@ -8,10 +8,9 @@ import os
 
 try:
     import anthropic
-    from anthropic import Anthropic
+    from anthropic._types import NOT_GIVEN
 except ImportError:
     anthropic = None
-    Anthropic = None
 
 
 from prompttools.mock.mock import mock_anthropic_completion_fn
@@ -68,24 +67,24 @@ class AnthropicCompletionExperiment(Experiment):
         max_tokens_to_sample: list[int],
         model: list[str],
         prompt: list[str],
-        metadata: list = [],
-        stop_sequences: list[list[str]] = [],
+        metadata: list = [NOT_GIVEN],
+        stop_sequences: list[list[str]] = [NOT_GIVEN],
         stream: list[bool] = [False],
-        temperature: list[float] = [],
-        top_k: list[int] = [],
-        top_p: list[float] = [],
+        temperature: list[float] = [NOT_GIVEN],
+        top_k: list[int] = [NOT_GIVEN],
+        top_p: list[float] = [NOT_GIVEN],
         timeout: list[float] = [600.0],
         # These are extra parameters not available via kwargs
         # extra_headers=None,
         # extra_query=None,
         # extra_body=None,
     ):
-        if anthropic is None or Anthropic is None:
+        if anthropic is None:
             raise ModuleNotFoundError(
                 "Package `anthropic` is required to be installed to use this experiment."
                 "Please use `pip install anthropic` to install the package"
             )
-        self.client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+        self.client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
         self.completion_fn = self.anthropic_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_anthropic_completion_fn
