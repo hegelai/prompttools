@@ -46,7 +46,7 @@ class ChromaDBExperiment(Experiment):
 
     def __init__(
         self,
-        chroma_client: chromadb.Client,
+        chroma_client, # We omit the type annotation here so we can guard the import
         collection_name: str,
         use_existing_collection: bool,
         query_collection_params: dict,
