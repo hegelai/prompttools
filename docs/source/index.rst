@@ -93,6 +93,7 @@ Module Index
 
    quickstart
    usage
+   playground
 
 .. toctree::
    :caption: Concepts
