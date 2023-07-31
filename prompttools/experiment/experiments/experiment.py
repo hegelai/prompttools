@@ -335,8 +335,21 @@ class Experiment:
         sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
         if is_interactive():
             import matplotlib.pyplot as plt
+            import os
 
-            plt.bar(range(len(sorted_scores)), list(sorted_scores.values()), align="center")
+            # Import style file, assumes same dir as experiment.py
+            style_path = os.path.join(os.path.dirname(__file__), 'style.mplstyle')
+            plt.style.use(style_path)
+
+            # Define the custom colors
+            custom_colors = ["black", '#7e1e9c', '#15b01a', '#448ee4', '#ff7fa7', '#029386',]
+
+            plt.ylabel("Latency (s)")
+
+            # Cycle through the custom colors when creating the bars
+            for i, (label, value) in enumerate(sorted_scores.items()):
+                plt.bar(i, value, align="center", color=custom_colors[i % len(custom_colors)])
+
             plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
             plt.show()
 
@@ -516,6 +529,7 @@ class Experiment:
             logging.info("Running first...")
             self.run()
         markdown = self.to_pandas_df().to_markdown()
+        print(markdown)
         return markdown
 
     def _get_model_names(self):
