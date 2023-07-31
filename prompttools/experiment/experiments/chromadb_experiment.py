@@ -50,7 +50,7 @@ class ChromaDBExperiment(Experiment):
         collection_name: str,
         use_existing_collection: bool,
         query_collection_params: dict,
-        embedding_fns: list[Callable] = [chromadb.utils.embedding_functions.DefaultEmbeddingFunction],
+        embedding_fns: list[Callable] = [chromadb.utils.embedding_functions.DefaultEmbeddingFunction if chromadb else None],
         embedding_fn_names: list[str] = ["default"],
         add_to_collection_params: Optional[dict] = None,
     ):
