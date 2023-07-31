@@ -5,6 +5,6 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from . import autoeval, expected, validate_json, validate_python, similarity
+from . import autoeval, expected, validate_json, validate_python, similarity, autoeval_scoring
 
-__all__ = ["autoeval", "expected", "validate_json", "validate_python", "similarity"]
+__all__ = ["autoeval", "autoeval_scoring", "expected", "validate_json", "validate_python", "similarity"]
