@@ -62,7 +62,7 @@ with st.sidebar:
             prompt_count = st.number_input("Add User Input", step=1, min_value=1, max_value=10)
             variable_count = st.number_input("Add Variable", step=1, min_value=1, max_value=10)
         elif model_type == "OpenAI Chat":
-            instruction_count = st.number_input("Add System Prompt", step=1, min_value=1, max_value=5)
+            instruction_count = st.number_input("Add System Message", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add User Message", step=1, min_value=1, max_value=10)
         else:
             instruction_count = st.number_input("Add Instruction", step=1, min_value=1, max_value=5)
@@ -89,7 +89,7 @@ if mode == "Instruction":
     for j in range(1, instruction_count + 1):
         with cols[j]:
             instructions.append(
-                st.text_area("System Prompt" if model_type == "OpenAI Chat" else "Instruction", key=f"col_{j}")
+                st.text_area("System Message" if model_type == "OpenAI Chat" else "Instruction", key=f"col_{j}")
             )
 
     prompts = []
@@ -112,7 +112,7 @@ elif mode == "Prompt Template":
     if model_type == "LlamaCpp Chat":
         instruction = st.text_area("Instruction", key="instruction")
     elif model_type == "OpenAI Chat":
-        instruction = st.text_area("System Prompt", key="instruction")
+        instruction = st.text_area("System Message", key="instruction")
 
     placeholders = [[st.empty() for _ in range(instruction_count + variable_count)] for _ in range(prompt_count)]
 
@@ -202,7 +202,7 @@ elif mode == "Model Comparison":
                         key=f"model_{j}",
                     )
                 )
-                instructions[j] = st.text_area("System Prompt", key=f"instruction_{j}")
+                instructions[j] = st.text_area("System Message", key=f"instruction_{j}")
 
     prompts = []
     for i in range(prompt_count):
