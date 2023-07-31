@@ -10,7 +10,7 @@ To launch the playground locally, clone the git repo and run the following scrip
 
 ```
 git clone https://github.com/hegelai/prompttools.git
-cd prompttools && streamlit run prompttools/ui/playground.py
+cd prompttools && streamlit run prompttools/playground/playground.py
 ```
 
 Similar to the notebook examples, all the executions and calls to LLM services happen within your local machines,

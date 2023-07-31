@@ -1,7 +1,6 @@
 from prompttools.experiment import LlamaCppExperiment
 from prompttools.experiment import OpenAIChatExperiment
 from prompttools.experiment import OpenAICompletionExperiment
-from prompttools.experiment import LlamaCppExperiment
 from prompttools.experiment import AnthropicCompletionExperiment
 from prompttools.experiment import GooglePaLMCompletionExperiment
 from prompttools.experiment import HuggingFaceHubExperiment
