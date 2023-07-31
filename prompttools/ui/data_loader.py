@@ -3,7 +3,7 @@ import jinja2
 import streamlit as st
 
 from prompttools.selector.prompt_selector import PromptSelector
-from ui.constants import ENVIRONMENT_VARIABLE, EXPERIMENTS
+from prompttools.ui.constants import ENVIRONMENT_VARIABLE, EXPERIMENTS
 
 
 def render_prompts(templates, vars):

@@ -2,8 +2,8 @@ import streamlit as st
 
 from prompttools.selector.prompt_selector import PromptSelector
 
-from ui.data_loader import render_prompts, load_data
-from ui.constants import EXPERIMENTS
+from prompttools.ui.data_loader import render_prompts, load_data
+from prompttools.ui.constants import EXPERIMENTS
 
 
 with st.sidebar:

@@ -71,7 +71,7 @@ Then, clone the git repo and launch the streamlit app:
 
 ```
 git clone https://github.com/hegelai/prompttools.git
-cd prompttools && streamlit run ui/playground.py
+cd prompttools && streamlit run prompttools/ui/playground.py
 ```
 
 ## Documentation
