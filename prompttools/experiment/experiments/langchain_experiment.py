@@ -19,7 +19,7 @@ from prompttools.mock.mock import mock_lc_completion_fn
 from .experiment import Experiment
 from .error import PromptExperimentException
 
-VALID_TASKS = ("text2text-generation", "text-generation", "summarization")
+VALID_TASKS = ()
 
 
 class SequentialChainExperiment(Experiment):
@@ -27,9 +27,9 @@ class SequentialChainExperiment(Experiment):
     Experiment for LangChain sequential chains.
     """
 
-    MODEL_PARAMETERS = ["repo_id", "task"]
+    MODEL_PARAMETERS = []
 
-    CALL_PARAMETERS = ["prompt"]
+    CALL_PARAMETERS = []
 
     def __init__(
         self,
