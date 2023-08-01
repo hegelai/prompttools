@@ -105,7 +105,7 @@ class OpenAIChatExperiment(Experiment):
             n=n,
             stream=stream,
             stop=stop,
-            max_token=max_tokens,
+            max_tokens=max_tokens,
             presence_penalty=presence_penalty,
             frequency_penalty=frequency_penalty,
             logit_bias=logit_bias,
