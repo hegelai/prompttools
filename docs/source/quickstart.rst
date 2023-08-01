@@ -7,20 +7,15 @@ To install ``prompttools``, you can use ``pip``:
 
    pip install prompttools
 
-You can run a simple example of a ``prompttools`` with the following
+You can run a simple example of a ``prompttools`` locally with the following
 
 ::
 
-   DEBUG=1 python examples/prompttests/test_openai_chat.py
+    git clone https://github.com/hegelai/prompttools.git
+    cd prompttools && jupyter notebook examples/notebooks/OpenAIChatExperiment.ipynb
 
-To run the example outside of ``DEBUG`` mode, you’ll need to bring your
-own OpenAI API key. This is because ``prompttools`` makes a call to
-OpenAI from your machine. For example:
+There are many `notebook examples <https://github.com/hegelai/prompttools/tree/main/examples/notebooks>`_ that
+you can explore. The README on that page gives you brief description of the examples.
 
-::
-
-   OPENAI_API_KEY=sk-... python examples/prompttests/test_openai_chat.py
-
-You can see the full example
-`here <https://github.com/hegelai/prompttools/tree/main/examples/prompttests/test_openai_chat.py>`__.
-
+If you prefer to have a UI instead of using jupyter notebook, have a look at
+our `Playground <./playground.html>`_.

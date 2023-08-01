@@ -1,3 +1,10 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+
 import streamlit as st
 
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple

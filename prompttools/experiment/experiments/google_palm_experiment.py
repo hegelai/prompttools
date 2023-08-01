@@ -97,3 +97,9 @@ class GooglePaLMCompletionExperiment(Experiment):
     def _extract_responses(completion_response: "palm.text.text_types.Completion") -> list[str]:
         # `# completion_response.result` will return the top response
         return [candidate["output"] for candidate in completion_response.candidates]
+
+    def _get_model_names(self):
+        return [combo["model"] for combo in self.argument_combos]
+
+    def _get_prompts(self):
+        return [combo["prompt"] for combo in self.argument_combos]

@@ -4,7 +4,7 @@ Harness
 .. currentmodule:: prompttools.harness
 
 There are two main abstractions used in the ``prompttools`` library: Experiments and Harnesses.
-Most of the time, you'll want to use a harness, because it abstracts away more details.
+Occasionally, you may want to use a harness, because it abstracts away more details.
 
 A harness is built on top of an experiment, and manages abstractions over inputs.
 For example, the ``PromptTemplateExperimentationHarness`` freezes one set of model arguments
@@ -17,6 +17,8 @@ a corresponding experiment, and keeps track of the templates and inputs used for
 .. autoclass:: ChatHistoryExperimentationHarness
 
 .. autoclass:: ChatModelComparisonHarness
+
+.. autoclass:: MultiExperimentHarness
 
 .. autoclass:: PromptTemplateExperimentationHarness
 

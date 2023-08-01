@@ -34,7 +34,16 @@ class HuggingFaceHubExperiment(Experiment):
     Note:
         - All arguments here should be a ``list``, even if you want to keep the argument frozen
           (i.e. ``temperature=[1.0]``), because the experiment will try all possible combination
-          of the input arguments.
+          of the input arguments. For example, ``kwargs`` should have string keys,
+          with ``list``s being the values.
+
+    Args:
+        repo_id (List[str]): IDs of repository (e.g. [`user/bert-base-uncased`]).
+        prompt (List[str] | List[PromptSelector]): list of prompts to test
+        task (List[str]): List of tasks in strings. Determines whether to force a task instead of using task
+            specified in the repository.
+        **kwargs (Dict[str, list[object]]): Keyword parameters used in the call to ``InferenceApi``.
+            The values should be ``list``s.
     """
 
     MODEL_PARAMETERS = ["repo_id", "task"]
@@ -46,7 +55,7 @@ class HuggingFaceHubExperiment(Experiment):
         repo_id: List[str],
         prompt: List[str] | List[PromptSelector],
         task: List[str] = ["text-generation"],
-        **kwargs: Dict[str, object],
+        **kwargs: Dict[str, list[object]],
     ):
         if InferenceApi is None:
             raise ModuleNotFoundError(
