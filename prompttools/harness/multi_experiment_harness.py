@@ -1,3 +1,10 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+
 from typing import Callable, Dict, List
 from collections import defaultdict
 from prompttools.experiment import Experiment
