@@ -111,6 +111,12 @@ a PR to add it. Feel free to discuss in our Discord channel as well.
 2. Does `prompttools` store my API keys or LLM inputs and outputs to a server?
     - No, all data stay on your local machine.
 
+3. How do I persist my results?
+   -  To persist the results of your tests and experiments, you can export your `Experiment` with the methods `to_csv`,
+      `to_json`, `to_lora_json`, or `to_mongo_db`. We are building more persistence features and we will be happy to further discuss your use cases, pain points, and what export
+      options may be useful for you.
+
+
 ## Contributing
 
 We welcome PRs and suggestions! Don't hesitate to open a PR/issue or to reach out to us [via email](mailto:team@hegel-ai.com).
