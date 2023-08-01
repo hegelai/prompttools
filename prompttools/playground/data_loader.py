@@ -16,7 +16,7 @@ def render_prompts(templates, vars):
 
 
 @st.cache_data
-def load_data(model_type, model, instructions, user_inputs, temperature=0.0, api_key=None):
+def load_data(model_type, model, instructions, user_inputs, temperature=0.0, top_p = 1, max_tokens=100, frequency_penalty=0.0, presence_penalty=0.0, api_key=None):
     if api_key:
         os.environ[ENVIRONMENT_VARIABLE[model_type]] = api_key
     selectors = [PromptSelector(instruction, user_input) for instruction in instructions for user_input in user_inputs]
@@ -26,7 +26,7 @@ def load_data(model_type, model, instructions, user_inputs, temperature=0.0, api
         call_params = dict(temperature=[temperature])
         experiment = EXPERIMENTS[model_type]([model], selectors, call_params=call_params)
     elif model_type in {"OpenAI Chat", "OpenAI Completion"}:
-        experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+        experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature], top_p=[top_p], max_tokens=[max_tokens], frequency_penalty=[frequency_penalty], presence_penalty=[presence_penalty])
     elif model_type == "HuggingFace Hub":
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
     return experiment.to_pandas_df()

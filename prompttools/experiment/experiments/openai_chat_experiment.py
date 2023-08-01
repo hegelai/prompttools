@@ -82,6 +82,9 @@ class OpenAIChatExperiment(Experiment):
         frequency_penalty: Optional[List[float]] = [0.0],
         logit_bias: Optional[Dict] = [None],
     ):
+        print(max_tokens)
+        print(frequency_penalty)
+        print(presence_penalty)
         self.completion_fn = openai.ChatCompletion.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_openai_chat_completion_fn
@@ -105,7 +108,7 @@ class OpenAIChatExperiment(Experiment):
             n=n,
             stream=stream,
             stop=stop,
-            max_token=max_tokens,
+            max_tokens=max_tokens,
             presence_penalty=presence_penalty,
             frequency_penalty=frequency_penalty,
             logit_bias=logit_bias,

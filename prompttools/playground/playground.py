@@ -54,6 +54,11 @@ with st.sidebar:
             model = st.selectbox("Model", ("text-davinci-003", "text-davinci-002", "code-davinci-002"))
             api_key = st.text_input("OpenAI API Key")
         temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
+        top_p = st.slider("Top_P", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="top_p")
+        max_tokens = st.slider("Max Tokens", min_value=0, max_value=100, value=100, step=5, key="max_tokens")
+        presence_penalty = st.slider("Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty")
+        frequency_penalty = st.slider("Frequency Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="frequency_penalty")
+
         variable_count = 0
         if mode == "Prompt Template":
             instruction_count = st.number_input("Add Template", step=1, min_value=1, max_value=5)
@@ -87,7 +92,7 @@ if mode == "Instruction":
     for j in range(1, instruction_count + 1):
         with cols[j]:
             instructions.append(
-                st.text_area("System Message" if model_type == "OpenAI Chat" else "Instruction", key=f"col_{j}")
+                st.text_area("System Message" if model_type == "OpenAI Chat" else "Instruction", placeholder="You are an AI assistant.", key=f"col_{j}")
             )
 
     prompts = []
@@ -101,7 +106,7 @@ if mode == "Instruction":
         st.divider()
 
     if st.button("Run"):
-        df = load_data(model_type, model, instructions, prompts, temperature, api_key)
+        df = load_data(model_type, model, instructions, prompts, temperature, top_p, max_tokens, frequency_penalty, presence_penalty, api_key)
         for i in range(len(prompts)):
             for j in range(len(instructions)):
                 placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
@@ -200,7 +205,7 @@ elif mode == "Model Comparison":
                         key=f"model_{j}",
                     )
                 )
-                instructions[j] = st.text_area("System Message", key=f"instruction_{j}")
+                instructions[j] = st.text_area("System Message", placeholder="You are an AI assistant.", key=f"instruction_{j}")
 
     prompts = []
     for i in range(prompt_count):
@@ -213,6 +218,8 @@ elif mode == "Model Comparison":
         st.divider()
 
     if st.button("Run"):
+        print("A")
+        print(openai_api_key)
         dfs = run_multiple(
             model_types, models, instructions, prompts, openai_api_key, anthropic_api_key, google_api_key, hf_api_key
         )
