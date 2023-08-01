@@ -27,10 +27,10 @@ def compute(prompt: str, model: str = "gpt-4") -> str:
     return response["choices"][0]["message"]["content"]
 
 
-def compute_similarity(prompt: str, response: str, model: str = "gpt-4") -> str:
+def compute_similarity_against_model(prompt: str, response: str, model: str = "gpt-4") -> str:
     r"""
     Computes the similarity of a given response to the expected result
-    of a given prompt by using a high quality LLM, like GPT-4.
+    generated from a high quality LLM (by default GPT-4) using the same prompt.
 
     Args:
         prompt (str): The input prompt.

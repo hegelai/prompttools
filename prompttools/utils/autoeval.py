@@ -51,14 +51,17 @@ def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
     return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
 
 
-# TODO: After we refactor experiment.evaluate()
-#       Rename these functions to make it easier for users to distinguish between different utils functions
-def evaluate(prompt: str, response: str, _metadata: Dict) -> float:
+def autoeval_binary_scoring(prompt: str, response: str, metadata: Dict) -> float:
     r"""
-    Uses auto-evaluation to score the model response, using "gpt-4".
+    Uses auto-evaluation to score the model response with "gpt-4" as the judge, returning 0.0 or 1.0.
 
     Args:
         prompt (str): The input prompt.
         response (str): The model response.
+        metadata (str): Not used.
     """
     return compute(prompt, response)
+
+
+def evaluate(prompt: str, response: str, _metadata: Dict) -> float:
+    return autoeval_binary_scoring(prompt, response, _metadata)
