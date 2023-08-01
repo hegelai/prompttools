@@ -218,8 +218,6 @@ elif mode == "Model Comparison":
         st.divider()
 
     if st.button("Run"):
-        print("A")
-        print(openai_api_key)
         dfs = run_multiple(
             model_types, models, instructions, prompts, openai_api_key, anthropic_api_key, google_api_key, hf_api_key
         )
