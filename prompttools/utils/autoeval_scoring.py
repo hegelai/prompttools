@@ -62,12 +62,14 @@ def compute(fact: str, model_answer: str, model: str = "claude-2") -> float:
     return int(completion_response.completion)
 
 
-def evaluate(prompt: str, response: str, metadata: dict, expected: str) -> float:
+def autoeval_scoring(prompt: str, response: str, metadata: dict, expected: str) -> float:
     r"""
     Uses auto-evaluation to score the model response.
 
     Args:
+        prompt (str): Not used.
         response (str): The model response.
+        metadata (str): Not used.
         expected (str): The fact (truth). The auto-eval model will judge how close the ``response`` is
             from this fact (truth).
     """

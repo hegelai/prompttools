@@ -57,7 +57,7 @@ def compute(doc1, doc2, use_chroma=False):
         doc1 (str): The first document.
         doc2 (str): The second document.
         use_chroma (bool): Indicates whether or not to use Chroma.
-            If false, uses HuggingFace sentence_transformers.
+            If ``False``, uses HuggingFace ``sentence_transformers``.
     """
     if use_chroma:
         return _from_chroma(doc1, doc2)
@@ -65,9 +65,19 @@ def compute(doc1, doc2, use_chroma=False):
         return _from_huggingface(doc1, doc2)
 
 
-def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float:
+def semantic_similarity(prompt: str, response: str, metadata: Dict, expected: str) -> float:
     r"""
-    A simple test that checks semantic similarity between the user input
+    A simple test that checks semantic similarity between the expected response (provided by the user)
     and the model's text responses.
+
+    Args:
+        prompt (str): Not used.
+        response (str): the response string that will be compared against
+        metadata (dict): Not used.
+        expected (str): the expected response
     """
     return compute(expected, response)
+
+
+def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float:
+    return semantic_similarity(prompt, response, metadata, expected)

@@ -29,5 +29,17 @@ def validate(text: str):
     return 0.0 if "error" in pylint_stdout.getvalue() else 1.0
 
 
-def evaluate(prompt: str, response: str, metadata: Dict) -> float:
+def validate_python_response(prompt: str, response: str, metadata: Dict) -> float:
+    r"""
+    Validate whether ``response`` string follows Python's syntax.
+
+    Args:
+        prompt (str): Not used.
+        response (str): the string that will be validated
+        metadata (dict): Not used.
+    """
     return validate(response)
+
+
+def evaluate(prompt: str, response: str, metadata: Dict) -> float:
+    return validate_python_response(prompt, response, metadata)

@@ -74,5 +74,17 @@ def validate_keys(text: str, valid_keys: List[str]):
     return 1.0
 
 
-def evaluate(prompt: str, response: str, metadata: Dict) -> float:
+def validate_json_response(prompt: str, response: str, metadata: Dict) -> float:
+    r"""
+    Validate whether ``response`` string is in a valid JSON format.
+
+    Args:
+        prompt (str): Not used.
+        response (str): the string that will be validated
+        metadata (dict): Not used.
+    """
     return validate(response)
+
+
+def evaluate(prompt: str, response: str, metadata: Dict) -> float:
+    return validate_json_response(prompt, response, metadata)
