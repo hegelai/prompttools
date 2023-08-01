@@ -6,6 +6,10 @@ You can:
 - Try different prompt templates
 - Compare across models (e.g. GPT-4 vs. local LLaMA 2)
 
+<p align="center">
+  <img src="../../img/playground.gif" width="1000" height="500">
+</p>
+
 To launch the playground locally, clone the git repo and run the following script with streamlit:
 
 ```

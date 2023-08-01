@@ -10,6 +10,9 @@ class MultiExperimentHarness:
     (e.g. LlamaCpp and OpenAI) are different, this provides a way to manage that complexity.
     This will run experiments for different providers, and combine the results into a single table.
 
+    The notebook "examples/notebooks/GPT4vsLlama2.ipynb" provides a good example how this can used
+    to test prompts across different models.
+
     Args:
         experiments (list[Experiment]): The list of experiments that you would like to execute (e.g.
             ``prompttools.experiment.OpenAICompletionExperiment``)
