@@ -18,6 +18,8 @@ a corresponding experiment, and keeps track of the templates and inputs used for
 
 .. autoclass:: ChatModelComparisonHarness
 
+.. autoclass:: MultiExperimentHarness
+
 .. autoclass:: PromptTemplateExperimentationHarness
 
 .. autoclass:: SystemPromptExperimentationHarness

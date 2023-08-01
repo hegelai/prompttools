@@ -28,7 +28,15 @@ class LlamaCppExperiment(Experiment):
     Note:
         - All arguments here should be a ``list``, even if you want to keep the argument frozen
           (i.e. ``temperature=[1.0]``), because the experiment will try all possible combination
-          of the input arguments.
+          of the input arguments. For example, ``model_params`` should have string keys,
+          with ``list``s being the values.
+
+    Args:
+        model_path (List[str]): list of paths to the models that you would like to run
+        prompt (List[str] | List[PromptSelector]): list of prompts to test
+        model_params (Dict[str, list[object]]): Parameters for initializing the model. The values should be ``list``s.
+        call_params: (Dict[str, list[object]]): Parameters for calling the model completion function.
+            The values should be ``list``s.
     """
 
     MODEL_PARAMETERS = (
@@ -92,8 +100,8 @@ class LlamaCppExperiment(Experiment):
         self,
         model_path: List[str],
         prompt: List[str] | List[PromptSelector],
-        model_params: Dict[str, object] = {},
-        call_params: Dict[str, object] = {},
+        model_params: Dict[str, list[object]] = {},
+        call_params: Dict[str, list[object]] = {},
     ):
         if Llama is None:
             raise ModuleNotFoundError(

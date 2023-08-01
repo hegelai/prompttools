@@ -1,3 +1,10 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+
 from typing import Callable, Dict, List
 from collections import defaultdict
 from prompttools.experiment import Experiment
@@ -5,9 +12,21 @@ import pandas as pd
 
 
 class MultiExperimentHarness:
-    def __init__(self, experiments: List[Experiment], prompts: List[str] = []):
+    r"""
+    This is designed to run experiments across multiple model providers. The underlying APIs for different models
+    (e.g. LlamaCpp and OpenAI) are different, this provides a way to manage that complexity.
+    This will run experiments for different providers, and combine the results into a single table.
+
+    The notebook "examples/notebooks/GPT4vsLlama2.ipynb" provides a good example how this can used
+    to test prompts across different models.
+
+    Args:
+        experiments (list[Experiment]): The list of experiments that you would like to execute (e.g.
+            ``prompttools.experiment.OpenAICompletionExperiment``)
+    """
+
+    def __init__(self, experiments: List[Experiment]):
         self.experiments = experiments
-        self.prompts = prompts
 
     def prepare(self):
         for experiment in self.experiments:
@@ -50,7 +69,6 @@ class MultiExperimentHarness:
         return tmp
 
     def visualize(self, colname: str = None) -> None:
-        argument_combos = self._get_argument_combos()
         scores = self._get_scores()
         data = {
             "prompt": self._get_prompts(),

@@ -123,3 +123,6 @@ class AnthropicCompletionExperiment(Experiment):
 
     def _get_model_names(self):
         return [combo["model"] for combo in self.argument_combos]
+
+    def _get_prompts(self):
+        return [combo["prompt"] for combo in self.argument_combos]
