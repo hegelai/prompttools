@@ -80,6 +80,20 @@ class ChromaDBExperiment(Experiment):
         self.query_args_combo: list[dict] = []
         super().__init__()
 
+    @classmethod
+    def initialize(cls, test_parameters: dict[str, list], frozen_parameters: dict):
+        required_frozen_params = (
+            "chroma_client",
+            "collection_name",
+            "use_existing_collection",
+            "query_collection_params",
+        )
+        for arg_name in required_frozen_params:
+            if arg_name not in frozen_parameters or arg_name in test_parameters:
+                raise RuntimeError(f"'{arg_name}' must be a frozen parameter in ChromaDBExperiment.")
+        frozen_parameters = {k: [v] for k, v in frozen_parameters.items()}
+        return cls(**test_parameters, **frozen_parameters)
+
     def chromadb_completion_fn(
         self,
         collection: "chromadb.api.Collection",

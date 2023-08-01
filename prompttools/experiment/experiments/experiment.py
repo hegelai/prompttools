@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional, Tuple, Union, final
+from typing import Callable, Dict, List, Optional, Tuple, Union
 from operator import itemgetter
 from collections import defaultdict
 import itertools
@@ -50,7 +50,6 @@ class Experiment:
         )
 
     @classmethod
-    @final
     def initialize(cls, test_parameters: dict[str, list], frozen_parameters: dict):
         r"""
         An alternate way to initialize an experiment by specifying which parameters should be tested
@@ -346,11 +345,18 @@ class Experiment:
             import os
 
             # Import style file, assumes same dir as experiment.py
-            style_path = os.path.join(os.path.dirname(__file__), 'style.mplstyle')
+            style_path = os.path.join(os.path.dirname(__file__), "style.mplstyle")
             plt.style.use(style_path)
 
             # Define the custom colors
-            custom_colors = ["black", '#7e1e9c', '#15b01a', '#448ee4', '#ff7fa7', '#029386',]
+            custom_colors = [
+                "black",
+                "#7e1e9c",
+                "#15b01a",
+                "#448ee4",
+                "#ff7fa7",
+                "#029386",
+            ]
 
             plt.ylabel("Latency (s)")
 

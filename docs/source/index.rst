@@ -104,7 +104,7 @@ Module Index
    :maxdepth: 2
    :hidden:
 
-   harness
    experiment
+   harness
    utils
    testing

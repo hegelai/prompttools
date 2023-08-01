@@ -122,6 +122,12 @@ class LlamaCppExperiment(Experiment):
         self.all_args = self.model_params | self.call_params
         super().__init__()
 
+    @classmethod
+    def initialize(cls, test_parameters: dict[str, list], frozen_parameters: dict):
+        raise NotImplementedError(
+            "`initialize` is currently not compatible with `LlamaCppExperiment`. Please" "use `__init__` directly."
+        )
+
     def prepare(self) -> None:
         r"""
         Creates argument combinations by taking the cartesian product of all inputs.

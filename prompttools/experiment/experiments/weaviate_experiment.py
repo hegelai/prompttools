@@ -126,6 +126,15 @@ class WeaviateExperiment(Experiment):
         self.query_builders = query_builders
         super().__init__()
 
+    @classmethod
+    def initialize(cls, test_parameters: dict[str, list], frozen_parameters: dict):
+        required_frozen_params = ("client", "class_name", "use_existing_data")
+        for arg_name in required_frozen_params:
+            if arg_name not in frozen_parameters or arg_name in test_parameters:
+                raise RuntimeError(f"'{arg_name}' must be a frozen parameter in WeaviateExperiment.")
+        frozen_parameters = {k: [v] for k, v in frozen_parameters.items()}
+        return cls(**test_parameters, **frozen_parameters)
+
     @staticmethod
     def _generate_vectorIndexConfigs(distance_metric: str):
         return {
