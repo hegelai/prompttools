@@ -88,14 +88,17 @@ LLMs
 - LLaMA.Cpp (LLaMA 1, LLaMA 2) - **Supported**
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
-- Google PaLM API - **Supported**
+- Google PaLM - **Supported**
+- LangChain - Exploratory
 
-Vector Databases
+Vector Databases and Data Utility
 - Chroma - **Supported**
 - Weaviate - **Supported**
+- MindsDB - **Supported**
 - Milvus - Exploratory
 - Pinecone - Exploratory
 - LanceDB - Exploratory
+- LlamaIndex - Exploratory
 
 If you have any API that you'd like to see being supported soon, please open an issue or
 a PR to add it. Feel free to discuss in our Discord channel as well.
