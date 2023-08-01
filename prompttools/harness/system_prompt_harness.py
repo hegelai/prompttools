@@ -16,8 +16,8 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         experiment (Type[Experiment]): The experiment that you would like to execute (e.g.
             ``prompttools.experiment.OpenAICompletionExperiment``)
         model_name (str): The name of the model.
-        system_prompts (List[str]): A list of system prompts
-        human_messages (List[str]): A list of
+        system_prompts (List[str]): A list of system prompts for the model
+        human_messages (List[str]): A list of human (user) messages to pass into the model
         model_arguments (Optional[Dict[str, object]], optional): Additional arguments for the model.
             Defaults to ``None``.
     """
