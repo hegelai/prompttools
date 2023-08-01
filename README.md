@@ -17,7 +17,7 @@
 </p>
 
 
-Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of free, open-source tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
+Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of open-source, self-hostable tools for experimenting with, testing, and evaluating LLMs, vector databases, and prompts. The core idea is to enable developers to evaluate using familiar interfaces like _code_, _notebooks_, and a local _playground_.
 
 In just a few lines of codes, you can test your prompts and parameters across different models (whether you are using
 OpenAI, Anthropic, or LLaMA models). You can even evaluate the retrieval accuracy of vector databases.
