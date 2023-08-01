@@ -55,7 +55,7 @@ with st.sidebar:
             api_key = st.text_input("OpenAI API Key")
         temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
         top_p = st.slider("Top_P", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="top_p")
-        max_tokens = st.slider("Max Tokens", min_value=0, max_value=100, value=100, step=5, key="max_tokens")
+        max_tokens = st.number_input("Max Tokens", min_value=0, value=100, step=5, key="max_tokens")
         presence_penalty = st.slider("Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty")
         frequency_penalty = st.slider("Frequency Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="frequency_penalty")
 
@@ -92,7 +92,7 @@ if mode == "Instruction":
     for j in range(1, instruction_count + 1):
         with cols[j]:
             instructions.append(
-                st.text_area("System Message" if model_type == "OpenAI Chat" else "Instruction", placeholder="You are an AI assistant.", key=f"col_{j}")
+                st.text_area("System Message" if model_type == "OpenAI Chat" else "Instruction", value="You are a helpful AI assistant.", key=f"col_{j}")
             )
 
     prompts = []
@@ -205,7 +205,7 @@ elif mode == "Model Comparison":
                         key=f"model_{j}",
                     )
                 )
-                instructions[j] = st.text_area("System Message", placeholder="You are an AI assistant.", key=f"instruction_{j}")
+                instructions[j] = st.text_area("System Message", value="You are a helpful AI assistant.", key=f"instruction_{j}")
 
     prompts = []
     for i in range(prompt_count):

@@ -16,7 +16,7 @@ def render_prompts(templates, vars):
 
 
 @st.cache_data
-def load_data(model_type, model, instructions, user_inputs, temperature=0.0, top_p = 1, max_tokens=100, frequency_penalty=0.0, presence_penalty=0.0, api_key=None):
+def load_data(model_type, model, instructions, user_inputs, temperature=0.0, top_p = 1, max_tokens=None, frequency_penalty=0.0, presence_penalty=0.0, api_key=None):
     if api_key:
         os.environ[ENVIRONMENT_VARIABLE[model_type]] = api_key
     selectors = [PromptSelector(instruction, user_input) for instruction in instructions for user_input in user_inputs]
