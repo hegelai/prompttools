@@ -97,3 +97,7 @@ def mock_mindsdb_completion_fn(**kwargs):
             "The first president of the United States was George Washington. However, if you're referring to a different country, please specify so I can provide the correct information.",
         )
     ]
+
+
+def mock_lc_completion_fn(**kwargs):
+    return "The first president of the United States was George Washington."
