@@ -74,6 +74,10 @@ git clone https://github.com/hegelai/prompttools.git
 cd prompttools && streamlit run prompttools/playground/playground.py
 ```
 
+You can also access a hosted version of the playground on the [Streamlit Community Cloud](https://prompttools.streamlit.app/).
+
+> Note: The hosted version does not support LlamaCpp
+
 ## Documentation
 
 Our [documentation website](https://prompttools.readthedocs.io/en/latest/index.html) contains the full API reference
