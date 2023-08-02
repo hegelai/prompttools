@@ -1,2 +1,4 @@
 prompttools==0.0.22
 jinja2
+huggingface_hub
+llama-cpp-python
