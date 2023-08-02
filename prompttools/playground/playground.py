@@ -11,10 +11,11 @@ try:
     import os
     from pathlib import Path
     from dotenv import load_dotenv
+
     base_dir = os.path.abspath(os.path.dirname(__file__))
     path = Path(base_dir)
     repo_dir = path.parent.parent.absolute()
-    load_dotenv(os.path.join(repo_dir, '.env')) 
+    load_dotenv(os.path.join(repo_dir, ".env"))
 except Exception:
     pass
 
@@ -68,10 +69,10 @@ with st.sidebar:
                 ),
             )
             api_key = st.text_input("OpenAI API Key")
-        elif model_type == "OpenAI Completion":
+        elif model_type == "OpenAI g":
             model = st.selectbox("Model", ("text-davinci-003", "text-davinci-002", "code-davinci-002"))
             api_key = st.text_input("OpenAI API Key")
-       
+
         variable_count = 0
         if mode == "Prompt Template":
             instruction_count = st.number_input("Add Template", step=1, min_value=1, max_value=5)
@@ -80,7 +81,7 @@ with st.sidebar:
         elif model_type == "OpenAI Chat":
             instruction_count = st.number_input("Add System Message", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add User Message", step=1, min_value=1, max_value=10)
-            
+
         else:
             instruction_count = st.number_input("Add Instruction", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
@@ -88,12 +89,15 @@ with st.sidebar:
         for i in range(variable_count):
             var_names.append(st.text_input(f"Variable {i+1} Name", value=f"Variable {i+1}", key=f"varname_{i}"))
         temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
-
         if model_type == "OpenAI Chat" or model_type == "OpenAI Completion":
             top_p = st.slider("Top P", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="top_p")
             max_tokens = st.number_input("Max Tokens", min_value=0, value=32768, step=1, key="max_tokens")
-            presence_penalty = st.slider("Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty")
-            frequency_penalty = st.slider("Frequency Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="frequency_penalty")
+            presence_penalty = st.slider(
+                "Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty"
+            )
+            frequency_penalty = st.slider(
+                "Frequency Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="frequency_penalty"
+            )
     else:
         model_count = st.number_input("Add Model", step=1, min_value=1, max_value=5)
         prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
@@ -113,7 +117,11 @@ if mode == "Instruction":
     for j in range(1, instruction_count + 1):
         with cols[j]:
             instructions.append(
-                st.text_area("System Message" if model_type == "OpenAI Chat" else "Instruction", value="You are a helpful AI assistant.", key=f"col_{j}")
+                st.text_area(
+                    "System Message" if model_type == "OpenAI Chat" else "Instruction",
+                    value="You are a helpful AI assistant.",
+                    key=f"col_{j}",
+                )
             )
 
     prompts = []
@@ -127,7 +135,18 @@ if mode == "Instruction":
         st.divider()
 
     if st.button("Run"):
-        df = load_data(model_type, model, instructions, prompts, temperature, top_p, max_tokens, frequency_penalty, presence_penalty, api_key)
+        df = load_data(
+            model_type,
+            model,
+            instructions,
+            prompts,
+            temperature,
+            top_p,
+            max_tokens,
+            frequency_penalty,
+            presence_penalty,
+            api_key,
+        )
         for i in range(len(prompts)):
             for j in range(len(instructions)):
                 placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
@@ -226,7 +245,9 @@ elif mode == "Model Comparison":
                         key=f"model_{j}",
                     )
                 )
-                instructions[j] = st.text_area("System Message", value="You are a helpful AI assistant.", key=f"instruction_{j}")
+                instructions[j] = st.text_area(
+                    "System Message", value="You are a helpful AI assistant.", key=f"instruction_{j}"
+                )
 
     prompts = []
     for i in range(prompt_count):

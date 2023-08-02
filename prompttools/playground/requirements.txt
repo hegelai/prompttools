@@ -1,4 +1,4 @@
-prompttools==0.0.22
+prompttools==0.0.23
 jinja2
 huggingface_hub
 llama-cpp-python
