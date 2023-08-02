@@ -1,5 +1,4 @@
-prompttools
+prompttools==0.0.22
 jinja2
-streamlit
 dotenv
 pathlib
