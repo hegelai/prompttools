@@ -7,6 +7,17 @@
 
 import streamlit as st
 
+try:
+    import os
+    from pathlib import Path
+    from dotenv import load_dotenv
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    path = Path(base_dir)
+    repo_dir = path.parent.parent.absolute()
+    load_dotenv(os.path.join(repo_dir, '.env')) 
+except Exception:
+    pass
+
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 st.header("PromptTools Playground")
