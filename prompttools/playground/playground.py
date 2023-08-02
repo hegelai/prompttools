@@ -97,10 +97,10 @@ with st.sidebar:
             # top_p = st.slider("Top P", min_value=0.0, max_value=1.0, value=1.0, step=0.01, key="top_p")
             # max_tokens = st.number_input("Max Tokens", min_value=0, value=, step=1, key="max_tokens")
             presence_penalty = st.slider(
-                "Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty"
+                "Presence Penalty", min_value=-2.0, max_value=2.0, value=0.0, step=0.01, key="presence_penalty"
             )
             frequency_penalty = st.slider(
-                "Frequency Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="frequency_penalty"
+                "Frequency Penalty", min_value=-2.0, max_value=2.0, value=0.0, step=0.01, key="frequency_penalty"
             )
     else:
         model_count = st.number_input("Add Model", step=1, min_value=1, max_value=5)
