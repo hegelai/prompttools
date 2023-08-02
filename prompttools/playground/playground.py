@@ -71,12 +71,7 @@ with st.sidebar:
         elif model_type == "OpenAI Completion":
             model = st.selectbox("Model", ("text-davinci-003", "text-davinci-002", "code-davinci-002"))
             api_key = st.text_input("OpenAI API Key")
-        temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
-        top_p = st.slider("Top_P", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="top_p")
-        max_tokens = st.number_input("Max Tokens", min_value=0, value=100, step=5, key="max_tokens")
-        presence_penalty = st.slider("Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty")
-        frequency_penalty = st.slider("Frequency Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="frequency_penalty")
-
+       
         variable_count = 0
         if mode == "Prompt Template":
             instruction_count = st.number_input("Add Template", step=1, min_value=1, max_value=5)
@@ -85,12 +80,20 @@ with st.sidebar:
         elif model_type == "OpenAI Chat":
             instruction_count = st.number_input("Add System Message", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add User Message", step=1, min_value=1, max_value=10)
+            
         else:
             instruction_count = st.number_input("Add Instruction", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
         var_names = []
         for i in range(variable_count):
             var_names.append(st.text_input(f"Variable {i+1} Name", value=f"Variable {i+1}", key=f"varname_{i}"))
+        temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="temperature")
+
+        if model_type == "OpenAI Chat" or model_type == "OpenAI Completion":
+            top_p = st.slider("Top P", min_value=0.0, max_value=1.0, value=0.5, step=0.01, key="top_p")
+            max_tokens = st.number_input("Max Tokens", min_value=0, value=32768, step=1, key="max_tokens")
+            presence_penalty = st.slider("Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty")
+            frequency_penalty = st.slider("Frequency Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="frequency_penalty")
     else:
         model_count = st.number_input("Add Model", step=1, min_value=1, max_value=5)
         prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
