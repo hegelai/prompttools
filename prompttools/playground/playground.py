@@ -94,8 +94,8 @@ with st.sidebar:
         presence_penalty = None
         frequency_penalty = None
         if model_type == "OpenAI Chat" or model_type == "OpenAI Completion":
-            top_p = st.slider("Top P", min_value=0.0, max_value=1.0, value=1.0, step=0.01, key="top_p")
-            max_tokens = st.number_input("Max Tokens", min_value=0, value=4097, step=1, key="max_tokens")
+            # top_p = st.slider("Top P", min_value=0.0, max_value=1.0, value=1.0, step=0.01, key="top_p")
+            # max_tokens = st.number_input("Max Tokens", min_value=0, value=, step=1, key="max_tokens")
             presence_penalty = st.slider(
                 "Presence Penalty", min_value=-2.0, max_value=2.0, value=1.0, step=0.01, key="presence_penalty"
             )
