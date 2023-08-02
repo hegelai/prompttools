@@ -1,4 +1,2 @@
 prompttools==0.0.22
 jinja2
-dotenv
-pathlib
