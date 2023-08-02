@@ -22,7 +22,7 @@ except Exception:
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 st.header("PromptTools Playground")
-st.write("[View Source Code](https://github.com/hegelai/prompttools)")
+st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
 
 with st.sidebar:
     mode = st.radio("Choose a mode", ("Instruction", "Prompt Template", "Model Comparison"))
