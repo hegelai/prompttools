@@ -17,7 +17,7 @@
 </p>
 
 
-Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of free, open-source tools for testing and experimenting with prompts. The core idea is to enable developers to evaluate prompts using familiar interfaces like _code_ and _notebooks_.
+Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of open-source, self-hostable tools for experimenting with, testing, and evaluating LLMs, vector databases, and prompts. The core idea is to enable developers to evaluate using familiar interfaces like _code_, _notebooks_, and a local _playground_.
 
 In just a few lines of codes, you can test your prompts and parameters across different models (whether you are using
 OpenAI, Anthropic, or LLaMA models). You can even evaluate the retrieval accuracy of vector databases.
@@ -109,7 +109,8 @@ a PR to add it. Feel free to discuss in our Discord channel as well.
     - No, the source code will be executed on your machine. Any call to LLM APIs will be directly executed from your machine without any forwarding.
 
 2. Does `prompttools` store my API keys or LLM inputs and outputs to a server?
-    - No, all data stay on your local machine.
+    - No, all data stay on your local machine. No metrics, telemetry, or usage data are collected. As a result,
+      we would love to hear direct feedback from you. Please open an issue or join our Discord.
 
 3. How do I persist my results?
    -  To persist the results of your tests and experiments, you can export your `Experiment` with the methods `to_csv`,
