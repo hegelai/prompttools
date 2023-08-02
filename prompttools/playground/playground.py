@@ -22,6 +22,7 @@ except Exception:
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 st.header("PromptTools Playground")
+st.write("[View Source Code](https://github.com/hegelai/prompttools)")
 
 with st.sidebar:
     mode = st.radio("Choose a mode", ("Instruction", "Prompt Template", "Model Comparison"))
@@ -138,7 +139,13 @@ if mode == "Instruction":
                 placeholders[i][j] = st.empty()  # placeholders for the future output
         st.divider()
 
-    if st.button("Run"):
+    buttons = st.columns(2)
+    with buttons[0]:
+        run = st.button("Run")
+    with buttons[1]:
+        clear = st.button("Clear")
+
+    if run:
         df = load_data(
             model_type,
             model,
@@ -151,6 +158,12 @@ if mode == "Instruction":
             presence_penalty,
             api_key,
         )
+        st.session_state.df = df
+        for i in range(len(prompts)):
+            for j in range(len(instructions)):
+                placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
+    elif "df" in st.session_state and not clear:
+        df = st.session_state.df
         for i in range(len(prompts)):
             for j in range(len(instructions)):
                 placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
@@ -184,9 +197,23 @@ elif mode == "Prompt Template":
                 placeholders[i][j] = st.empty()  # placeholders for the future output
         st.divider()
 
-    if st.button("Run"):
+    buttons = st.columns(2)
+    with buttons[0]:
+        run = st.button("Run")
+    with buttons[1]:
+        clear = st.button("Clear")
+
+    if run:
         prompts = render_prompts(templates, vars)
         df = load_data(model_type, model, [instruction], prompts, temperature, api_key)
+        st.session_state.prompts = prompts
+        st.session_state.df = df
+        for i in range(len(prompts)):
+            for j in range(len(templates)):
+                placeholders[i][j + variable_count].markdown(df["response"][i + len(prompts) * j])
+    elif "df" in st.session_state and "prompts" in st.session_state and not clear:
+        df = st.session_state.df
+        prompts = st.session_state.prompts
         for i in range(len(prompts)):
             for j in range(len(templates)):
                 placeholders[i][j + variable_count].markdown(df["response"][i + len(prompts) * j])
@@ -263,10 +290,27 @@ elif mode == "Model Comparison":
                 placeholders[i][j] = st.empty()  # placeholders for the future output
         st.divider()
 
-    if st.button("Run"):
+    buttons = st.columns(2)
+    with buttons[0]:
+        run = st.button("Run")
+    with buttons[1]:
+        clear = st.button("Clear")
+
+    if run:
         dfs = run_multiple(
             model_types, models, instructions, prompts, openai_api_key, anthropic_api_key, google_api_key, hf_api_key
         )
+        st.session_state.dfs = dfs
         for i in range(len(prompts)):
             for j in range(len(models)):
                 placeholders[i][j + 1].markdown(dfs[j]["response"][i])
+
+    elif "dfs" in st.session_state and not clear:
+        dfs = st.session_state.dfs
+        for i in range(len(prompts)):
+            for j in range(len(models)):
+                placeholders[i][j + 1].markdown(dfs[j]["response"][i])
+
+if clear:
+    for key in st.session_state.keys():
+        del st.session_state[key]
