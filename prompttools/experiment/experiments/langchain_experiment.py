@@ -6,87 +6,69 @@
 
 import os
 from typing import Any, Dict, List
-
-from langchain.chains import LLMChain
-from langchain.chains import SequentialChain
-
-# from pydantic.main import ModelMetaclass
+import itertools
 
 from time import perf_counter
 import logging
+
+from langchain.chains import LLMChain, SequentialChain
 
 from prompttools.mock.mock import mock_lc_completion_fn
 
 from .experiment import Experiment
 from .error import PromptExperimentException
 
-VALID_TASKS = ()
-
 
 class SequentialChainExperiment(Experiment):
-    """
-    Experiment for LangChain sequential chains.
-    For sequential chains, the order in which
-    links in the chain are submitted to the
-    class is very strict. Users should take extra
-    precaution since this is not yet enforced.
+    r"""
+    Testing Lang Chain sequential chains.
     """
 
-    MODEL_PARAMETERS = ["temperature"]
-    CALL_PARAMETERS = {"prompt_chain", "temperature", "input_variables", "output_variables", "output_key", "prompt"}
+    MODEL_PARAMETERS = ["llm"]
+
+    CALL_PARAMETERS = ["prompt_template", "prompt"]
 
     def __init__(
         self,
-        llms: List[Any],
+        llm: List[Any],
+        prompt_template: List[List[Any]],
+        prompt: List[str],
         **kwargs: Dict[str, object],
     ):
         self.completion_fn = self.lc_completion_fn
-        self.prompt = kwargs["prompt"]
-        self.call_params = {k: kwargs[k] for k in self.CALL_PARAMETERS if k in self.CALL_PARAMETERS}
-        self.output_keys = kwargs["output_key"]
-        self.llms = []
-        # Only supporting temperature for now
-        for llm in llms:
-            for temp in kwargs["temperature"]:
-                self.llms.append(llm(temperature=temp))
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_lc_completion_fn
-        self.chain_params = list(zip(kwargs["prompt_chain"], kwargs["output_key"], strict=True))
-        self.all_args = {
-            "temperature": kwargs["temperature"],
-            "llms": llms,
-            "prompt": self.prompt
-        }
+        self.model_params = dict(llm=llm)  # placeholder for future
+
+        self.call_params = dict(prompt_template=prompt_template, prompt=prompt)
+        for k, v in kwargs.items():
+            self.CALL_PARAMETERS.append(k)
+            self.call_params[k] = v
+
+        self.all_args = self.model_params | self.call_params
         super().__init__()
 
-    def prepare_chain(self) -> None:
+    def prepare(self) -> None:
+        r"""
+        Combo builder.
         """
-        Links each individual chain to assemble
-        a sequential chain.
-        """
-        self.seq_chains = []
-        for llm in self.llms:
-            seq_chain = [
-                LLMChain(llm=llm, prompt=prompt, output_key=output_key)
-                for prompt, output_key in self.chain_params
-                ]
-            overall_chain = SequentialChain(
-                chains=seq_chain,
-                input_variables=self.call_params["input_variables"],
-                output_variables=self.call_params["output_variables"],
-                verbose=True,
-            )
-            self.seq_chains.append(overall_chain)
+        self.model_argument_combos = [
+            dict(zip(self.model_params, val, strict=False)) for val in itertools.product(*self.model_params.values())
+        ]
+        self.call_argument_combos = [
+            dict(zip(self.call_params, val, strict=False)) for val in itertools.product(*self.call_params.values())
+        ]
 
     def lc_completion_fn(
         self,
-        seq_chain,
+        **params: Dict[str, Any],
     ):
         r"""
-        Makes request to LLM using the assembled
-        sequential chain.
+        Local model helper function to make request.
         """
-        return seq_chain(self.prompt)
+        client = params["client"]
+        response = client(params["prompt"])
+        return response
 
     def run(
         self,
@@ -95,34 +77,42 @@ class SequentialChainExperiment(Experiment):
         r"""
         Create tuples of input and output for every possible combination of arguments.
         For each combination, it will execute `runs` times, default to 1.
-        # TODO This can be done with an async queue
+        # TODO This can be done with an async queue.
         """
         if not self.argument_combos:
             logging.info("Preparing first...")
-            self.prepare_chain()
+            self.prepare()
         self.results = []
-        for seq_chain in self.seq_chains:
-            for _ in range(runs):
-                start = perf_counter()
-                res = self.completion_fn(seq_chain)
-                self.scores["latency"].append(perf_counter() - start)
-                self.results.append(res)
-                self.argument_combos.append({
-                    "llm": seq_chain.chains[0].llm,
-                    "temperature": seq_chain.chains[0].llm.temperature,
-                    "prompt": self.prompt,
-                    })
+        for model_combo in self.model_argument_combos:
+            for call_combo in self.call_argument_combos:
+                llm = model_combo["llm"]
+                llm = llm(temperature=call_combo["temperature"])
+                chain = []
+                for i, prompt_template in enumerate(call_combo["prompt_template"]):
+                    chain.append(
+                        LLMChain(
+                            llm=llm,
+                            prompt=prompt_template,
+                            output_key=call_combo["output_key"][i]
+                        )
+                    )
+                client = SequentialChain(
+                            chains=chain,
+                            input_variables=call_combo["input_variables"],
+                            output_variables=call_combo["output_variables"],
+                            verbose=True
+                        )
+                for _ in range(runs):
+                    call_combo["client"] = client
+                    start = perf_counter()
+                    res = self.completion_fn(**call_combo)
+                    self.scores["latency"].append(perf_counter() - start)
+                    self.results.append(res)
+                    self.argument_combos.append(model_combo | call_combo)
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
 
     @staticmethod
-    def _extract_responses(output: List[Dict[str, object]]) -> list[str]:
-        return [str(output)]
-
-
-class RouterChainExperiment(Experiment):
-    """
-    Experiment for LangChain router chains.
-    """
-    # TODO: functionality for router chains
+    def _extract_responses(output: List[Dict[str, object]]) -> str:
+        return str({k: output[k] for k in output})

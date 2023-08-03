@@ -8,5 +8,3 @@ ipywidgets
 sentence-transformers
 pylint
 streamlit
-pydantic
-langchain
