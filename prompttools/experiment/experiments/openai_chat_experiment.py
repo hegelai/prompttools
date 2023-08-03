@@ -5,11 +5,12 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
+import json
 from typing import Dict, List, Optional
 import openai
 
 from prompttools.selector.prompt_selector import PromptSelector
-from prompttools.mock.mock import mock_openai_chat_completion_fn
+from prompttools.mock.mock import mock_openai_chat_completion_fn, mock_openai_chat_function_completion_fn
 from .experiment import Experiment
 
 
@@ -73,6 +74,8 @@ class OpenAIChatExperiment(Experiment):
         model: List[str],
         messages: List[List[Dict[str, str]]] | List[PromptSelector],
         temperature: Optional[List[float]] = [1.0],
+        functions: Optional[List[Dict]] = [None],
+        function_call: Optional[List[Dict[str, str]]] = [None],
         top_p: Optional[List[float]] = [1.0],
         n: Optional[List[int]] = [1],
         stream: Optional[List[bool]] = [False],
@@ -84,7 +87,10 @@ class OpenAIChatExperiment(Experiment):
     ):
         self.completion_fn = openai.ChatCompletion.create
         if os.getenv("DEBUG", default=False):
-            self.completion_fn = mock_openai_chat_completion_fn
+            if functions[0] is not None:
+                self.completion_fn = mock_openai_chat_function_completion_fn
+            else:
+                self.completion_fn = mock_openai_chat_completion_fn
 
         # If we are using a prompt selector, we need to render
         # messages, as well as create prompt_keys to map the messages
@@ -113,8 +119,12 @@ class OpenAIChatExperiment(Experiment):
         super().__init__()
 
     @staticmethod
-    def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return [choice["message"]["content"] for choice in output["choices"]][0]
+    def _extract_responses(output: Dict[str, object]) -> str:
+        message = output["choices"][0]["message"]
+        if "function_call" in message:
+            return json.dumps(json.loads(message["function_call"]["arguments"]))
+        else:
+            return message["content"]
 
     def _is_chat(self):
         return True
