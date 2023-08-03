@@ -11,7 +11,10 @@ import itertools
 from time import perf_counter
 import logging
 
-from langchain.chains import LLMChain, SequentialChain
+try:
+    from langchain.chains import LLMChain, SequentialChain
+except ImportError:
+    LLMChain = None
 
 from prompttools.mock.mock import mock_lc_completion_fn
 
@@ -35,6 +38,11 @@ class SequentialChainExperiment(Experiment):
         prompt: List[str],
         **kwargs: Dict[str, object],
     ):
+        if LLMChain is None:
+            raise ModuleNotFoundError(
+                "Package `langchain` is required to be installed to use this experiment."
+                "Please use `pip install langchain` to install the package"
+            )
         self.completion_fn = self.lc_completion_fn
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_lc_completion_fn
