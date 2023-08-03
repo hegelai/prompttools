@@ -85,14 +85,14 @@ class RequestQueue:
         self.data_queue.join()
         return self.request_args
 
-    def results(self) -> List[Dict[str, object]]:
+    def get_results(self) -> List[Dict[str, object]]:
         r"""
         Joins the queue and gets results.
         """
         self.data_queue.join()
         return self.request_results
 
-    def latencies(self) -> List[float]:
+    def get_latencies(self) -> List[float]:
         r"""
         Joins the queue and gets latencies.
         """

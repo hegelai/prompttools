@@ -162,8 +162,8 @@ class Experiment:
                     # We need to filter out defaults that are invalid JSON from the request
                     {k: v for k, v in combo.items() if (v is not None) and (v != float("inf"))},
                 )
-        self.results = self.queue.results()
-        self.scores["latency"] = self.queue.latencies()
+        self.results = self.queue.get_results()
+        self.scores["latency"] = self.queue.get_latencies()
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
