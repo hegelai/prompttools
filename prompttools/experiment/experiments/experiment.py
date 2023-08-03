@@ -23,6 +23,7 @@ from ..widgets.feedback import FeedbackWidgetProvider
 from ..widgets.comparison import ComparisonWidgetProvider
 from ..widgets.utility import is_interactive
 from .error import PromptExperimentException
+from ._utils import _get_dynamic_columns
 
 pd.set_option("display.max_colwidth", 0)
 
@@ -85,6 +86,7 @@ class Experiment:
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
             self.scores["feedback"][i] = change["new"]
+            self.score_df["feedback"][i] = change["new"]
 
         return listener
 
@@ -92,6 +94,7 @@ class Experiment:
         def listener(change):
             new_index = self.comparison_index_translation(index)
             self.scores["comparison"][new_index] = change["new"]
+            self.score_df["comparison"][new_index] = change["new"]
 
         return listener
 
@@ -108,6 +111,8 @@ class Experiment:
             key = str(row[agg_column])
             new_index = self.comparison_index_translation(index)
             prompt_scores[key] += self.scores["comparison"][new_index]
+            # TODO: Turn on this line
+            # prompt_scores[key] += self.score_df["comparison"][new_index]
             prompt_counts[key] += 1
         if is_average:
             for k, v in prompt_scores.items():
@@ -129,6 +134,8 @@ class Experiment:
         for index, row in table.iterrows():
             key = str(row[agg_column])
             prompt_scores[key] += self.scores[metric_name][index]
+            # TODO: Turn on this line
+            # prompt_scores[key] += self.score_df[metric_name][index]
             prompt_counts[key] += 1
         if is_average:
             for k, v in prompt_scores.items():
@@ -164,11 +171,80 @@ class Experiment:
                 )
         self.results = self.queue.get_results()
         self.scores["latency"] = self.queue.get_latencies()
+
+        input_args = self.queue.get_input_args()
+        self._construct_tables(input_args, self.results, self.queue.get_latencies())
+
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
 
-    # TODO: Ideally, `eval_fn` should accept one row at a time, compute the metric, and add that to the row.
+    def _construct_tables(
+        self, input_args: list[dict[str, object]], results: list[dict[str, object]], latencies: list[float]
+    ):
+        # `input_arg_df` contains all all input args
+        self.input_arg_df = pd.DataFrame(input_args)
+        # `dynamic_input_arg_df` contains input args that has more than one unique values
+        self.dynamic_input_arg_df = _get_dynamic_columns(self.input_arg_df)
+
+        # `result_df` contains everything returned by the completion function
+        self.result_df = pd.DataFrame(results)
+        # `text_response_df` contains the extracted text response
+        self.text_response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
+
+        # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
+        self.score_df = pd.DataFrame({"latency": latencies})
+        # `full_df` contains all input arguments, responses, and score
+        self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+
+    def visualize_table(self, full_table: bool = False) -> None:
+        r"""
+        Visualize the DataFrame that contains dynamic (non-frozen) input arguments, the text response,
+        and scores (e.g. latency and metrics generated from evaluation).
+
+        Args:
+            full_table (bool): defaults to ``False``. If ``True``, it will visualize the full data with all
+                input arguments (including frozen ones), full model response (not just the text response), and scores.
+        """
+        if not self.results:
+            logging.info("Running first...")
+            self.run()
+        if full_table:
+            table = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+        else:
+            table = pd.concat([self.dynamic_input_arg_df, self.text_response_df, self.score_df], axis=1)
+        if is_interactive():
+            display.display(table)
+        else:
+            logging.getLogger().setLevel(logging.INFO)
+            logging.info(tabulate(table, headers="keys", tablefmt="psql"))
+
+    # TODO: Test this function
+    def evaluate_by_row(self, metric_name: str, eval_fn: Callable, eval_fn_kwargs: Optional[list[dict]] = None) -> None:
+        """
+        Using the given evaluation function that accepts a row of data, compute a new column with the evaluation
+        result.
+
+        Args:
+            metric_name (str): name of the metric being computed
+            eval_fn (Callable): an evaluation function that takes in (input, result, other_scores) and return a score
+            eval_fn_kwargs (Optional[list[dict]]): List of keyword args to be passed to the evaluation function.
+                The length of the list should be the same as the number of responses in the experiment's result.
+        """
+        if not self.results:
+            logging.info("Running first...")
+            self.run()
+        if metric_name in self.score_df.columns:
+            logging.warning(metric_name + " is already present, skipping.")
+            return
+        eval_fn_kwargs = {} if eval_fn_kwargs is None else eval_fn_kwargs
+        res = []
+        self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+        for _index, row in self.full_df.iterrows():
+            res.append(eval_fn(row, **eval_fn_kwargs))
+        self.score_df[metric_name] = res
+        self.full_df[metric_name] = res
+
     def evaluate(
         self,
         metric_name: str,
@@ -239,7 +315,7 @@ class Experiment:
         }
         # Add scores for each eval fn, including feedback
         for metric_name, evals in self.scores.items():
-            if metric_name != "comparison":
+            if metric_name != "comparison":  # TODO: Why are we skipping over comparison?
                 data[metric_name] = evals
         # Add other args as cols if there was more than 1 input
         for k, args in self.all_args.items():
@@ -275,6 +351,7 @@ class Experiment:
             logging.warning("This method only works in notebooks.")
             return
         self.scores["feedback"] = [1] * len(self.results)
+        self.score_df["feedback"] = [1] * len(self.results)
         table = self.get_table(pivot_data, pivot_columns, pivot=False)
         self.feedback_widget_provider.set_pivot_columns(pivot_columns)
         items = self.feedback_widget_provider.get_header_widgets()
@@ -295,6 +372,7 @@ class Experiment:
             return
         table = self.get_table(pivot_data={}, pivot_columns=pivot_columns, pivot=True)
         self.scores["comparison"] = [1] * len(table)
+        self.score_df["comparison"] = [1] * len(table)
         self.comparison_index_translation = lambda i: i * len(table.columns)
         self.comparison_widget_provider.set_models(table.columns)
         items = self.comparison_widget_provider.get_header_widgets()
@@ -320,6 +398,7 @@ class Experiment:
             logging.info("Running first...")
             self.run()
         table = self.get_table(pivot_data, pivot_columns, pivot=pivot_columns is not None)
+        # TODO: Skip over "comparison" column?
         if is_interactive():
             display.display(table)
         else:
@@ -335,7 +414,7 @@ class Experiment:
             column_name (str): column to based the aggregation on
             is_average (bool): if ``True``, compute the average for the metric, else compute the total
         """
-        if metric_name not in self.scores:
+        if metric_name not in self.scores or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
         table = self.get_table(pivot_data=None, pivot_columns=None, pivot=False)
@@ -387,7 +466,7 @@ class Experiment:
             metric_name (str): metric to aggregate over
             is_average (bool): if ``True``, compute the average for the metric, else compute the total
         """
-        if metric_name not in self.scores:
+        if metric_name not in self.scores or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
         table = self.get_table(pivot_data, pivot_columns, pivot=False)
