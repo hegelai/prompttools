@@ -45,9 +45,7 @@ class RequestQueue:
             # Ideally, OpenAI should be able to use the env var.
             if "OPENAI_API_KEY" in os.environ:
                 openai.api_key = os.environ["OPENAI_API_KEY"]
-            print(args)
             res = self._run(fn, args)
-            print(res)
             self.request_args.append(args)
             self.request_results.append(res[0])
             self.request_latencies.append(res[1])
