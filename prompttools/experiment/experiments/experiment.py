@@ -86,6 +86,7 @@ class Experiment:
     def _get_human_eval_listener(self, i: int) -> Callable:
         def listener(change):
             self.scores["feedback"][i] = change["new"]
+            # TODO: Confirm that we just need the one below
             self.score_df["feedback"][i] = change["new"]
 
         return listener
@@ -94,6 +95,7 @@ class Experiment:
         def listener(change):
             new_index = self.comparison_index_translation(index)
             self.scores["comparison"][new_index] = change["new"]
+            # TODO: Confirm that we just need the one below
             self.score_df["comparison"][new_index] = change["new"]
 
         return listener
@@ -499,7 +501,7 @@ class Experiment:
         if metric_name not in self.scores or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
-        table = self.get_new_table(get_all_cols=True)
+        table = self.get_new_table(get_all_cols=False)
         sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
         if is_interactive():
             import matplotlib.pyplot as plt
@@ -528,6 +530,7 @@ class Experiment:
             plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
             plt.show()
 
+    # TODO: Should we keep or remove?
     def rank(
         self,
         pivot_data: Dict[str, object],
