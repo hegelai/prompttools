@@ -7,4 +7,3 @@ jupyterlab
 ipywidgets
 sentence-transformers
 pylint
-streamlit
