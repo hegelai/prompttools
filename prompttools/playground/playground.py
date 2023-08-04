@@ -89,7 +89,7 @@ with st.sidebar:
         var_names = []
         for i in range(variable_count):
             var_names.append(st.text_input(f"Variable {i+1} Name", value=f"Variable {i+1}", key=f"varname_{i}"))
-        temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=1.0, step=0.01, key="temperature")
+        temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.01, key="temperature")
         top_p = None
         max_tokens = None
         presence_penalty = None
