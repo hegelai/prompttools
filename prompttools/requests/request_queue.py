@@ -26,8 +26,9 @@ class RequestQueue:
         self.is_running = True
         self.worker_thread = threading.Thread(target=self._process_queue, daemon=True)
         self.worker_thread.start()
-        self.request_results = []
-        self.request_latencies = []
+        self.request_args: list[dict[str, object]] = []
+        self.request_results: list[dict[str, object]] = []
+        self.request_latencies: list[float] = []
 
     def _process_queue(self) -> None:
         while self.is_running:
@@ -45,6 +46,7 @@ class RequestQueue:
             if "OPENAI_API_KEY" in os.environ:
                 openai.api_key = os.environ["OPENAI_API_KEY"]
             res = self._run(fn, args)
+            self.request_args.append(args)
             self.request_results.append(res[0])
             self.request_latencies.append(res[1])
         # TODO: If we get an unexpected error here, the queue will hang
@@ -76,14 +78,21 @@ class RequestQueue:
         """
         self.data_queue.put((callable, args))
 
-    def results(self) -> List[Dict[str, object]]:
+    def get_input_args(self) -> List[Dict[str, object]]:
+        r"""
+        Joins the queue and gets input args that lead to the result.
+        """
+        self.data_queue.join()
+        return self.request_args
+
+    def get_results(self) -> List[Dict[str, object]]:
         r"""
         Joins the queue and gets results.
         """
         self.data_queue.join()
         return self.request_results
 
-    def latencies(self) -> List[float]:
+    def get_latencies(self) -> List[float]:
         r"""
         Joins the queue and gets latencies.
         """

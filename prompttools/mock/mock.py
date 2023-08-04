@@ -30,6 +30,30 @@ def mock_openai_chat_completion_fn(**kwargs):
     }
 
 
+def mock_openai_chat_function_completion_fn(**kwargs):
+    return {
+        "choices": [
+            {
+                "finish_reason": "stop",
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": None,
+                    "function_call": {
+                        "name": "get_current_weather",
+                        "arguments": '{\n  "location": "Toronto, Canada",\n  "format": "celsius"\n}'
+                    }
+                },
+            }
+        ],
+        "created": 1687839008,
+        "id": "",
+        "model": "gpt-3.5-turbo-0301",
+        "object": "chat.completion",
+        "usage": {"completion_tokens": 18, "prompt_tokens": 57, "total_tokens": 75},
+    }
+
+
 def mock_openai_completion_fn(**kwargs):
     return {
         "id": "",
@@ -97,3 +121,7 @@ def mock_mindsdb_completion_fn(**kwargs):
             "The first president of the United States was George Washington. However, if you're referring to a different country, please specify so I can provide the correct information.",
         )
     ]
+
+
+def mock_lc_completion_fn(**kwargs):
+    return "The first president of the United States was George Washington."
