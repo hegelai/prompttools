@@ -125,9 +125,6 @@ class ChromaDBExperiment(Experiment):
                 collection = self.chroma_client.create_collection(self.collection_name, embedding_function=emb_fn)
                 collection.add(**self.add_to_collection_params)
             for query_arg_dict in self.query_args_combo:
-                if "query_texts" in query_arg_dict and "query_embeddings" in query_arg_dict:
-                    # `query` does not accept both arguments at the same time
-                    continue
                 for _ in range(runs):
                     self.results.append(self.chromadb_completion_fn(collection, **query_arg_dict))
             # Clean up
