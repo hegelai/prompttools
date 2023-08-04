@@ -6,6 +6,8 @@
 
 
 import streamlit as st
+import pyperclip
+import urllib.parse
 
 try:
     import os
@@ -24,6 +26,7 @@ from prompttools.playground.data_loader import render_prompts, load_data, run_mu
 
 
 params = st.experimental_get_query_params()
+st.experimental_set_query_params()
 
 st.header("PromptTools Playground")
 st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
@@ -134,11 +137,13 @@ if mode == "Instruction":
                 placeholders[i][j] = st.empty()  # placeholders for the future output
         st.divider()
 
-    buttons = st.columns(2)
-    with buttons[0]:
+    run_button, clear_button, share_button = st.columns([1, 1, 1], gap="small")
+    with run_button:
         run = st.button("Run")
-    with buttons[1]:
+    with clear_button:
         clear = st.button("Clear")
+    with share_button:
+        share = st.button("Share")
 
     if run:
         df = load_data(
@@ -192,11 +197,13 @@ elif mode == "Prompt Template":
                 placeholders[i][j] = st.empty()  # placeholders for the future output
         st.divider()
 
-    buttons = st.columns(2)
-    with buttons[0]:
+    run_button, clear_button, share_button = st.columns([1, 1, 1], gap="small")
+    with run_button:
         run = st.button("Run")
-    with buttons[1]:
+    with clear_button:
         clear = st.button("Clear")
+    with share_button:
+        share = st.button("Share")
 
     if run:
         prompts = render_prompts(templates, vars)
@@ -285,11 +292,13 @@ elif mode == "Model Comparison":
                 placeholders[i][j] = st.empty()  # placeholders for the future output
         st.divider()
 
-    buttons = st.columns(2)
-    with buttons[0]:
+    run_button, clear_button, share_button = st.columns([1, 1, 1], gap="small")
+    with run_button:
         run = st.button("Run")
-    with buttons[1]:
+    with clear_button:
         clear = st.button("Clear")
+    with share_button:
+        share = st.button("Share")
 
     if run:
         dfs = run_multiple(
@@ -309,3 +318,12 @@ elif mode == "Model Comparison":
 if clear:
     for key in st.session_state.keys():
         del st.session_state[key]
+
+
+if share:
+    link = "https://prompttools.streamlit.app?"
+    link += "model_type=" + urllib.parse.quote(model_type)
+    link += "&model=" + urllib.parse.quote(model)
+    link += "&instruction=" + urllib.parse.quote(instructions[0])
+    link += "&prompt=" + urllib.parse.quote(prompts[0])
+    pyperclip.copy(link)
