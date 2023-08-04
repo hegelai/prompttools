@@ -34,6 +34,7 @@ def _get_messages(prompt: str, expected: str, response: str):
     ]
 
 
+# TODO: Should this be removed since no one is using it?
 def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> float:
     r"""
     Uses a high quality chat model, like GPT-4, to automatically evaluate a given

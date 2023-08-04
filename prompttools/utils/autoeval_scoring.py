@@ -6,6 +6,7 @@
 
 
 import os
+import pandas.core.series
 import jinja2
 
 try:
@@ -79,3 +80,23 @@ def autoeval_scoring(prompt: str, response: str, metadata: dict, expected: str) 
             "Please use `pip install anthropic` to install the package"
         )
     return compute(fact=expected, model_answer=response)
+
+
+def autoeval_scoring_row(
+    row: pandas.core.series.Series, expected: str, response_column_name: str = "response"
+) -> float:
+    r"""
+    Uses auto-evaluation to score the model response.
+
+    Args:
+        row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
+            metrics, etc).
+        expected (str): the expected response
+        response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
+    """
+    if anthropic is None:
+        raise ModuleNotFoundError(
+            "Package `anthropic` is required to be installed to use this experiment."
+            "Please use `pip install anthropic` to install the package"
+        )
+    return compute(fact=expected, model_answer=row[response_column_name])

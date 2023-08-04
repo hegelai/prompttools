@@ -8,6 +8,7 @@
 import os
 from typing import Dict
 import openai
+import pandas.core.series
 import jinja2
 from .error import PromptToolsUtilityError
 
@@ -65,3 +66,20 @@ def autoeval_binary_scoring(prompt: str, response: str, metadata: Dict) -> float
 
 def evaluate(prompt: str, response: str, _metadata: Dict) -> float:
     return autoeval_binary_scoring(prompt, response, _metadata)
+
+
+def autoeval_binary_scoring_row(
+    row: pandas.core.series.Series,
+    prompt_column_name: str,
+    response_column_name: str = "response",
+) -> float:
+    r"""
+    Uses auto-evaluation to score the model response with "gpt-4" as the judge, returning 0.0 or 1.0.
+
+    Args:
+        row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
+            metrics, etc).
+        prompt_column_name (str): name of the column that contains the input prompt
+        response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
+    """
+    return compute(row[prompt_column_name], row[response_column_name])
