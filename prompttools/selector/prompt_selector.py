@@ -10,7 +10,6 @@ except ImportError:
     HUMAN_PROMPT, AI_PROMPT = None, None
 
 
-
 GENERIC_TEMPLATE = """INSTRUCTION:
 {instruction}
 PROMPT:
