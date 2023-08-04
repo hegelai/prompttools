@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import Callable, Dict, List, Optional, Union
 from operator import itemgetter
 from collections import defaultdict
 import itertools
@@ -179,6 +179,9 @@ class Experiment:
     def _construct_tables(
         self, input_args: list[dict[str, object]], results: list[dict[str, object]], latencies: list[float]
     ):
+        r"""
+        Construct a few
+        """
         # `input_arg_df` contains all all input args
         self.input_arg_df = pd.DataFrame(input_args)
         # `dynamic_input_arg_df` contains input args that has more than one unique values
@@ -191,10 +194,13 @@ class Experiment:
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({"latency": latencies})
+
+        # `partial_df` contains some input arguments, extracted responses, and score
+        self.partial_df = pd.concat([self.dynamic_input_arg_df, self.text_response_df, self.score_df], axis=1)
         # `full_df` contains all input arguments, responses, and score
         self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
 
-    def get_new_table(self, get_all_cols: bool = False) -> pd.DataFrame:
+    def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
         r"""
         Get the DataFrame in one of two versions:
         1. ``get_all_cols = False`` - good for visualization. This contains dynamic (non-frozen) input arguments,
@@ -210,12 +216,11 @@ class Experiment:
             logging.info("Running first...")
             self.run()
         if get_all_cols:
-            table = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+            return self.full_df
         else:
-            table = pd.concat([self.dynamic_input_arg_df, self.text_response_df, self.score_df], axis=1)
-        return table
+            return self.partial_df
 
-    def visualize_table(self, get_all_cols: bool = False) -> None:
+    def visualize(self, get_all_cols: bool = False) -> None:
         r"""
         Visualize the DataFrame in one of two versions:
         1. ``get_all_cols = False`` - good for visualization. This contains dynamic (non-frozen) input arguments,
@@ -227,22 +232,22 @@ class Experiment:
             get_all_cols (bool): defaults to ``False``. If ``True``, it will visualize the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
-        table = self.get_new_table(get_all_cols)
+        table = self.get_table(get_all_cols)
         if is_interactive():
             display.display(table)
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
 
-    # TODO: Test this function
-    def evaluate_by_row(self, metric_name: str, eval_fn: Callable, **eval_fn_kwargs) -> None:
+    def evaluate(self, metric_name: str, eval_fn: Callable, **eval_fn_kwargs) -> None:
         """
         Using the given evaluation function that accepts a row of data, compute a new column with the evaluation
         result.
 
         Args:
             metric_name (str): name of the metric being computed
-            eval_fn (Callable): an evaluation function that takes in (input, result, other_scores) and return a score
+            eval_fn (Callable): an evaluation function that takes in a row from pd.DataFrame
+                and optional keyword arguments
             eval_fn_kwargs (Optional[list]): keyword args where the value is a list. The length of the list should be
                 the same as the number of responses in the experiment's result. The ``i``th element of the list will be
                 passed to the evaluation function to evaluate the ``i``th row.
@@ -251,13 +256,17 @@ class Experiment:
             logging.warning(metric_name + " is already present, skipping.")
             return
         res = []
-        self.full_df = self.get_new_table(get_all_cols=True)
-        for i, row in self.full_df.iterrows():
+        table = self.get_table(get_all_cols=True)
+        for i, row in table.iterrows():
             curr_kwargs = {}
             for k, v in eval_fn_kwargs.items():
                 curr_kwargs[k] = v[i]
             res.append(eval_fn(row, **curr_kwargs))
+        self._update_score(metric_name, res)
+
+    def _update_score(self, metric_name: str, res) -> None:
         self.score_df[metric_name] = res
+        self.partial_df[metric_name] = res
         self.full_df[metric_name] = res
 
     def pivot_table(
@@ -273,7 +282,7 @@ class Experiment:
             get_all_cols (bool): defaults to ``False``. If ``True``, it will visualize the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
-        df = self.get_new_table(get_all_cols)
+        df = self.get_table(get_all_cols)
         pivot_df = pd.pivot_table(
             df,
             values=response_value_name,
@@ -282,96 +291,6 @@ class Experiment:
             aggfunc=lambda x: x.iloc[0],
         )
         return pivot_df
-
-    def evaluate(
-        self,
-        metric_name: str,
-        eval_fn: Callable,
-        input_pairs: Optional[Dict[str, Tuple[str, Dict[str, str]]]] = None,
-        input_key: Optional[str] = None,
-        expected: Optional[List[str]] = None,
-        eval_fn_kwargs: Optional[list[dict]] = None,
-    ) -> None:
-        """
-        Using the given evaluation function, all input/response pairs are evaluated.
-
-        Args:
-            metric_name (str): name of the metric being computed
-            eval_fn (Callable): an evaluation function that takes in (input, result, other_scores) and return a score
-            input_pairs (Optional[Dict[str, Tuple[str, Dict[str, str]]]]): optional dictionary that holds the input data
-                along with additional context or metadata for each input
-            input_key (str): input key name as it exists within input argument (e.g. "messages", "prompt")
-            expected (Optional[List[str]]): List of expected response to be passed to the evaluation function.
-                The length of the list should be the same as the number of responses in the experiment's result.
-            eval_fn_kwargs (Optional[list[dict]]): List of keyword args to be passed to the evaluation function.
-                The length of the list should be the same as the number of responses in the experiment's result.
-        """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
-        if metric_name in self.scores:
-            logging.warning(metric_name + " is already present, skipping.")
-            return
-
-        if input_key is None:
-            input_key = "messages" if self._is_chat() else "prompt"
-        for i, result in enumerate(self.results):
-            # Pass the messages and results into the eval function
-            extracted_input = (
-                input_pairs[self.argument_combos[i][input_key]] if input_pairs else self.argument_combos[i][input_key]
-            )
-            other_scores = {name: self.scores[name][i] for name in self.scores.keys() if name is not metric_name}
-            if expected or eval_fn_kwargs:
-                curr_eval_kwargs = {} if eval_fn_kwargs is None else eval_fn_kwargs[i]
-                if expected:
-                    curr_eval_kwargs["expected"] = expected[i]
-                score = eval_fn(extracted_input, self._extract_responses(result), other_scores, **curr_eval_kwargs)
-            else:
-                score = eval_fn(
-                    extracted_input,
-                    self._extract_responses(result),
-                    other_scores,
-                )
-            self.scores[metric_name].append(score)
-
-    def get_table(self, pivot_data: Dict[str, object], pivot_columns: List[str], pivot: bool) -> pd.DataFrame:
-        """
-        This method creates a table of the experiment data. It can also be used
-        to create a pivot table, or a table for gathering human feedback.
-
-        Args:
-            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
-            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
-                that serve as indices the pivot table
-            pivot (bool): determines whether to create a pivot table
-        """
-        input_key = "messages" if self._is_chat() else "prompt"
-        data = {
-            input_key: [str(combo[input_key]) for combo in self.argument_combos],
-            "response": [self._extract_responses(result) for result in self.results],
-            "latency": self.scores["latency"],
-        }
-        # Add scores for each eval fn, including feedback
-        for metric_name, evals in self.scores.items():
-            if metric_name != "comparison":  # TODO: Why are we skipping over comparison?
-                data[metric_name] = evals
-        # Add other args as cols if there was more than 1 input
-        for k, args in self.all_args.items():
-            if len(args) > 1:
-                data[k] = [combo[k] for combo in self.argument_combos]
-        if pivot_data:
-            data[pivot_columns[0]] = [str(pivot_data[str(combo[input_key])][0]) for combo in self.argument_combos]
-            data[pivot_columns[1]] = [str(pivot_data[str(combo[input_key])][1]) for combo in self.argument_combos]
-        df = pd.DataFrame(data)
-        if pivot:
-            df = pd.pivot_table(
-                df,
-                values="response(s)",
-                index=[pivot_columns[1]],
-                columns=[pivot_columns[0]],
-                aggfunc=lambda x: x.iloc[0],
-            )
-        return df
 
     # def gather_feedback(self, pivot_data: Dict[str, object], pivot_columns: List[str]) -> None:
     #     """
@@ -418,73 +337,7 @@ class Experiment:
     #         items += self.comparison_widget_provider.get_row_widgets(index, row[1])
     #     items += self.comparison_widget_provider.get_footer_widgets(table)
     #     self.comparison_widget_provider.display(items)
-
-    def visualize(
-        self,
-        pivot_data: Optional[Dict[str, object]] = None,
-        pivot_columns: Optional[List[str]] = None,
-    ) -> None:
-        """
-        Creates and shows a table using the results produced.
-
-        Args:
-            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
-            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
-                that serve as indices the pivot table
-        """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
-        table = self.get_table(pivot_data, pivot_columns, pivot=pivot_columns is not None)
-        # TODO: Skip over "comparison" column?
-        if is_interactive():
-            display.display(table)
-        else:
-            logging.getLogger().setLevel(logging.INFO)
-            logging.info(tabulate(table, headers="keys", tablefmt="psql"))
-
     def aggregate(self, metric_name, column_name, is_average=False):
-        """
-        Aggregates a metric for a given column and displays to the user.
-
-         Args:
-            metric_name (str): metric to aggregate
-            column_name (str): column to based the aggregation on
-            is_average (bool): if ``True``, compute the average for the metric, else compute the total
-        """
-        if metric_name not in self.scores or metric_name not in self.score_df.columns:
-            logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
-            return
-        table = self.get_table(pivot_data=None, pivot_columns=None, pivot=False)
-        sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
-        if is_interactive():
-            import matplotlib.pyplot as plt
-            import os
-
-            # Import style file, assumes same dir as experiment.py
-            style_path = os.path.join(os.path.dirname(__file__), "style.mplstyle")
-            plt.style.use(style_path)
-
-            # Define the custom colors
-            custom_colors = [
-                "black",
-                "#7e1e9c",
-                "#15b01a",
-                "#448ee4",
-                "#ff7fa7",
-                "#029386",
-            ]
-
-            plt.ylabel("Latency (s)")
-
-            # Cycle through the custom colors when creating the bars
-            for i, (label, value) in enumerate(sorted_scores.items()):
-                plt.bar(i, value, align="center", color=custom_colors[i % len(custom_colors)])
-
-            plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
-            plt.show()
-
-    def aggregate_by_row(self, metric_name, column_name, is_average=False):
         r"""
         Aggregates a metric for a given column and displays to the user.
 
@@ -496,7 +349,7 @@ class Experiment:
         if metric_name not in self.scores or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
-        table = self.get_new_table(get_all_cols=False)
+        table = self.get_table(get_all_cols=False)
         sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
         if is_interactive():
             import matplotlib.pyplot as plt
@@ -548,7 +401,7 @@ class Experiment:
         if metric_name not in self.scores or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
-        table = self.get_new_table(get_all_cols=get_all_cols)
+        table = self.get_table(get_all_cols=get_all_cols)
         sorted_scores = self._aggregate_metric(table, metric_name, agg_column, is_average)
         return sorted_scores
 
@@ -571,7 +424,7 @@ class Experiment:
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
             **kwargs: optional arguments passed to ``pd.DataFrame.to_csv()``
         """
-        table = self.get_new_table(get_all_cols=get_all_cols)
+        table = self.get_table(get_all_cols=get_all_cols)
         table.to_csv(path, **kwargs)
 
     def to_pandas_df(self, get_all_cols: bool = True):
@@ -582,7 +435,7 @@ class Experiment:
             get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
-        return self.get_new_table(get_all_cols=get_all_cols)
+        return self.get_table(get_all_cols=get_all_cols)
 
     def to_json(
         self,
@@ -600,7 +453,7 @@ class Experiment:
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
             **kwargs: optional arguments passed to ``pd.DataFrame.to_json()``
         """
-        table = self.get_new_table(get_all_cols=get_all_cols)
+        table = self.get_table(get_all_cols=get_all_cols)
         if path is None:
             return table.to_json(**kwargs)
         else:

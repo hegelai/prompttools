@@ -133,6 +133,7 @@ class ChromaDBExperiment(Experiment):
             # Clean up
             self.chroma_client.delete_collection(self.collection_name)
 
+    # TODO: This needs to be updated or deleted (because it may not be necessary anymore)
     def get_table(self, pivot_data: Dict[str, object], pivot_columns: list[str], pivot: bool) -> pd.DataFrame:
         """
         This method creates a table of the experiment data. It can also be used
