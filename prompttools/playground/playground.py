@@ -21,7 +21,7 @@ try:
 except Exception:
     pass
 
-from prompttools.playground.constants import MODEL_TYPES, OPENAI_CHAT_MODELS, OPENAI_COMPLETION_MODELS
+from prompttools.playground.constants import MODES, MODEL_TYPES, OPENAI_CHAT_MODELS, OPENAI_COMPLETION_MODELS
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 
@@ -32,8 +32,7 @@ st.header("PromptTools Playground")
 st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
 
 with st.sidebar:
-    mode = st.radio("Choose a mode", ("Instruction", "Prompt Template", "Model Comparison"))
-
+    mode = st.radio("Choose a mode", MODES, index=MODES.index(params["mode"][0]) if "mode" in params else 0)
     if mode != "Model Comparison":
         model_type = st.selectbox(
             "Model Type", MODEL_TYPES, index=MODEL_TYPES.index(params["model_type"][0]) if "model_type" in params else 0
@@ -65,11 +64,11 @@ with st.sidebar:
             )
             api_key = st.text_input("OpenAI API Key")
 
-        variable_count = 0
+        variable_count = len(params["var_names"][0].split(",")) if "var_names" in params else 1
         if mode == "Prompt Template":
             instruction_count = st.number_input("Add Template", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add User Input", step=1, min_value=1, max_value=10)
-            variable_count = st.number_input("Add Variable", step=1, min_value=1, max_value=10)
+            variable_count = st.number_input("Add Variable", step=1, min_value=1, max_value=10, value=variable_count)
         elif model_type == "OpenAI Chat":
             instruction_count = st.number_input("Add System Message", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add User Message", step=1, min_value=1, max_value=10)
@@ -79,7 +78,13 @@ with st.sidebar:
             prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
         var_names = []
         for i in range(variable_count):
-            var_names.append(st.text_input(f"Variable {i+1} Name", value=f"Variable {i+1}", key=f"varname_{i}"))
+            var_names.append(
+                st.text_input(
+                    f"Variable {i+1} Name",
+                    value=params["var_names"][0].split(",")[i] if "var_names" in params else f"Variable {i+1}",
+                    key=f"varname_{i}",
+                )
+            )
         temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.01, key="temperature")
         top_p = None
         max_tokens = None
@@ -145,6 +150,13 @@ if mode == "Instruction":
     with share_button:
         share = st.button("Share")
 
+    link = "https://prompttools.streamlit.app?"
+    link += "mode=" + urllib.parse.quote(mode)
+    link += "&model_type=" + urllib.parse.quote(model_type)
+    link += "&model=" + urllib.parse.quote(model)
+    link += "&instruction=" + urllib.parse.quote(instructions[0])
+    link += "&prompt=" + urllib.parse.quote(prompts[0])
+
     if run:
         df = load_data(
             model_type,
@@ -170,9 +182,17 @@ if mode == "Instruction":
 elif mode == "Prompt Template":
     instruction = None
     if model_type == "LlamaCpp Chat":
-        instruction = st.text_area("Instruction", key="instruction")
+        instruction = st.text_area(
+            "Instruction",
+            key="instruction",
+            value=params["instruction"][0] if "instruction" in params else "You are a helpful AI assistant.",
+        )
     elif model_type == "OpenAI Chat":
-        instruction = st.text_area("System Message", key="instruction")
+        instruction = st.text_area(
+            "System Message",
+            key="instruction",
+            value=params["instruction"][0] if "instruction" in params else "You are a helpful AI assistant.",
+        )
 
     placeholders = [[st.empty() for _ in range(instruction_count + variable_count)] for _ in range(prompt_count)]
 
@@ -183,15 +203,26 @@ elif mode == "Prompt Template":
     templates = []
     for j in range(variable_count, instruction_count + variable_count):
         with cols[j]:
-            templates.append(st.text_area("Prompt Template", key=f"col_{j-variable_count}"))
+            templates.append(
+                st.text_area(
+                    "Prompt Template",
+                    key=f"col_{j-variable_count}",
+                    value=params["template"][0] if "template" in params else "",
+                )
+            )
 
     vars = []
+    varlist = []
+    if "vars" in params:
+        varlist = params["vars"][0].split(",")
     for i in range(prompt_count):
         cols = st.columns(instruction_count + variable_count)
         vars.append(dict())
         for j in range(variable_count):
             with cols[j]:
-                vars[i][var_names[j]] = st.text_area(var_names[j], key=f"var_{i}_{j}")
+                vars[i][var_names[j]] = st.text_area(
+                    var_names[j], key=f"var_{i}_{j}", value=varlist[j] if len(varlist) > 0 else ""
+                )
         for j in range(variable_count, instruction_count + variable_count):
             with cols[j]:
                 placeholders[i][j] = st.empty()  # placeholders for the future output
@@ -204,6 +235,18 @@ elif mode == "Prompt Template":
         clear = st.button("Clear")
     with share_button:
         share = st.button("Share")
+
+    link = "https://prompttools.streamlit.app?"
+    link += "mode=" + urllib.parse.quote(mode)
+    link += "&model_type=" + urllib.parse.quote(model_type)
+    link += "&model=" + urllib.parse.quote(model)
+    if instruction:
+        link += "&instruction=" + urllib.parse.quote(instruction)
+    link += "&template=" + urllib.parse.quote(templates[0])
+    if len(var_names) > 0:
+        link += "&var_names=" + urllib.parse.quote(",".join(var_names))
+    if len(vars) > 0:
+        link += "&vars=" + urllib.parse.quote(",".join(vars[0].values()))
 
     if run:
         prompts = render_prompts(templates, vars)
@@ -300,6 +343,13 @@ elif mode == "Model Comparison":
     with share_button:
         share = st.button("Share")
 
+    link = "https://prompttools.streamlit.app?"
+    link += "mode=" + urllib.parse.quote(mode)
+    link += "&model_type=" + urllib.parse.quote(model_type)
+    link += "&model=" + urllib.parse.quote(model)
+    link += "&instruction=" + urllib.parse.quote(instructions[0])
+    link += "&prompt=" + urllib.parse.quote(prompts[0])
+
     if run:
         dfs = run_multiple(
             model_types, models, instructions, prompts, openai_api_key, anthropic_api_key, google_api_key, hf_api_key
@@ -321,9 +371,4 @@ if clear:
 
 
 if share:
-    link = "https://prompttools.streamlit.app?"
-    link += "model_type=" + urllib.parse.quote(model_type)
-    link += "&model=" + urllib.parse.quote(model)
-    link += "&instruction=" + urllib.parse.quote(instructions[0])
-    link += "&prompt=" + urllib.parse.quote(prompts[0])
     pyperclip.copy(link)

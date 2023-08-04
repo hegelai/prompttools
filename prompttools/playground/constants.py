@@ -29,6 +29,8 @@ EXPERIMENTS = {
     "HuggingFace Hub": HuggingFaceHubExperiment,
 }
 
+MODES = ("Instruction", "Prompt Template", "Model Comparison")
+
 MODEL_TYPES = (
     "OpenAI Chat",
     "OpenAI Completion",
