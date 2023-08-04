@@ -19,7 +19,11 @@ try:
 except Exception:
     pass
 
+from prompttools.playground.constants import MODEL_TYPES, OPENAI_CHAT_MODELS, OPENAI_COMPLETION_MODELS
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
+
+
+params = st.experimental_get_query_params()
 
 st.header("PromptTools Playground")
 st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
@@ -29,16 +33,7 @@ with st.sidebar:
 
     if mode != "Model Comparison":
         model_type = st.selectbox(
-            "Model Type",
-            (
-                "OpenAI Chat",
-                "OpenAI Completion",
-                "Anthropic",
-                "Google PaLM",
-                "LlamaCpp Chat",
-                "LlamaCpp Completion",
-                "HuggingFace Hub",
-            ),
+            "Model Type", MODEL_TYPES, index=MODEL_TYPES.index(params["model_type"][0]) if "model_type" in params else 0
         )
         model, api_key = None, None
         if model_type in {"LlamaCpp Chat", "LlamaCpp Completion"}:
@@ -55,23 +50,16 @@ with st.sidebar:
         elif model_type == "OpenAI Chat":
             model = st.selectbox(
                 "Model",
-                (
-                    "gpt-3.5-turbo",
-                    "gpt-3.5-turbo-16k",
-                    "gpt-3.5-turbo-0613",
-                    "gpt-3.5-turbo-16k-0613",
-                    "gpt-3.5-turbo-0301",
-                    "gpt-4",
-                    "gpt-4-0613",
-                    "gpt-4-32k",
-                    "gpt-4-32k-0613",
-                    "gpt-4-0314",
-                    "gpt-4-32k-0314",
-                ),
+                OPENAI_CHAT_MODELS,
+                index=OPENAI_CHAT_MODELS.index(params["model"][0]) if "model" in params else 0,
             )
             api_key = st.text_input("OpenAI API Key")
-        elif model_type == "OpenAI g":
-            model = st.selectbox("Model", ("text-davinci-003", "text-davinci-002", "code-davinci-002"))
+        elif model_type == "OpenAI Completion":
+            model = st.selectbox(
+                "Model",
+                OPENAI_COMPLETION_MODELS,
+                index=OPENAI_COMPLETION_MODELS.index(params["model"][0]) if "model" in params else 0,
+            )
             api_key = st.text_input("OpenAI API Key")
 
         variable_count = 0
@@ -111,6 +99,7 @@ with st.sidebar:
         google_api_key = st.text_input("Google PaLM Key")
         hf_api_key = st.text_input("HuggingFace Hub Key")
 
+
 if mode == "Instruction":
     placeholders = [[st.empty() for _ in range(instruction_count + 1)] for _ in range(prompt_count)]
 
@@ -124,7 +113,7 @@ if mode == "Instruction":
             instructions.append(
                 st.text_area(
                     "System Message" if model_type == "OpenAI Chat" else "Instruction",
-                    value="You are a helpful AI assistant.",
+                    value=params["instruction"][0] if "instruction" in params else "You are a helpful AI assistant.",
                     key=f"col_{j}",
                 )
             )
@@ -133,7 +122,13 @@ if mode == "Instruction":
     for i in range(prompt_count):
         cols = st.columns(instruction_count + 1)
         with cols[0]:
-            prompts.append(st.text_area("User Message" if model_type == "OpenAI Chat" else "Prompt", key=f"row_{i}"))
+            prompts.append(
+                st.text_area(
+                    "User Message" if model_type == "OpenAI Chat" else "Prompt",
+                    key=f"row_{i}",
+                    value=params["prompt"][0] if "prompt" in params else "",
+                )
+            )
         for j in range(1, instruction_count + 1):
             with cols[j]:
                 placeholders[i][j] = st.empty()  # placeholders for the future output
