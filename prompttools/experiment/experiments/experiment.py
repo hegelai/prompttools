@@ -187,10 +187,10 @@ class Experiment:
         # `dynamic_input_arg_df` contains input args that has more than one unique values
         self.dynamic_input_arg_df = _get_dynamic_columns(self.input_arg_df)
 
-        # `result_df` contains everything returned by the completion function
-        self.result_df = pd.DataFrame(results)
         # `text_response_df` contains the extracted text response
         self.text_response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
+        # `result_df` contains everything returned by the completion function
+        self.result_df = pd.concat([self.text_response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({"latency": latencies})
@@ -220,7 +220,7 @@ class Experiment:
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
 
     # TODO: Test this function
-    def evaluate_by_row(self, metric_name: str, eval_fn: Callable, eval_fn_kwargs: Optional[list[dict]] = None) -> None:
+    def evaluate_by_row(self, metric_name: str, eval_fn: Callable, **eval_fn_kwargs) -> None:
         """
         Using the given evaluation function that accepts a row of data, compute a new column with the evaluation
         result.
@@ -228,8 +228,9 @@ class Experiment:
         Args:
             metric_name (str): name of the metric being computed
             eval_fn (Callable): an evaluation function that takes in (input, result, other_scores) and return a score
-            eval_fn_kwargs (Optional[list[dict]]): List of keyword args to be passed to the evaluation function.
-                The length of the list should be the same as the number of responses in the experiment's result.
+            eval_fn_kwargs (Optional[list]): keyword args where the value is a list. The length of the list should be
+                the same as the number of responses in the experiment's result. The ``i``th element of the list will be
+                passed to the evaluation function to evaluate the ``i``th row.
         """
         if not self.results:
             logging.info("Running first...")
@@ -237,11 +238,13 @@ class Experiment:
         if metric_name in self.score_df.columns:
             logging.warning(metric_name + " is already present, skipping.")
             return
-        eval_fn_kwargs = {} if eval_fn_kwargs is None else eval_fn_kwargs
         res = []
         self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
-        for _index, row in self.full_df.iterrows():
-            res.append(eval_fn(row, **eval_fn_kwargs))
+        for i, row in self.full_df.iterrows():
+            curr_kwargs = {}
+            for k, v in eval_fn_kwargs.items():
+                curr_kwargs[k] = v[i]
+            res.append(eval_fn(row, **curr_kwargs))
         self.score_df[metric_name] = res
         self.full_df[metric_name] = res
 

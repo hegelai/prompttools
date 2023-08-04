@@ -9,6 +9,7 @@ Use a list to optionally hold a reference to the embedding model and client,
 allowing for lazy initialization.
 """
 from typing import Dict
+import pandas.core.series
 
 EMBEDDING_MODEL = []  #
 CHROMA_CLIENT = []
@@ -77,6 +78,22 @@ def semantic_similarity(prompt: str, response: str, metadata: Dict, expected: st
         expected (str): the expected response
     """
     return compute(expected, response)
+
+
+def semantic_similarity_row(
+    row: pandas.core.series.Series, expected: str, response_column_name: str = "response"
+) -> float:
+    r"""
+    A simple test that checks semantic similarity between the expected response (provided by the user)
+    and the model's text responses.
+
+    Args:
+        row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
+            metrics, etc).
+        expected (str): the expected response
+        response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
+    """
+    return compute(expected, row[response_column_name])
 
 
 def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float:
