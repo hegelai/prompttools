@@ -41,8 +41,8 @@ def mock_openai_chat_function_completion_fn(**kwargs):
                     "content": None,
                     "function_call": {
                         "name": "get_current_weather",
-                        "arguments": '{\n  "location": "Toronto, Canada",\n  "format": "celsius"\n}'
-                    }
+                        "arguments": '{\n  "location": "Toronto, Canada",\n  "format": "celsius"\n}',
+                    },
                 },
             }
         ],

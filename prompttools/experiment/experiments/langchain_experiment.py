@@ -97,19 +97,13 @@ class SequentialChainExperiment(Experiment):
                 llm = llm(temperature=call_combo["temperature"])
                 chain = []
                 for i, prompt_template in enumerate(call_combo["prompt_template"]):
-                    chain.append(
-                        LLMChain(
-                            llm=llm,
-                            prompt=prompt_template,
-                            output_key=call_combo["output_key"][i]
-                        )
-                    )
+                    chain.append(LLMChain(llm=llm, prompt=prompt_template, output_key=call_combo["output_key"][i]))
                 client = SequentialChain(
-                            chains=chain,
-                            input_variables=call_combo["input_variables"],
-                            output_variables=call_combo["output_variables"],
-                            verbose=True
-                        )
+                    chains=chain,
+                    input_variables=call_combo["input_variables"],
+                    output_variables=call_combo["output_variables"],
+                    verbose=True,
+                )
                 for _ in range(runs):
                     call_combo["client"] = client
                     start = perf_counter()
