@@ -19,8 +19,9 @@ except ImportError:
     pymongo = None
 
 from prompttools.requests.request_queue import RequestQueue
-from ..widgets.feedback import FeedbackWidgetProvider
-from ..widgets.comparison import ComparisonWidgetProvider
+
+# from ..widgets.feedback import FeedbackWidgetProvider
+# from ..widgets.comparison import ComparisonWidgetProvider
 from ..widgets.utility import is_interactive
 from .error import PromptExperimentException
 from ._utils import _get_dynamic_columns
@@ -41,14 +42,14 @@ class Experiment:
         self.argument_combos: list[dict] = []
         self.results = []
         self.scores = defaultdict(list)
-        self.feedback_widget_provider = FeedbackWidgetProvider(
-            self.completion_fn, self._aggregate_metric, self._get_human_eval_listener
-        )
-        self.comparison_widget_provider = ComparisonWidgetProvider(
-            self.completion_fn,
-            self._aggregate_comparison,
-            self._get_comparison_listener,
-        )
+        # self.feedback_widget_provider = FeedbackWidgetProvider(
+        #     self.completion_fn, self._aggregate_metric, self._get_human_eval_listener
+        # )
+        # self.comparison_widget_provider = ComparisonWidgetProvider(
+        #     self.completion_fn,
+        #     self._aggregate_comparison,
+        #     self._get_comparison_listener,
+        # )
 
     @classmethod
     def initialize(cls, test_parameters: dict[str, list], frozen_parameters: dict):
@@ -83,44 +84,38 @@ class Experiment:
     def _is_chat(self):
         return False
 
-    def _get_human_eval_listener(self, i: int) -> Callable:
-        def listener(change):
-            self.scores["feedback"][i] = change["new"]
-            # TODO: Confirm that we just need the one below
-            self.score_df["feedback"][i] = change["new"]
+    # def _get_human_eval_listener(self, i: int) -> Callable:
+    #     def listener(change):
+    #         self.score_df["feedback"][i] = change["new"]
+    #
+    #     return listener
 
-        return listener
+    # def _get_comparison_listener(self, index: int) -> Callable:
+    #     def listener(change):
+    #         new_index = self.comparison_index_translation(index)
+    #         self.score_df["comparison"][new_index] = change["new"]
+    #
+    #     return listener
 
-    def _get_comparison_listener(self, index: int) -> Callable:
-        def listener(change):
-            new_index = self.comparison_index_translation(index)
-            self.scores["comparison"][new_index] = change["new"]
-            # TODO: Confirm that we just need the one below
-            self.score_df["comparison"][new_index] = change["new"]
-
-        return listener
-
-    def _aggregate_comparison(
-        self,
-        table: pd.DataFrame,
-        agg_column: int = 0,
-        is_average: bool = False,
-    ) -> Dict[str, int]:
-        # TODO: This could be a group by
-        prompt_scores = defaultdict(int)
-        prompt_counts = defaultdict(int)
-        for index, row in enumerate(table.iterrows()):
-            key = str(row[agg_column])
-            new_index = self.comparison_index_translation(index)
-            prompt_scores[key] += self.scores["comparison"][new_index]
-            # TODO: Turn on this line
-            # prompt_scores[key] += self.score_df["comparison"][new_index]
-            prompt_counts[key] += 1
-        if is_average:
-            for k, v in prompt_scores.items():
-                prompt_scores[k] = v / prompt_counts[k]
-        sorted_scores = dict(sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True))
-        return sorted_scores
+    # def _aggregate_comparison(
+    #     self,
+    #     table: pd.DataFrame,
+    #     agg_column: int = 0,
+    #     is_average: bool = False,
+    # ) -> Dict[str, int]:
+    #     # TODO: This could be a group by
+    #     prompt_scores = defaultdict(int)
+    #     prompt_counts = defaultdict(int)
+    #     for index, row in enumerate(table.iterrows()):
+    #         key = str(row[agg_column])
+    #         new_index = self.comparison_index_translation(index)
+    #         prompt_scores[key] += self.score_df["comparison"][new_index]
+    #         prompt_counts[key] += 1
+    #     if is_average:
+    #         for k, v in prompt_scores.items():
+    #             prompt_scores[k] = v / prompt_counts[k]
+    #     sorted_scores = dict(sorted(prompt_scores.items(), key=lambda item: item[1], reverse=True))
+    #     return sorted_scores
 
     def _aggregate_metric(
         self,
@@ -378,51 +373,51 @@ class Experiment:
             )
         return df
 
-    def gather_feedback(self, pivot_data: Dict[str, object], pivot_columns: List[str]) -> None:
-        """
-        This method creates a table to gather human feedback from a notebook interface.
+    # def gather_feedback(self, pivot_data: Dict[str, object], pivot_columns: List[str]) -> None:
+    #     """
+    #     This method creates a table to gather human feedback from a notebook interface.
+    #
+    #     Args:
+    #         pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
+    #         pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
+    #             that serve as indices the pivot table
+    #     """
+    #     if not self.results:
+    #         logging.info("Running first...")
+    #         self.run()
+    #     if not is_interactive():
+    #         logging.warning("This method only works in notebooks.")
+    #         return
+    #     self.scores["feedback"] = [1] * len(self.results)
+    #     self.score_df["feedback"] = [1] * len(self.results)
+    #     table = self.get_table(pivot_data, pivot_columns, pivot=False)
+    #     self.feedback_widget_provider.set_pivot_columns(pivot_columns)
+    #     items = self.feedback_widget_provider.get_header_widgets()
+    #     for row in table.iterrows():
+    #         items += self.feedback_widget_provider.get_row_widgets(*row)
+    #     items += self.feedback_widget_provider.get_footer_widgets(table)
+    #     self.feedback_widget_provider.display(items)
 
-        Args:
-            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
-            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
-                that serve as indices the pivot table
-        """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
-        if not is_interactive():
-            logging.warning("This method only works in notebooks.")
-            return
-        self.scores["feedback"] = [1] * len(self.results)
-        self.score_df["feedback"] = [1] * len(self.results)
-        table = self.get_table(pivot_data, pivot_columns, pivot=False)
-        self.feedback_widget_provider.set_pivot_columns(pivot_columns)
-        items = self.feedback_widget_provider.get_header_widgets()
-        for row in table.iterrows():
-            items += self.feedback_widget_provider.get_row_widgets(*row)
-        items += self.feedback_widget_provider.get_footer_widgets(table)
-        self.feedback_widget_provider.display(items)
-
-    def compare(self, primary_model: str, pivot_columns: List[str]) -> None:
-        """
-        This method creates a table to gather human feedback from a notebook interface.
-        """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
-        if not is_interactive():
-            logging.warning("This method only works in notebooks.")
-            return
-        table = self.get_table(pivot_data={}, pivot_columns=pivot_columns, pivot=True)
-        self.scores["comparison"] = [1] * len(table)
-        self.score_df["comparison"] = [1] * len(table)
-        self.comparison_index_translation = lambda i: i * len(table.columns)
-        self.comparison_widget_provider.set_models(table.columns)
-        items = self.comparison_widget_provider.get_header_widgets()
-        for index, row in enumerate(table.iterrows()):
-            items += self.comparison_widget_provider.get_row_widgets(index, row[1])
-        items += self.comparison_widget_provider.get_footer_widgets(table)
-        self.comparison_widget_provider.display(items)
+    # def compare(self, primary_model: str, pivot_columns: List[str]) -> None:
+    #     """
+    #     This method creates a table to gather human feedback from a notebook interface.
+    #     """
+    #     if not self.results:
+    #         logging.info("Running first...")
+    #         self.run()
+    #     if not is_interactive():
+    #         logging.warning("This method only works in notebooks.")
+    #         return
+    #     table = self.get_table(pivot_data={}, pivot_columns=pivot_columns, pivot=True)
+    #     self.scores["comparison"] = [1] * len(table)
+    #     self.score_df["comparison"] = [1] * len(table)
+    #     self.comparison_index_translation = lambda i: i * len(table.columns)
+    #     self.comparison_widget_provider.set_models(table.columns)
+    #     items = self.comparison_widget_provider.get_header_widgets()
+    #     for index, row in enumerate(table.iterrows()):
+    #         items += self.comparison_widget_provider.get_row_widgets(index, row[1])
+    #     items += self.comparison_widget_provider.get_footer_widgets(table)
+    #     self.comparison_widget_provider.display(items)
 
     def visualize(
         self,
@@ -530,7 +525,6 @@ class Experiment:
             plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
             plt.show()
 
-    # TODO: Should we keep or remove?
     def rank(
         self,
         pivot_data: Dict[str, object],
