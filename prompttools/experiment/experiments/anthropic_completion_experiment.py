@@ -88,7 +88,6 @@ class AnthropicCompletionExperiment(Experiment):
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_anthropic_completion_fn
         else:
-            print("Not debug")
             self.client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
             self.completion_fn = self.anthropic_completion_fn
 
