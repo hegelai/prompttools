@@ -197,22 +197,40 @@ class Experiment:
         # `full_df` contains all input arguments, responses, and score
         self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
 
-    def visualize_table(self, full_table: bool = False) -> None:
+    def get_new_table(self, get_all_cols: bool = False) -> pd.DataFrame:
         r"""
-        Visualize the DataFrame that contains dynamic (non-frozen) input arguments, the text response,
-        and scores (e.g. latency and metrics generated from evaluation).
+        Get the DataFrame in one of two versions:
+        1. ``get_all_cols = False`` - good for visualization. This contains dynamic (non-frozen) input arguments,
+            the text response, and scores (e.g. latency and metrics generated from evaluation).
+        2. ``get_all_cols = True`` - good for full result. This contains full data with all
+            input arguments (including frozen ones), full model response (not just the text response), and scores.
 
         Args:
-            full_table (bool): defaults to ``False``. If ``True``, it will visualize the full data with all
+            get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
         if not self.results:
             logging.info("Running first...")
             self.run()
-        if full_table:
+        if get_all_cols:
             table = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
         else:
             table = pd.concat([self.dynamic_input_arg_df, self.text_response_df, self.score_df], axis=1)
+        return table
+
+    def visualize_table(self, get_all_cols: bool = False) -> None:
+        r"""
+        Visualize the DataFrame in one of two versions:
+        1. ``get_all_cols = False`` - good for visualization. This contains dynamic (non-frozen) input arguments,
+            the text response, and scores (e.g. latency and metrics generated from evaluation).
+        2. ``get_all_cols = True`` - good for full result. This contains full data with all
+            input arguments (including frozen ones), full model response (not just the text response), and scores.
+
+        Args:
+            get_all_cols (bool): defaults to ``False``. If ``True``, it will visualize the full data with all
+                input arguments (including frozen ones), full model response (not just the text response), and scores.
+        """
+        table = self.get_new_table(get_all_cols)
         if is_interactive():
             display.display(table)
         else:
@@ -232,14 +250,11 @@ class Experiment:
                 the same as the number of responses in the experiment's result. The ``i``th element of the list will be
                 passed to the evaluation function to evaluate the ``i``th row.
         """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
         if metric_name in self.score_df.columns:
             logging.warning(metric_name + " is already present, skipping.")
             return
         res = []
-        self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+        self.full_df = self.get_new_table(get_all_cols=True)
         for i, row in self.full_df.iterrows():
             curr_kwargs = {}
             for k, v in eval_fn_kwargs.items():
@@ -247,6 +262,29 @@ class Experiment:
             res.append(eval_fn(row, **curr_kwargs))
         self.score_df[metric_name] = res
         self.full_df[metric_name] = res
+
+    def pivot_table(
+        self, pivot_columns: List[str], response_value_name: Optional[str] = None, get_all_cols: bool = False
+    ) -> pd.DataFrame:
+        """
+        Returns a pivoted DataFrame.
+
+        Args:
+            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
+                that serve as indices the pivot table
+            response_value_name (Optional[str]): name of the column to aggregate.
+            get_all_cols (bool): defaults to ``False``. If ``True``, it will visualize the full data with all
+                input arguments (including frozen ones), full model response (not just the text response), and scores.
+        """
+        df = self.get_new_table(get_all_cols)
+        pivot_df = pd.pivot_table(
+            df,
+            values=response_value_name,
+            index=[pivot_columns[1]],
+            columns=[pivot_columns[0]],
+            aggfunc=lambda x: x.iloc[0],
+        )
+        return pivot_df
 
     def evaluate(
         self,
@@ -421,6 +459,47 @@ class Experiment:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
         table = self.get_table(pivot_data=None, pivot_columns=None, pivot=False)
+        sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
+        if is_interactive():
+            import matplotlib.pyplot as plt
+            import os
+
+            # Import style file, assumes same dir as experiment.py
+            style_path = os.path.join(os.path.dirname(__file__), "style.mplstyle")
+            plt.style.use(style_path)
+
+            # Define the custom colors
+            custom_colors = [
+                "black",
+                "#7e1e9c",
+                "#15b01a",
+                "#448ee4",
+                "#ff7fa7",
+                "#029386",
+            ]
+
+            plt.ylabel("Latency (s)")
+
+            # Cycle through the custom colors when creating the bars
+            for i, (label, value) in enumerate(sorted_scores.items()):
+                plt.bar(i, value, align="center", color=custom_colors[i % len(custom_colors)])
+
+            plt.xticks(range(len(sorted_scores)), list(sorted_scores.keys()))
+            plt.show()
+
+    def aggregate_by_row(self, metric_name, column_name, is_average=False):
+        r"""
+        Aggregates a metric for a given column and displays to the user.
+
+         Args:
+            metric_name (str): metric to aggregate
+            column_name (str): column to base the aggregation on
+            is_average (bool): if ``True``, compute the average for the metric, else compute the total
+        """
+        if metric_name not in self.scores or metric_name not in self.score_df.columns:
+            logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
+            return
+        table = self.get_new_table(get_all_cols=True)
         sorted_scores = self._aggregate_metric(table, metric_name, column_name, is_average)
         if is_interactive():
             import matplotlib.pyplot as plt
