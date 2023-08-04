@@ -527,10 +527,10 @@ class Experiment:
 
     def rank(
         self,
-        pivot_data: Dict[str, object],
-        pivot_columns: List[str],
         metric_name: str,
         is_average: bool,
+        agg_column: str,
+        get_all_cols: bool = False,
     ) -> Dict[str, int]:
         """
         Using pivot data, groups the data by the first pivot column to
@@ -539,17 +539,17 @@ class Experiment:
         we rank prompt templates by their average latency in the test set.
 
         Args:
-            pivot_data (Dict[str, object]): dictionary that contains additional data or metadata related to the input
-            pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
-                that serve as indices the pivot table
             metric_name (str): metric to aggregate over
             is_average (bool): if ``True``, compute the average for the metric, else compute the total
+            agg_column (str): column to aggregate over
+            get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
+                input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
         if metric_name not in self.scores or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
-        table = self.get_table(pivot_data, pivot_columns, pivot=False)
-        sorted_scores = self._aggregate_metric(table, metric_name, pivot_columns[0], is_average)
+        table = self.get_new_table(get_all_cols=get_all_cols)
+        sorted_scores = self._aggregate_metric(table, metric_name, agg_column, is_average)
         return sorted_scores
 
     @staticmethod
@@ -559,8 +559,7 @@ class Experiment:
     def to_csv(
         self,
         path: str,
-        pivot_data: Optional[Dict[str, object]] = None,
-        pivot_columns: Optional[List[str]] = None,
+        get_all_cols: bool = True,
         **kwargs,
     ):
         r"""
@@ -568,32 +567,27 @@ class Experiment:
 
         Args:
             path (str): path/buffer to write the CSV output
-            pivot_data (Dict[str, object]): optional dictionary that contains additional data or metadata
-                related to the input
-            pivot_columns (List[str]): optional two column names (first for pivot row, second for pivot column)
-                that serve as indices the pivot table
+            get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
+                input arguments (including frozen ones), full model response (not just the text response), and scores.
             **kwargs: optional arguments passed to ``pd.DataFrame.to_csv()``
         """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
-        table = self.get_table(pivot_data, pivot_columns, pivot=pivot_columns is not None)
+        table = self.get_new_table(get_all_cols=get_all_cols)
         table.to_csv(path, **kwargs)
 
-    def to_pandas_df(self):
+    def to_pandas_df(self, get_all_cols: bool = True):
         r"""
         Return the results as a ``pandas.DataFrame``. If the experiment has not been executed, it will run.
+
+        Args:
+            get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
+                input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
-        return self.get_table({}, [], pivot=False)
+        return self.get_new_table(get_all_cols=get_all_cols)
 
     def to_json(
         self,
         path: Optional[str] = None,
-        pivot_data: Optional[Dict[str, object]] = None,
-        pivot_columns: Optional[List[str]] = None,
+        get_all_cols: bool = True,
         **kwargs,
     ):
         r"""
@@ -602,16 +596,11 @@ class Experiment:
         Args:
             path (Optional[str]): path/buffer to write the JSON output, defaults to ``None`` which returns
                 the JSON as a `dict`
-            pivot_data (Dict[str, object]): optional dictionary that contains additional data or metadata
-                related to the input
-            pivot_columns (List[str]): optional two column names (first for pivot row, second for pivot column)
-                that serve as indices the pivot table
+            get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
+                input arguments (including frozen ones), full model response (not just the text response), and scores.
             **kwargs: optional arguments passed to ``pd.DataFrame.to_json()``
         """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
-        table = self.get_table(pivot_data, pivot_columns, pivot=pivot_columns is not None)
+        table = self.get_new_table(get_all_cols=get_all_cols)
         if path is None:
             return table.to_json(**kwargs)
         else:
@@ -640,16 +629,13 @@ class Experiment:
                 the JSON as a `dict`
             **kwargs: optional arguments passed to ``pd.DataFrame.to_json()``
         """
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
         if isinstance(instruction_extract, str):
             instruction_extract = itemgetter(instruction_extract)
         if isinstance(input_extract, str):
             input_extract = itemgetter(input_extract)
         if isinstance(output_extract, str):
             output_extract = itemgetter(output_extract)
-        df = self.to_pandas_df()
+        df = self.to_pandas_df(get_all_cols=True)
         extracted_data = df.apply(
             lambda row: {
                 "instruction": instruction_extract(row),
@@ -697,9 +683,6 @@ class Experiment:
         client.close()
 
     def to_markdown(self):
-        if not self.results:
-            logging.info("Running first...")
-            self.run()
         markdown = self.to_pandas_df().to_markdown()
         return markdown
 
