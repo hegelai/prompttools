@@ -13,7 +13,7 @@ except ImportError:
     anthropic = None
     NOT_GIVEN = None
 
-
+from prompttools.selector.prompt_selector import PromptSelector
 from prompttools.mock.mock import mock_anthropic_completion_fn
 from .experiment import Experiment
 
@@ -65,10 +65,10 @@ class AnthropicCompletionExperiment(Experiment):
 
     def __init__(
         self,
-        max_tokens_to_sample: list[int],
         model: list[str],
         prompt: list[str],
         metadata: list = [NOT_GIVEN],
+        max_tokens_to_sample: list[int] = [1000],
         stop_sequences: list[list[str]] = [NOT_GIVEN],
         stream: list[bool] = [False],
         temperature: list[float] = [NOT_GIVEN],
@@ -88,8 +88,19 @@ class AnthropicCompletionExperiment(Experiment):
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_anthropic_completion_fn
         else:
+            print("Not debug")
             self.client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
             self.completion_fn = self.anthropic_completion_fn
+
+        # If we are using a prompt selector, we need to render
+        # messages, as well as create prompt_keys to map the messages
+        # to corresponding prompts in other models.
+        if isinstance(prompt[0], PromptSelector):
+            self.prompt_keys = {selector.for_anthropic(): selector.for_anthropic() for selector in prompt}
+            prompt = [selector.for_anthropic() for selector in prompt]
+        else:
+            self.prompt_keys = prompt
+
         self.all_args = dict(
             max_tokens_to_sample=max_tokens_to_sample,
             model=model,

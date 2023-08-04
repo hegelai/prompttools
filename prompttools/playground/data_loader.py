@@ -55,6 +55,8 @@ def load_data(
         )
     elif model_type == "HuggingFace Hub":
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+    elif model_type == "Anthropic":
+        experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
     return experiment.to_pandas_df()
 
 
