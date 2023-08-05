@@ -180,23 +180,36 @@ class Experiment:
         self, input_args: list[dict[str, object]], results: list[dict[str, object]], latencies: list[float]
     ):
         r"""
-        Construct a few
+        Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
+
+
+        Note:
+            - If your subclass of ``Experiment`` has a custom ``run`` method. You should consider overwriting this
+              method. In particular, you likely would want to define how to extract the response from LLM's result
+              and save that into ``response_df`` below. ChromaDBExperiment provides an example of this.
+            - The inputs should all share the same length.
+
+        Args:
+             input_args (list[dict[str, object]]): list of dictionaries, where each of them is a set of
+                input argument that was passed into the model
+             results (list[dict[str, object]]): list of responses from the model
+             latencies (list[float]): list of latency measurements
         """
         # `input_arg_df` contains all all input args
         self.input_arg_df = pd.DataFrame(input_args)
         # `dynamic_input_arg_df` contains input args that has more than one unique values
         self.dynamic_input_arg_df = _get_dynamic_columns(self.input_arg_df)
 
-        # `text_response_df` contains the extracted text response
-        self.text_response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
+        # `response_df` contains the extracted response (often being the text response)
+        self.response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
         # `result_df` contains everything returned by the completion function
-        self.result_df = pd.concat([self.text_response_df, pd.DataFrame(results)], axis=1)
+        self.result_df = pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({"latency": latencies})
 
         # `partial_df` contains some input arguments, extracted responses, and score
-        self.partial_df = pd.concat([self.dynamic_input_arg_df, self.text_response_df, self.score_df], axis=1)
+        self.partial_df = pd.concat([self.dynamic_input_arg_df, self.response_df, self.score_df], axis=1)
         # `full_df` contains all input arguments, responses, and score
         self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
 
