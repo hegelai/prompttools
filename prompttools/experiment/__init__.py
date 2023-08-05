@@ -24,9 +24,9 @@ __all__ = [
     "GooglePaLMCompletionExperiment",
     "LlamaCppExperiment",
     "HuggingFaceHubExperiment",
+    "MindsDBExperiment",
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
-    "WeaviateExperiment",
-    "MindsDBExperiment",
     "SequentialChainExperiment",
+    "WeaviateExperiment",
 ]
