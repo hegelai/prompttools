@@ -78,7 +78,6 @@ class ChromaDBExperiment(Experiment):
         if not use_existing_collection and add_to_collection_params is None:
             raise RuntimeError("If you choose to create a new collection, you must also add to it.")
         self.add_to_collection_params = add_to_collection_params if add_to_collection_params else {}
-        self.query_args_combo: list[dict] = []
         super().__init__()
 
     @classmethod
@@ -110,14 +109,13 @@ class ChromaDBExperiment(Experiment):
         r"""
         Creates argument combinations by taking the cartesian product of all inputs.
         """
-        self.query_args_combo: list[dict] = []
         for combo in itertools.product(*self.query_collection_params.values()):
-            self.query_args_combo.append(dict(zip(self.query_collection_params.keys(), combo)))
+            self.argument_combos.append(dict(zip(self.query_collection_params.keys(), combo)))
 
     def run(self, runs: int = 1):
-        input_args = []
+        input_args = []  # This will be used to construct DataFrame table
         self.results = []
-        if not self.query_args_combo:
+        if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
         for i, emb_fn in enumerate(self.embedding_fns):
@@ -127,9 +125,9 @@ class ChromaDBExperiment(Experiment):
                 collection = self.chroma_client.create_collection(self.collection_name, embedding_function=emb_fn)
                 collection.add(**self.add_to_collection_params)
 
-            for query_arg_dict in self.query_args_combo:
+            for query_arg_dict in self.argument_combos:
                 arg_combo = query_arg_dict.copy()
-                arg_combo["embed_fn"] = self.embedding_fn_names[i]
+                arg_combo["embed_fn"] = self.embedding_fn_names[i]  # Save embedding function name to combo
                 if "query_texts" in query_arg_dict and "query_embeddings" in query_arg_dict:
                     # `query` does not accept both arguments at the same time
                     continue
@@ -144,6 +142,8 @@ class ChromaDBExperiment(Experiment):
     def _construct_tables(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
         r"""
         Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
+
+        This version only extract the most relevant objects returned by ChromaDB.
 
         Args:
              input_args (list[dict[str, object]]): list of dictionaries, where each of them is a set of
