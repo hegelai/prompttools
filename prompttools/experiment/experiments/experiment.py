@@ -177,11 +177,14 @@ class Experiment:
             raise PromptExperimentException
 
     def _construct_tables(
-        self, input_args: list[dict[str, object]], results: list[dict[str, object]], latencies: list[float]
+        self,
+        input_args: list[dict[str, object]],
+        results: list[dict[str, object]],
+        latencies: list[float],
+        extract_response_equal_full_result: bool = False,
     ):
         r"""
         Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
-
 
         Note:
             - If your subclass of ``Experiment`` has a custom ``run`` method. You should consider overwriting this
@@ -194,6 +197,8 @@ class Experiment:
                 input argument that was passed into the model
              results (list[dict[str, object]]): list of responses from the model
              latencies (list[float]): list of latency measurements
+             extract_response_equal_full_result (bool): if ``True``, ``result_df`` will only contain
+                the extracted response, lead to a simpler (but incomplete) columns of results.
         """
         # `input_arg_df` contains all all input args
         self.input_arg_df = pd.DataFrame(input_args)
@@ -203,7 +208,10 @@ class Experiment:
         # `response_df` contains the extracted response (often being the text response)
         self.response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
         # `result_df` contains everything returned by the completion function
-        self.result_df = pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
+        if extract_response_equal_full_result:
+            self.result_df = self.response_df
+        else:
+            self.result_df = pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({"latency": latencies})
