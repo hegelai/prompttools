@@ -40,8 +40,8 @@ class Experiment:
     def __init__(self):
         self.queue = RequestQueue()
         self.argument_combos: list[dict] = []
-        self.results = []
-        self.scores = defaultdict(list)
+        self.full_df = None
+        self.score_df = None
         # self.feedback_widget_provider = FeedbackWidgetProvider(
         #     self.completion_fn, self._aggregate_metric, self._get_human_eval_listener
         # )
@@ -130,9 +130,7 @@ class Experiment:
         prompt_counts = defaultdict(int)
         for index, row in table.iterrows():
             key = str(row[agg_column])
-            prompt_scores[key] += self.scores[metric_name][index]
-            # TODO: Turn on this line
-            # prompt_scores[key] += self.score_df[metric_name][index]
+            prompt_scores[key] += self.score_df[metric_name][index]
             prompt_counts[key] += 1
         if is_average:
             for k, v in prompt_scores.items():
@@ -166,15 +164,13 @@ class Experiment:
                     # We need to filter out defaults that are invalid JSON from the request
                     {k: v for k, v in combo.items() if (v is not None) and (v != float("inf"))},
                 )
-        self.results = self.queue.get_results()
-        self.scores["latency"] = self.queue.get_latencies()
-
+        results = self.queue.get_results()
         input_args = self.queue.get_input_args()
-        self._construct_tables(input_args, self.results, self.queue.get_latencies())
-
-        if len(self.results) == 0:
+        if len(results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
+        print(f"{results = }")
+        self._construct_tables(input_args, results, self.queue.get_latencies())
 
     def _construct_tables(
         self,
@@ -233,7 +229,7 @@ class Experiment:
             get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
-        if not self.results:
+        if self.full_df is None:
             logging.info("Running first...")
             self.run()
         if get_all_cols:
@@ -331,15 +327,11 @@ class Experiment:
     #         pivot_columns (List[str]): two column names (first for pivot row, second for pivot column)
     #             that serve as indices the pivot table
     #     """
-    #     if not self.results:
-    #         logging.info("Running first...")
-    #         self.run()
     #     if not is_interactive():
     #         logging.warning("This method only works in notebooks.")
     #         return
-    #     self.scores["feedback"] = [1] * len(self.results)
-    #     self.score_df["feedback"] = [1] * len(self.results)
-    #     table = self.get_table(pivot_data, pivot_columns, pivot=False)
+    #     table = self.get_table(get_all_cols=True)
+    #     self.score_df["feedback"] = [1] * len(table.index))
     #     self.feedback_widget_provider.set_pivot_columns(pivot_columns)
     #     items = self.feedback_widget_provider.get_header_widgets()
     #     for row in table.iterrows():
@@ -351,15 +343,11 @@ class Experiment:
     #     """
     #     This method creates a table to gather human feedback from a notebook interface.
     #     """
-    #     if not self.results:
-    #         logging.info("Running first...")
-    #         self.run()
     #     if not is_interactive():
     #         logging.warning("This method only works in notebooks.")
     #         return
     #     table = self.get_table(pivot_data={}, pivot_columns=pivot_columns, pivot=True)
-    #     self.scores["comparison"] = [1] * len(table)
-    #     self.score_df["comparison"] = [1] * len(table)
+    #     self.score_df["comparison"] = [1] * len(table.index))
     #     self.comparison_index_translation = lambda i: i * len(table.columns)
     #     self.comparison_widget_provider.set_models(table.columns)
     #     items = self.comparison_widget_provider.get_header_widgets()
@@ -376,7 +364,7 @@ class Experiment:
             column_name (str): column to base the aggregation on
             is_average (bool): if ``True``, compute the average for the metric, else compute the total
         """
-        if metric_name not in self.scores or metric_name not in self.score_df.columns:
+        if self.score_df is None or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
         table = self.get_table(get_all_cols=False)
@@ -428,7 +416,7 @@ class Experiment:
             get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
-        if metric_name not in self.scores or metric_name not in self.score_df.columns:
+        if self.score_df is None or metric_name not in self.score_df.columns:
             logging.warning("Can't find " + metric_name + " in scores. Did you run `evaluate`?")
             return
         table = self.get_table(get_all_cols=get_all_cols)
@@ -537,6 +525,7 @@ class Experiment:
         else:
             return extracted_data.to_json(**kwargs)
 
+    # TODO: Add MongoDB local instruction (maybe include docker)
     def to_mongo_db(self, mongo_uri: str, database_name: str, collection_name: str) -> None:
         r"""
         Insert the results of the experiment into MongoDB for persistence.
@@ -555,13 +544,13 @@ class Experiment:
                 "Package `pymongo` is required to be installed to use this method."
                 "Please use `pip install pymongo` to install the package"
             )
-        if not self.results:
+        if self.full_df is None:
             logging.info("Running first...")
             self.run()
         client = pymongo.MongoClient(mongo_uri)
         db = client[database_name]
         collection = db[collection_name]
-        collection.insert_many(self.results)
+        collection.insert_many(self.full_df.to_dict("records"))
         logging.info(f"Inserted results in {database_name}'s collection {collection_name}.")
         client.close()
 

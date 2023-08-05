@@ -114,7 +114,7 @@ class ChromaDBExperiment(Experiment):
 
     def run(self, runs: int = 1):
         input_args = []  # This will be used to construct DataFrame table
-        self.results = []
+        results = []
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
@@ -133,10 +133,10 @@ class ChromaDBExperiment(Experiment):
                     continue
                 for _ in range(runs):
                     input_args.append(arg_combo)
-                    self.results.append(self.chromadb_completion_fn(collection, **query_arg_dict))
+                    results.append(self.chromadb_completion_fn(collection, **query_arg_dict))
             # Clean up
             self.chroma_client.delete_collection(self.collection_name)
-        self._construct_tables(input_args, self.results)
+        self._construct_tables(input_args, results)
 
     # TODO: Collect and add latency
     def _construct_tables(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
@@ -157,9 +157,9 @@ class ChromaDBExperiment(Experiment):
 
         # `response_df` contains the extracted response (often being the text response)
         response_dict = dict()
-        response_dict["top doc ids"] = [self._extract_top_doc_ids(result) for result in self.results]
-        response_dict["distances"] = [self._extract_chromadb_dists(result) for result in self.results]
-        response_dict["documents"] = [self._extract_chromadb_docs(result) for result in self.results]
+        response_dict["top doc ids"] = [self._extract_top_doc_ids(result) for result in results]
+        response_dict["distances"] = [self._extract_chromadb_dists(result) for result in results]
+        response_dict["documents"] = [self._extract_chromadb_docs(result) for result in results]
         self.response_df = pd.DataFrame(response_dict)
         # `result_df` contains everything returned by the completion function
         self.result_df = self.response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)

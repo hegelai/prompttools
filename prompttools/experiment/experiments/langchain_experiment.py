@@ -90,7 +90,8 @@ class SequentialChainExperiment(Experiment):
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
-        self.results = []
+        results = []
+        latencies = []
         for model_combo in self.model_argument_combos:
             for call_combo in self.call_argument_combos:
                 llm = model_combo["llm"]
@@ -108,15 +109,13 @@ class SequentialChainExperiment(Experiment):
                     call_combo["client"] = client
                     start = perf_counter()
                     res = self.completion_fn(**call_combo)
-                    self.scores["latency"].append(perf_counter() - start)
-                    self.results.append(res)
+                    latencies.append(perf_counter() - start)
+                    results.append(res)
                     self.argument_combos.append(model_combo | call_combo)
-        if len(self.results) == 0:
+        if len(results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
-        self._construct_tables(
-            self.argument_combos, self.results, self.scores["latency"], extract_response_equal_full_result=True
-        )
+        self._construct_tables(self.argument_combos, results, latencies, extract_response_equal_full_result=True)
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> str:

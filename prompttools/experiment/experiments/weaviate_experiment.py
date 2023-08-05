@@ -178,7 +178,7 @@ class WeaviateExperiment(Experiment):
                         )
 
     def run(self, runs: int = 1):
-        self.results = []
+        results = []
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
@@ -208,13 +208,13 @@ class WeaviateExperiment(Experiment):
             query_builder = self.query_builders[arg_dict["query_builder_name"]]
             for _ in range(runs):
                 result = self.completion_fn(query_builder, arg_dict["text_query"])
-                self.results.append(result)
+                results.append(result)
 
             # Clean up
             logging.info("Cleaning up items in Weaviate...")
             if not self.use_existing_data:
                 self.client.schema.delete_class(self.class_name)
-        self._construct_tables([c for c in self.argument_combos for _ in range(runs)], self.results)
+        self._construct_tables([c for c in self.argument_combos for _ in range(runs)], results)
 
     # TODO: Collect and add latency
     def _construct_tables(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
@@ -235,7 +235,7 @@ class WeaviateExperiment(Experiment):
 
         # `response_df` contains the extracted response (often being the text response)
         response_dict = dict()
-        response_dict["top objs"] = [self._extract_responses(result) for result in self.results]
+        response_dict["top objs"] = [self._extract_responses(result) for result in results]
         self.response_df = pd.DataFrame(response_dict)
         # `result_df` contains everything returned by the completion function
         self.result_df = self.response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
