@@ -169,7 +169,6 @@ class Experiment:
         if len(results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
-        print(f"{results = }")
         self._construct_tables(input_args, results, self.queue.get_latencies())
 
     def _construct_tables(
