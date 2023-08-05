@@ -241,7 +241,7 @@ class Experiment:
         else:
             return self.partial_df
 
-    def visualize(self, get_all_cols: bool = False) -> None:
+    def visualize(self, get_all_cols: bool = False, pivot: bool = False, pivot_columns: list = []) -> None:
         r"""
         Visualize the DataFrame in one of two versions:
         1. ``get_all_cols = False`` - good for visualization. This contains dynamic (non-frozen) input arguments,
@@ -253,25 +253,34 @@ class Experiment:
             get_all_cols (bool): defaults to ``False``. If ``True``, it will visualize the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
-        table = self.get_table(get_all_cols)
+        if pivot:
+            table = self.pivot_table(pivot_columns, get_all_cols=get_all_cols)
+        else:
+            table = self.get_table(get_all_cols)
         if is_interactive():
             display.display(table)
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
 
-    def evaluate(self, metric_name: str, eval_fn: Callable, **eval_fn_kwargs) -> None:
+    def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, **eval_fn_kwargs) -> None:
         """
         Using the given evaluation function that accepts a row of data, compute a new column with the evaluation
-        result.
+        result. Each row of data generally contain inputs, model response, and other previously computed metrics.
 
         Args:
             metric_name (str): name of the metric being computed
             eval_fn (Callable): an evaluation function that takes in a row from pd.DataFrame
                 and optional keyword arguments
-            eval_fn_kwargs (Optional[list]): keyword args where the value is a list. The length of the list should be
+            static_eval_fn_kwargs (dict): keyword args for ``eval_fn`` that are consistent for all rows
+            eval_fn_kwargs (Optional[list]): keyword args for ``eval_fn`` that may be different for each row.
+                Each value entered here should be a list, and the length of the list should be
                 the same as the number of responses in the experiment's result. The ``i``th element of the list will be
                 passed to the evaluation function to evaluate the ``i``th row.
+
+        Example:
+            >>> from prompttools.utils import validate_json_response
+            >>> experiment.evaluate("is_json", validate_json_response, {"response_column_name": "response"})
         """
         if metric_name in self.score_df.columns:
             logging.warning(metric_name + " is already present, skipping.")
@@ -279,7 +288,7 @@ class Experiment:
         res = []
         table = self.get_table(get_all_cols=True)
         for i, row in table.iterrows():
-            curr_kwargs = {}
+            curr_kwargs = static_eval_fn_kwargs.copy()
             for k, v in eval_fn_kwargs.items():
                 curr_kwargs[k] = v[i]
             res.append(eval_fn(row, **curr_kwargs))
