@@ -93,7 +93,7 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
-- LangChain - Exploratory
+- LangChain - _In Progress_
 
 Vector Databases and Data Utility
 - Chroma - **Supported**
