@@ -34,6 +34,8 @@ Integrated Experiment APIs
 
 .. autoclass:: HuggingFaceHubExperiment
 
+.. autoclass:: SequentialChainExperiment
+
 .. autoclass:: GooglePaLMCompletionExperiment
 
 .. autoclass:: LlamaCppExperiment
@@ -41,3 +43,5 @@ Integrated Experiment APIs
 .. autoclass:: ChromaDBExperiment
 
 .. autoclass:: WeaviateExperiment
+
+.. autoclass:: MindsDBExperiment

@@ -24,7 +24,13 @@ from .error import PromptExperimentException
 
 class SequentialChainExperiment(Experiment):
     r"""
-    Testing Lang Chain sequential chains.
+    Experiment for testing LangChain sequential chains.
+
+    Args:
+        llm (list): list of LLMs
+        prompt_template (list[list]): list of prompt templates
+        prompt (list[str]): list of prompts
+        kwargs (dict): keyword arguments to call the model with
     """
 
     MODEL_PARAMETERS = ["llm"]

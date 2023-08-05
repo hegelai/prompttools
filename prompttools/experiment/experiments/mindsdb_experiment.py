@@ -23,9 +23,12 @@ from .error import PromptExperimentException
 
 class MindsDBExperiment(Experiment):
     r"""
-    Experiment MindsDB tool.
-    Combos of MindsDB inputs to form SQL queries are accepted.
-    A list of responses is returned.
+    An experiment class for MindsDB.
+    This accepts combinations of MindsDB inputs to form SQL queries, returning a list of responses.
+
+    Args:
+        db_connector (CMySQLConnection): Connector MindsDB
+        kwargs (dict): keyword arguments for the model
     """
 
     def __init__(
