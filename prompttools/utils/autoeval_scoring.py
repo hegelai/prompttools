@@ -63,28 +63,7 @@ def compute(fact: str, model_answer: str, model: str = "claude-2") -> float:
     return int(completion_response.completion)
 
 
-def autoeval_scoring(prompt: str, response: str, metadata: dict, expected: str) -> float:
-    r"""
-    Uses auto-evaluation to score the model response.
-
-    Args:
-        prompt (str): Not used.
-        response (str): The model response.
-        metadata (str): Not used.
-        expected (str): The fact (truth). The auto-eval model will judge how close the ``response`` is
-            from this fact (truth).
-    """
-    if anthropic is None:
-        raise ModuleNotFoundError(
-            "Package `anthropic` is required to be installed to use this experiment."
-            "Please use `pip install anthropic` to install the package"
-        )
-    return compute(fact=expected, model_answer=response)
-
-
-def autoeval_scoring_row(
-    row: pandas.core.series.Series, expected: str, response_column_name: str = "response"
-) -> float:
+def autoeval_scoring(row: pandas.core.series.Series, expected: str, response_column_name: str = "response") -> float:
     r"""
     Uses auto-evaluation to score the model response.
 

@@ -30,19 +30,7 @@ def validate(text: str):
     return 0.0 if "error" in pylint_stdout.getvalue() else 1.0
 
 
-def validate_python_response(prompt: str, response: str, metadata: Dict) -> float:
-    r"""
-    Validate whether ``response`` string follows Python's syntax.
-
-    Args:
-        prompt (str): Not used.
-        response (str): the string that will be validated
-        metadata (dict): Not used.
-    """
-    return validate(response)
-
-
-def validate_python_response_row(row: pandas.core.series.Series, response_column_name: str = "response") -> float:
+def validate_python_response(row: pandas.core.series.Series, response_column_name: str = "response") -> float:
     r"""
     Validate whether ``response`` string follows Python's syntax.
 
@@ -55,4 +43,12 @@ def validate_python_response_row(row: pandas.core.series.Series, response_column
 
 
 def evaluate(prompt: str, response: str, metadata: Dict) -> float:
-    return validate_python_response(prompt, response, metadata)
+    r"""
+    Validate whether ``response`` string follows Python's syntax.
+
+    Args:
+        prompt (str): Not used.
+        response (str): the string that will be validated
+        metadata (dict): Not used.
+    """
+    return validate(response)

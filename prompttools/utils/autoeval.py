@@ -52,7 +52,7 @@ def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
     return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
 
 
-def autoeval_binary_scoring(prompt: str, response: str, metadata: Dict) -> float:
+def evaluate(prompt: str, response: str, _metadata: Dict) -> float:
     r"""
     Uses auto-evaluation to score the model response with "gpt-4" as the judge, returning 0.0 or 1.0.
 
@@ -64,11 +64,7 @@ def autoeval_binary_scoring(prompt: str, response: str, metadata: Dict) -> float
     return compute(prompt, response)
 
 
-def evaluate(prompt: str, response: str, _metadata: Dict) -> float:
-    return autoeval_binary_scoring(prompt, response, _metadata)
-
-
-def autoeval_binary_scoring_row(
+def autoeval_binary_scoring(
     row: pandas.core.series.Series,
     prompt_column_name: str,
     response_column_name: str = "response",

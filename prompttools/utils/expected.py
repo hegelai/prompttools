@@ -28,7 +28,7 @@ def compute(prompt: str, model: str = "gpt-4") -> str:
     return response["choices"][0]["message"]["content"]
 
 
-def compute_similarity_against_model(prompt: str, response: str, model: str = "gpt-4") -> str:
+def evaluate(prompt: str, response: str, model: str = "gpt-4") -> str:
     r"""
     Computes the similarity of a given response to the expected result
     generated from a high quality LLM (by default GPT-4) using the same prompt.
@@ -43,7 +43,7 @@ def compute_similarity_against_model(prompt: str, response: str, model: str = "g
     return similarity.compute(response, expected_response)
 
 
-def compute_similarity_against_model_row(
+def compute_similarity_against_model(
     row: pandas.core.series.Series,
     prompt_column_name: str,
     model: str = "gpt-4",
