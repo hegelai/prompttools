@@ -114,6 +114,9 @@ class SequentialChainExperiment(Experiment):
         if len(self.results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
+        self._construct_tables(
+            self.argument_combos, self.results, self.scores["latency"], extract_response_equal_full_result=True
+        )
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> str:
