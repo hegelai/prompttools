@@ -206,14 +206,15 @@ class WeaviateExperiment(Experiment):
 
             # Query
             query_builder = self.query_builders[arg_dict["query_builder_name"]]
-            result = self.completion_fn(query_builder, arg_dict["text_query"])
-            self.results.append(result)
+            for _ in range(runs):
+                result = self.completion_fn(query_builder, arg_dict["text_query"])
+                self.results.append(result)
 
             # Clean up
             logging.info("Cleaning up items in Weaviate...")
             if not self.use_existing_data:
                 self.client.schema.delete_class(self.class_name)
-        self._construct_tables(self.argument_combos, self.results)
+        self._construct_tables([c for c in self.argument_combos for _ in range(runs)], self.results)
 
     # TODO: Collect and add latency
     def _construct_tables(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
