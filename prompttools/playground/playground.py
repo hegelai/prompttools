@@ -64,10 +64,11 @@ with st.sidebar:
             )
             api_key = st.text_input("OpenAI API Key")
 
-        variable_count = len(params["var_names"][0].split(",")) if "var_names" in params else 1
+        variable_count = 0
         if mode == "Prompt Template":
             instruction_count = st.number_input("Add Template", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add User Input", step=1, min_value=1, max_value=10)
+            variable_count = len(params["var_names"][0].split(",")) if "var_names" in params else 1
             variable_count = st.number_input("Add Variable", step=1, min_value=1, max_value=10, value=variable_count)
         elif model_type == "OpenAI Chat":
             instruction_count = st.number_input("Add System Message", step=1, min_value=1, max_value=5)
