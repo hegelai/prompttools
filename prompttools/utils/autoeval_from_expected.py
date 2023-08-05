@@ -8,6 +8,7 @@
 import os
 import openai
 import jinja2
+import pandas
 from .error import PromptToolsUtilityError
 
 EVALUATION_SYSTEM_PROMPT = """
@@ -56,4 +57,12 @@ def evaluate(prompt: str, response: str, metadata: dict, expected: str) -> float
     r"""
     Uses auto-evaluation to score the model response.
     """
+    return compute(prompt, expected, response)
+
+
+def autoeval_from_expected_response(
+    row: pandas.core.series.Series, expected: str, prompt_column_name: str, response_column_name: str = "response"
+):
+    prompt = row[prompt_column_name]
+    response = row[response_column_name]
     return compute(prompt, expected, response)
