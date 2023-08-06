@@ -41,6 +41,7 @@ class Experiment:
         self.queue = RequestQueue()
         self.argument_combos: list[dict] = []
         self.full_df = None
+        self.partial_df = None
         self.score_df = None
         # self.feedback_widget_provider = FeedbackWidgetProvider(
         #     self.completion_fn, self._aggregate_metric, self._get_human_eval_listener
@@ -151,6 +152,11 @@ class Experiment:
         r"""
         Create tuples of input and output for every possible combination of arguments.
 
+        Note:
+            If you overwrite this method in a subclass, make sure your method calls ``_construct_result_dfs``
+            in order to save the results from your run as DataFrames. Then, they can later be used
+            for evaluation, aggregation, and persistence.
+
         Args:
             runs (int): number of times to execute each possible combination of arguments, defaults to 1.
         """
@@ -169,9 +175,9 @@ class Experiment:
         if len(results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
-        self._construct_tables(input_args, results, self.queue.get_latencies())
+        self._construct_result_dfs(input_args, results, self.queue.get_latencies())
 
-    def _construct_tables(
+    def _construct_result_dfs(
         self,
         input_args: list[dict[str, object]],
         results: list[dict[str, object]],
@@ -179,7 +185,10 @@ class Experiment:
         extract_response_equal_full_result: bool = False,
     ):
         r"""
-        Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
+        Takes in the input, results, and other metrics from the experiment's run, and construct a few DataFrames that
+        contain all relevant data (i.e. input arguments, results, evaluation metrics).
+
+        These DataFrames can later be used for evaluation, aggregation, or storing them for persistence.
 
         Note:
             - If your subclass of ``Experiment`` has a custom ``run`` method. You should consider overwriting this
@@ -196,25 +205,25 @@ class Experiment:
                 the extracted response, lead to a simpler (but incomplete) columns of results.
         """
         # `input_arg_df` contains all all input args
-        self.input_arg_df = pd.DataFrame(input_args)
+        input_arg_df = pd.DataFrame(input_args)
         # `dynamic_input_arg_df` contains input args that has more than one unique values
-        self.dynamic_input_arg_df = _get_dynamic_columns(self.input_arg_df)
+        dynamic_input_arg_df = _get_dynamic_columns(input_arg_df)
 
         # `response_df` contains the extracted response (often being the text response)
-        self.response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
+        response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
         # `result_df` contains everything returned by the completion function
         if extract_response_equal_full_result:
-            self.result_df = self.response_df
+            result_df = response_df
         else:
-            self.result_df = pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
+            result_df = pd.concat([response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({"latency": latencies})
 
         # `partial_df` contains some input arguments, extracted responses, and score
-        self.partial_df = pd.concat([self.dynamic_input_arg_df, self.response_df, self.score_df], axis=1)
+        self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
         # `full_df` contains all input arguments, responses, and score
-        self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+        self.full_df = pd.concat([input_arg_df, result_df, self.score_df], axis=1)
 
     def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
         r"""
@@ -275,7 +284,8 @@ class Experiment:
 
         Example:
             >>> from prompttools.utils import validate_json_response
-            >>> experiment.evaluate("is_json", validate_json_response, {"response_column_name": "response"})
+            >>> experiment.evaluate("is_json", validate_json_response,
+            >>>                     static_eval_fn_kwargs={"response_column_name": "response"})
         """
         if metric_name in self.score_df.columns:
             logging.warning(metric_name + " is already present, skipping.")

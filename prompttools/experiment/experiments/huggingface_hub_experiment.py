@@ -138,7 +138,7 @@ class HuggingFaceHubExperiment(Experiment):
         if len(results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
-        self._construct_tables(self.argument_combos, results, latencies, extract_response_equal_full_result=True)
+        self._construct_result_dfs(self.argument_combos, results, latencies, extract_response_equal_full_result=True)
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> list[str]:
