@@ -57,7 +57,16 @@ def load_data(
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
     elif model_type == "Anthropic":
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
-    return experiment.to_pandas_df()
+
+    data_loader_response = {}
+    try:
+        data_loader_response['df'] = experiment.to_pandas_df()
+        data_loader_response['to_mongo_db'] = experiment.to_mongo_db
+    except Exception as e:
+        raise Exception(str(e))
+
+
+    return data_loader_response
 
 
 @st.cache_data
