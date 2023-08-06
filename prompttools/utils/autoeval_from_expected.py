@@ -8,6 +8,7 @@
 import os
 import openai
 import jinja2
+import pandas
 from .error import PromptToolsUtilityError
 
 EVALUATION_SYSTEM_PROMPT = """
@@ -34,6 +35,7 @@ def _get_messages(prompt: str, expected: str, response: str):
     ]
 
 
+# TODO: Should this be removed since no one is using it?
 def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> float:
     r"""
     Uses a high quality chat model, like GPT-4, to automatically evaluate a given
@@ -55,4 +57,12 @@ def evaluate(prompt: str, response: str, metadata: dict, expected: str) -> float
     r"""
     Uses auto-evaluation to score the model response.
     """
+    return compute(prompt, expected, response)
+
+
+def autoeval_from_expected_response(
+    row: pandas.core.series.Series, expected: str, prompt_column_name: str, response_column_name: str = "response"
+):
+    prompt = row[prompt_column_name]
+    response = row[response_column_name]
     return compute(prompt, expected, response)
