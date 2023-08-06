@@ -9,7 +9,6 @@ import streamlit as st
 import pyperclip
 import urllib.parse
 
-
 try:
     import os
     from pathlib import Path
@@ -23,7 +22,7 @@ except Exception:
     pass
 
 from prompttools.playground.constants import MODES, MODEL_TYPES, OPENAI_CHAT_MODELS, OPENAI_COMPLETION_MODELS
-from prompttools.playground.data_loader import render_prompts, run_multiple
+from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 
 params = st.experimental_get_query_params()
@@ -172,7 +171,6 @@ if mode == "Instruction":
             presence_penalty,
             api_key,
         )
-        st.write(data_loader_response['df'])
         st.session_state.df = data_loader_response['df']
         st.session_state.to_mongo_db = data_loader_response['to_mongo_db']
 
