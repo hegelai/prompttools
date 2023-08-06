@@ -214,10 +214,10 @@ class WeaviateExperiment(Experiment):
             logging.info("Cleaning up items in Weaviate...")
             if not self.use_existing_data:
                 self.client.schema.delete_class(self.class_name)
-        self._construct_tables([c for c in self.argument_combos for _ in range(runs)], results)
+        self._construct_result_dfs([c for c in self.argument_combos for _ in range(runs)], results)
 
     # TODO: Collect and add latency
-    def _construct_tables(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
+    def _construct_result_dfs(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
         r"""
         Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
 
@@ -229,24 +229,24 @@ class WeaviateExperiment(Experiment):
              results (list[dict[str, object]]): list of responses from the model
         """
         # `input_arg_df` contains all all input args
-        self.input_arg_df = pd.DataFrame(input_args)
+        input_arg_df = pd.DataFrame(input_args)
         # `dynamic_input_arg_df` contains input args that has more than one unique values
-        self.dynamic_input_arg_df = _get_dynamic_columns(self.input_arg_df)
+        dynamic_input_arg_df = _get_dynamic_columns(input_arg_df)
 
         # `response_df` contains the extracted response (often being the text response)
         response_dict = dict()
         response_dict["top objs"] = [self._extract_responses(result) for result in results]
-        self.response_df = pd.DataFrame(response_dict)
+        response_df = pd.DataFrame(response_dict)
         # `result_df` contains everything returned by the completion function
-        self.result_df = self.response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
+        result_df = response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({})  # {"latency": latencies})
 
         # `partial_df` contains some input arguments, extracted responses, and score
-        self.partial_df = pd.concat([self.dynamic_input_arg_df, self.response_df, self.score_df], axis=1)
+        self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
         # `full_df` contains all input arguments, responses, and score
-        self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+        self.full_df = pd.concat([input_arg_df, result_df, self.score_df], axis=1)
 
     def _extract_responses(self, response: dict) -> list[dict]:
         return response["data"]["Get"][self.class_name]
