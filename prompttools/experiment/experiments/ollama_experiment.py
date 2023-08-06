@@ -74,17 +74,7 @@ class OllamaExperiment(Experiment):
             dict(zip(self.call_params, val)) for val in itertools.product(*self.call_params.values())
         ]
 
-    def llama_completion_fn(
-        self,
-        **params: Dict[str, Any],
-    ):
-        r"""
-        Local model helper function to make request
-        """
-        client = params["client"]
-        call_params = {k: v for k, v in params.items() if k != "client"}
-        response = client(**call_params)
-        return response
+   
 
     def ollama_completion_fn(
         self,
