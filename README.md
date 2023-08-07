@@ -113,7 +113,7 @@ a PR to add it. Feel free to discuss in our Discord channel as well.
     - No, the source code will be executed on your machine. Any call to LLM APIs will be directly executed from your machine without any forwarding.
 
 2. Does `prompttools` store my API keys or LLM inputs and outputs to a server?
-    - No, all of those data stay on your local machine.
+    - No, all of those data stay on your local machine. We do not collect any PII (personally identifiable information).
 
 3. How do I persist my results?
    -  To persist the results of your tests and experiments, you can export your `Experiment` with the methods `to_csv`,
