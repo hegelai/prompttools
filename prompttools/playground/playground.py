@@ -33,17 +33,15 @@ st.header("PromptTools Playground")
 st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
 
 with st.sidebar:
-    if 'mode' not in st.session_state and 'mode' in params:
+    if "mode" not in st.session_state and "mode" in params:
         st.session_state.mode = unquote(params["mode"][0])
     mode = st.radio("Choose a mode", MODES, key="mode")
     if mode != "Model Comparison":
-        if 'model_type' not in st.session_state and 'model_type' in params:
+        if "model_type" not in st.session_state and "model_type" in params:
             st.session_state.model_type = unquote(params["model_type"][0])
-        model_type = st.selectbox(
-            "Model Type", MODEL_TYPES, key='model_type'
-        )
+        model_type = st.selectbox("Model Type", MODEL_TYPES, key="model_type")
         model, api_key = None, None
-        if 'model' not in st.session_state and 'model' in params:
+        if "model" not in st.session_state and "model" in params:
             st.session_state.model = unquote(params["model"][0])
         if model_type in {"LlamaCpp Chat", "LlamaCpp Completion"}:
             model = st.text_input("Local Model Path", key="model")
@@ -54,29 +52,21 @@ with st.sidebar:
             model = st.text_input("Model", key="model")
             api_key = st.text_input("Google PaLM API Key")
         elif model_type == "Anthropic":
-            model = st.selectbox("Model", ("claude-2", "claude-instant-1"), key='model')
+            model = st.selectbox("Model", ("claude-2", "claude-instant-1"), key="model")
             api_key = st.text_input("Anthropic API Key")
         elif model_type == "OpenAI Chat":
             # if 'model' in params and not unquote(params["model"][0]) in OPENAI_CHAT_MODELS:
             #     del params['model']
             #     st.experimental_set_query_params(**params)
-            if 'model' not in st.session_state and 'model' in params:
+            if "model" not in st.session_state and "model" in params:
                 st.session_state.model = unquote(params["model"][0])
-            model = st.selectbox(
-                "Model",
-                OPENAI_CHAT_MODELS,
-                key='model'
-            )
+            model = st.selectbox("Model", OPENAI_CHAT_MODELS, key="model")
             api_key = st.text_input("OpenAI API Key")
         elif model_type == "OpenAI Completion":
             # if 'model' in params and not unquote(params["model"][0]) in OPENAI_COMPLETION_MODELS:
             #     del params['model']
             #     st.experimental_set_query_params(**params)
-            model = st.selectbox(
-                "Model",
-                OPENAI_COMPLETION_MODELS,
-                key='model'
-            )
+            model = st.selectbox("Model", OPENAI_COMPLETION_MODELS, key="model")
             api_key = st.text_input("OpenAI API Key")
 
         variable_count = 0
@@ -91,18 +81,17 @@ with st.sidebar:
         else:
             instruction_count = st.number_input("Add Instruction", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
-        
 
         var_names = []
-        if 'var_names' in params:
+        if "var_names" in params:
             var_names = unquote(params["var_names"][0]).split(",")
         for i in range(variable_count):
-            if f'varname_{i}' not in st.session_state:
+            if f"varname_{i}" not in st.session_state:
                 if len(var_names) > i:
                     st.session_state[f"varname_{i}"] = var_names[i]
                 else:
                     st.session_state[f"varname_{i}"] = f"Variable {i+1}"
-        
+
         for i in range(variable_count):
             var_names.append(
                 st.text_input(
@@ -142,11 +131,11 @@ if mode == "Instruction":
         a = None
     instructions = []
     for j in range(1, instruction_count + 1):
-        if f'instruction_{j-1}' not in st.session_state:
-            if 'instruction' in params:
-                st.session_state[f'instruction_{j-1}'] = unquote(params["instruction"][0])
+        if f"instruction_{j-1}" not in st.session_state:
+            if "instruction" in params:
+                st.session_state[f"instruction_{j-1}"] = unquote(params["instruction"][0])
             else:
-                st.session_state[f'instruction_{j-1}'] = "You are a helpful AI assistant."
+                st.session_state[f"instruction_{j-1}"] = "You are a helpful AI assistant."
         with cols[j]:
             instructions.append(
                 st.text_area(
@@ -158,8 +147,8 @@ if mode == "Instruction":
     prompts = []
     for i in range(prompt_count):
         cols = st.columns(instruction_count + 1)
-        if f'prompt_{i}' not in st.session_state and 'prompt' in params:
-                st.session_state[f'prompt_{i}'] = unquote(params["prompt"][0])
+        if f"prompt_{i}" not in st.session_state and "prompt" in params:
+            st.session_state[f"prompt_{i}"] = unquote(params["prompt"][0])
         with cols[0]:
             prompts.append(
                 st.text_area(
@@ -397,4 +386,9 @@ if clear:
 
 
 if share:
-    pyperclip.copy(link)
+    try:
+        pyperclip.copy(link)
+        raise pyperclip.PyperclipException
+    except pyperclip.PyperclipException:
+        st.write("Please copy the following link:")
+        st.code(link)
