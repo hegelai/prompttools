@@ -1,2 +1,0 @@
-xclip
-libgtk-3-dev
