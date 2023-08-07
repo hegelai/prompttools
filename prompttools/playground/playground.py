@@ -388,7 +388,6 @@ if clear:
 if share:
     try:
         pyperclip.copy(link)
-        raise pyperclip.PyperclipException
     except pyperclip.PyperclipException:
         st.write("Please copy the following link:")
         st.code(link)
