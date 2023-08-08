@@ -6,11 +6,7 @@
 
 
 from typing import Dict
-<<<<<<< HEAD
-import openai
 import pandas.core.series
-=======
->>>>>>> 862ca6e (add framework for adding new model evaluators)
 import jinja2
 
 from .model_evaluators.EvaluatorUtils import get_evaluator_for_model
@@ -45,7 +41,7 @@ def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
         model (str): The OpenAI chat model to use for generating an expected response.
             Defaults to GPT-4.
     """
-    response = get_evaluator_for_model(model).evaluate(model, EVALUATION_SYSTEM_PROMPT, _get_user_prompt())
+    response = get_evaluator_for_model(model).evaluate(model, prompt, )
     return 1.0 if "RIGHT" in response else 0.0
 
 

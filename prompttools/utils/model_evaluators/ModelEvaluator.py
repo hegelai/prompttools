@@ -10,9 +10,13 @@ from abc import ABC, abstractmethod
 
 class ModelEvaluator(ABC):
     @abstractmethod
-    def evaluate(self, model: str, evaluation_system_prompt: str, user_message: str):
+    def evaluate(self, model: str, prompt: str, response: str):
         pass
 
     @abstractmethod
     def supports_model(self, model: str):
+        pass
+
+    @abstractmethod
+    def evaluate_and_score(self, model: str, fact: str, answer: str):
         pass

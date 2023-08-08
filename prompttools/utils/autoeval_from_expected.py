@@ -6,12 +6,8 @@
 
 
 import jinja2
-<<<<<<< HEAD
 import pandas
-from .error import PromptToolsUtilityError
-=======
 from .model_evaluators.EvaluatorUtils import get_evaluator_for_model
->>>>>>> 862ca6e (add framework for adding new model evaluators)
 
 EVALUATION_SYSTEM_PROMPT = """
 You are a grader evaluating responses to math questions.
