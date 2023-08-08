@@ -6,7 +6,7 @@
 
 import os
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 import openai
 
 from prompttools.selector.prompt_selector import PromptSelector
@@ -80,7 +80,7 @@ class OpenAIChatExperiment(Experiment):
     def __init__(
         self,
         model: List[str],
-        messages: List[List[Dict[str, str]]] | List[PromptSelector],
+        messages: Union[List[List[Dict[str, str]]], List[PromptSelector]],
         temperature: Optional[List[float]] = [1.0],
         top_p: Optional[List[float]] = [1.0],
         n: Optional[List[int]] = [1],

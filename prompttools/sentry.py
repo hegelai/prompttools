@@ -25,6 +25,17 @@ def find_certifi_path():
     return None
 
 
+def filter_info(event, _hint):
+    # Remove personal info
+    try:
+        event["modules"] = None
+        event["extra"] = None
+        event["server_name"] = None
+    except Exception:
+        pass
+    return event
+
+
 def init_sentry():
     if "SENTRY_OPT_OUT" not in os.environ:
         if platform.system() == "Darwin":
@@ -40,6 +51,11 @@ def init_sentry():
             dsn=SENTRY_DSN,
             release=__version__,
             traces_sample_rate=1,
+            include_local_variables=False,
+            send_default_pii=False,
+            attach_stacktrace=False,
+            before_send=filter_info,
+            include_source_context=False,
         )
         try:
             filename = os.path.join(os.environ.get("HOME", "/tmp"), ".token")

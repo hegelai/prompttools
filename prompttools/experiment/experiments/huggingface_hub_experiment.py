@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 import itertools
 
 try:
@@ -53,7 +53,7 @@ class HuggingFaceHubExperiment(Experiment):
     def __init__(
         self,
         repo_id: List[str],
-        prompt: List[str] | List[PromptSelector],
+        prompt: Union[List[str], List[PromptSelector]],
         task: List[str] = ["text-generation"],
         **kwargs: Dict[str, list[object]],
     ):

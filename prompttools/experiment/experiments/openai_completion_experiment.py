@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 import openai
 
 from prompttools.selector.prompt_selector import PromptSelector
@@ -85,7 +85,7 @@ class OpenAICompletionExperiment(Experiment):
     def __init__(
         self,
         model: List[str],
-        prompt: List[str] | List[PromptSelector],
+        prompt: Union[List[str], List[PromptSelector]],
         suffix: Optional[List[str]] = [None],
         max_tokens: Optional[List[int]] = [float("inf")],
         temperature: Optional[List[float]] = [1.0],

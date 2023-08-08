@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 import itertools
 import logging
 
@@ -99,7 +99,7 @@ class LlamaCppExperiment(Experiment):
     def __init__(
         self,
         model_path: List[str],
-        prompt: List[str] | List[PromptSelector],
+        prompt: Union[List[str], List[PromptSelector]],
         model_params: Dict[str, list[object]] = {},
         call_params: Dict[str, list[object]] = {},
     ):
