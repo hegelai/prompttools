@@ -1,7 +1,6 @@
-<p align="center">
-  <a href="https://hegel-ai.com"><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Owl_of_Minerva.svg" width="75" height="75"></a>
-</p>
 <h1 align="center">
+ <a href="https://hegel-ai.com"><img src="img/hegel_ai_logo.svg" width="" height="70"></a>
+ <br>
  PromptTools
 </h1>
 <p align="center">
@@ -93,7 +92,11 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
-- LangChain - _In Progress_
+- Ollama - _In Progress_
+
+Frameworks
+- LangChain - **Supported**
+- MindsDB - **Supported**
 
 Vector Databases and Data Utility
 - Chroma - **Supported**
