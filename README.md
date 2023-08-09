@@ -1,8 +1,8 @@
-<h1 align="center" markdown="1">
+<h1 align="center">
  <a href="https://hegel-ai.com">
- <picture height="70">
+ <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/hegel_ai_logo_dark.svg">
-  <img height="70" alt="Text changing depending on mode. Light: 'So light!' Dark: 'So dark!'" src="img/hegel_ai_logo.svg">
+  <img height="70" src="img/hegel_ai_logo.svg">
  </picture>
  </a>
  <br>
