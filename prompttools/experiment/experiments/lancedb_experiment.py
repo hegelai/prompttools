@@ -108,7 +108,7 @@ class LanceDBExperiment(Experiment):
                 if not table:
                     raise RuntimeError(f"Table {self.table_name} does not exist.")
             else:
-                data = with_embeddings(emb_fn, self.data, "text")
+                data = with_embeddings(emb_fn, self.data, self.text_col_name)
                 table = self.db.create_table(self.table_name, data, mode="overwrite")
             for _ in range(runs):
                 self.results.append(self.lancedb_completion_fn(table=table, embedding_fn=emb_fn, **query_args))
