@@ -57,6 +57,9 @@ def load_data(
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
     elif model_type == "Anthropic":
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+    elif model_type == "Google PaLM":
+        experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+
     return experiment.to_pandas_df()
 
 
