@@ -17,6 +17,8 @@ from .experiments.weaviate_experiment import WeaviateExperiment
 from .experiments.mindsdb_experiment import MindsDBExperiment
 from .experiments.langchain_experiment import SequentialChainExperiment
 from .experiments.lancedb_experiment import LanceDBExperiment
+from .experiments.langchain_experiment import SequentialChainExperiment, RouterChainExperiment
+
 
 __all__ = [
     "AnthropicCompletionExperiment",

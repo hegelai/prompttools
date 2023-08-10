@@ -108,6 +108,7 @@ Vector Databases and Data Utility
 - Weaviate - **Supported**
 - MindsDB - **Supported**
 - LanceDB - **Supported**
+- Qdrant - _In Progress_
 - Milvus - Exploratory
 - Pinecone - Exploratory
 - LlamaIndex - Exploratory
