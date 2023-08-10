@@ -99,9 +99,9 @@ Vector Databases and Data Utility
 - Chroma - **Supported**
 - Weaviate - **Supported**
 - MindsDB - **Supported**
+- LanceDB - **Supported**
 - Milvus - Exploratory
 - Pinecone - Exploratory
-- LanceDB - Exploratory
 - LlamaIndex - Exploratory
 
 If you have any API that you'd like to see being supported soon, please open an issue or
