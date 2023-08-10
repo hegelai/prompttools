@@ -140,7 +140,7 @@ class Experiment:
         r"""
         Creates argument combinations by taking the cartesian product of all inputs.
         """
-        self.argument_combos = [dict(zip(self.all_args, val)) for val in itertools.product(*self.all_args.values())]
+        self.argument_combos = [dict(zip(self.all_args.keys(), val)) for val in itertools.product(*self.all_args.values())]
 
     def run(
         self,

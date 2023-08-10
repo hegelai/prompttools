@@ -16,6 +16,7 @@ from .experiments.chromadb_experiment import ChromaDBExperiment
 from .experiments.weaviate_experiment import WeaviateExperiment
 from .experiments.mindsdb_experiment import MindsDBExperiment
 from .experiments.langchain_experiment import SequentialChainExperiment
+from .experiments.lancedb_experiment import LanceDBExperiment
 
 __all__ = [
     "AnthropicCompletionExperiment",
@@ -29,4 +30,5 @@ __all__ = [
     "WeaviateExperiment",
     "MindsDBExperiment",
     "SequentialChainExperiment",
+    "LanceDBExperiment"
 ]
