@@ -33,7 +33,7 @@ class GooglePaLMCompletionExperiment(Experiment):
             generate text that completes the input text.
 
         temperature (list[float]): Controls the randomness of the output. Must be positive.
-            Typical values are in the range: ``[0.0,1.0]``. Higher values produce a
+            Typical values are in the range: ``[0.0, 1.0]``. Higher values produce a
             more random and varied response. A temperature of zero will be deterministic.
 
         candidate_count (list[int]): The **maximum** number of generated response messages to return.

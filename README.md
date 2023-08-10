@@ -1,7 +1,11 @@
-<p align="center">
-  <a href="https://hegel-ai.com"><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Owl_of_Minerva.svg" width="75" height="75"></a>
-</p>
 <h1 align="center">
+ <a href="https://hegel-ai.com">
+ <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="img/hegel_ai_logo_dark.svg">
+  <img height="70" src="img/hegel_ai_logo.svg">
+ </picture>
+ </a>
+ <br>
  PromptTools
 </h1>
 <p align="center">
@@ -93,15 +97,19 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
-- LangChain - _In Progress_
+- Ollama - _In Progress_
+
+Frameworks
+- LangChain - **Supported**
+- MindsDB - **Supported**
 
 Vector Databases and Data Utility
 - Chroma - **Supported**
 - Weaviate - **Supported**
-- MindsDB - **Supported**
+- Qdrant - _In Progress_
+- LanceDB - Exploratory
 - Milvus - Exploratory
 - Pinecone - Exploratory
-- LanceDB - Exploratory
 - LlamaIndex - Exploratory
 
 If you have any API that you'd like to see being supported soon, please open an issue or
