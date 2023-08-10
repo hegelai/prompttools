@@ -28,6 +28,7 @@ __all__ = [
     "MindsDBExperiment",
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
+    "RouterChainExperiment",
     "SequentialChainExperiment",
     "LanceDBExperiment"
     "WeaviateExperiment",
