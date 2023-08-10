@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prompttools"
-version = "0.0.31"
+version = "0.0.32"
 authors = [
   { name="Hegel AI", email="team@hegel-ai.com" },
 ]
