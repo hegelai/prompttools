@@ -177,7 +177,7 @@ if mode == "Instruction":
     link += "&prompt=" + urllib.parse.quote(prompts[0])
 
     if run:
-        df, to_mongo_db = load_data(
+        df = load_data(
             model_type,
             model,
             instructions,
@@ -190,31 +190,14 @@ if mode == "Instruction":
             api_key,
         )
         st.session_state.df = df
-        st.session_state.to_mongo_db = to_mongo_db
-
         for i in range(len(prompts)):
             for j in range(len(instructions)):
-                placeholders[i][j + 1].markdown(st.session_state.df["response"][i + len(prompts) * j])
-
+                placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
     elif "df" in st.session_state and not clear:
         df = st.session_state.df
         for i in range(len(prompts)):
             for j in range(len(instructions)):
                 placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
-
-    if "df" in st.session_state and not clear:
-        st.sidebar.info("Export To MongoDB")
-        mongo_uri = st.sidebar.text_input("Enter MongoURI")
-        database = st.sidebar.text_input("Enter Database Name")
-        collection = st.sidebar.text_input("Enter Collection Name")
-        export = st.sidebar.button("Export")
-        loaded = False
-        if export and mongo_uri and database and collection and export:
-            with st.sidebar:
-                with st.spinner("Exporting..."):
-                    st.session_state.to_mongo_db(mongo_uri, database, collection)
-                    st.write("Exported!")
-
 elif mode == "Prompt Template":
     instruction = None
     if model_type == "LlamaCpp Chat":
@@ -286,31 +269,18 @@ elif mode == "Prompt Template":
 
     if run:
         prompts = render_prompts(templates, vars)
-        df, to_mongo_db = load_data(model_type, model, [instruction], prompts, temperature, api_key)
+        df = load_data(model_type, model, [instruction], prompts, temperature, api_key)
         st.session_state.prompts = prompts
         st.session_state.df = df
-        st.session_state.to_mongo_db = to_mongo_db
         for i in range(len(prompts)):
             for j in range(len(templates)):
-                placeholders[i][j + variable_count].markdown(st.session_state.df["response"][i + len(prompts) * j])
-
+                placeholders[i][j + variable_count].markdown(df["response"][i + len(prompts) * j])
     elif "df" in st.session_state and "prompts" in st.session_state and not clear:
         df = st.session_state.df
         prompts = st.session_state.prompts
         for i in range(len(prompts)):
             for j in range(len(templates)):
                 placeholders[i][j + variable_count].markdown(df["response"][i + len(prompts) * j])
-
-    if "df" in st.session_state and not clear:
-        st.sidebar.info("Export To MongoDB")
-        mongo_uri = st.sidebar.text_input("Enter MongoURI")
-        database = st.sidebar.text_input("Enter Database Name")
-        collection = st.sidebar.text_input("Enter Collection Name")
-        export = st.sidebar.button("Export")
-        if export and mongo_uri and database and collection and export:
-            st.session_state.to_mongo_db(mongo_uri, database, collection)
-
-
 elif mode == "Model Comparison":
     placeholders = [[st.empty() for _ in range(model_count + 1)] for _ in range(prompt_count)]
 
