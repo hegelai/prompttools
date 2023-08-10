@@ -32,4 +32,5 @@ __all__ = [
     "SequentialChainExperiment",
     "LanceDBExperiment"
     "WeaviateExperiment",
+    "LanceDBExperiment"
 ]
