@@ -14,6 +14,7 @@ from .experiments.google_palm_experiment import GooglePaLMCompletionExperiment
 from .experiments.llama_cpp_experiment import LlamaCppExperiment
 from .experiments.chromadb_experiment import ChromaDBExperiment
 from .experiments.weaviate_experiment import WeaviateExperiment
+from .experiments.lancedb_experiment import LanceDBExperiment
 from .experiments.mindsdb_experiment import MindsDBExperiment
 from .experiments.langchain_experiment import SequentialChainExperiment, RouterChainExperiment
 
@@ -22,6 +23,7 @@ __all__ = [
     "ChromaDBExperiment",
     "Experiment",
     "GooglePaLMCompletionExperiment",
+    "LanceDBExperiment",
     "LlamaCppExperiment",
     "HuggingFaceHubExperiment",
     "MindsDBExperiment",
