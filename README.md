@@ -107,7 +107,7 @@ Vector Databases and Data Utility
 - Chroma - **Supported**
 - Weaviate - **Supported**
 - Qdrant - _In Progress_
-- LanceDB - Exploratory
+- LanceDB - **Supported**
 - Milvus - Exploratory
 - Pinecone - Exploratory
 - LlamaIndex - Exploratory
