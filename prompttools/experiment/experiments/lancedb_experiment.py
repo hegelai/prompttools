@@ -4,6 +4,8 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 import itertools
+import warnings
+
 import pandas as pd
 from typing import Callable, Optional
 
@@ -28,7 +30,14 @@ def query_builder(
     metric: str = "cosine",
     limit: int = 3,
     filter: str = None,
+    nprobes: int = None,
+    refine_factor: int = None,
 ):
+    if nprobes is not None or refine_factor is not None:
+        warnings.warn(
+            "`nprobes` and `refine_factor` are not used by the default `query_builder`. "
+            "Feel free to open an issue to request adding support for them."
+        )
     query = table.search(embed_fn(text)[0]).metric(metric)
     if filter:
         query = query.where(filter)
