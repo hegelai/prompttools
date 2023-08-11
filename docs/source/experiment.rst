@@ -44,4 +44,6 @@ Integrated Experiment APIs
 
 .. autoclass:: WeaviateExperiment
 
+.. autoclass:: LanceDBExperiment
+
 .. autoclass:: MindsDBExperiment

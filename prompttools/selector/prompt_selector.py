@@ -17,6 +17,11 @@ PROMPT:
 RESPONSE:
 """
 
+PALM_TEMPLATE = """{instruction}
+
+{user_input}
+"""
+
 LLAMA_TEMPLATE = """<s>[INST] <<SYS>>
 {instruction}
 <</SYS>
@@ -58,3 +63,6 @@ class PromptSelector:
         return ANTHROPIC_TEMPLATE.format(
             HUMAN_PROMPT=HUMAN_PROMPT, instruction=self.instruction, user_input=self.user_input, AI_PROMPT=AI_PROMPT
         )
+
+    def for_palm(self):
+        return PALM_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)
