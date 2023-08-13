@@ -17,6 +17,7 @@ except ImportError:
     lancedb = None
 
 import logging
+from time import perf_counter
 from .experiment import Experiment
 from ._utils import _get_dynamic_columns
 
@@ -104,6 +105,7 @@ class LanceDBExperiment(Experiment):
     def run(self, runs: int = 1):
         input_args = []  # This will be used to construct DataFrame table
         results = []
+        latencies = []
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
@@ -121,7 +123,9 @@ class LanceDBExperiment(Experiment):
             for query_arg_dict in self.argument_combos:
                 query_args = query_arg_dict.copy()
                 for _ in range(runs):
+                    start = perf_counter()
                     results.append(self.lancedb_completion_fn(table=table, embedding_fn=emb_fn, **query_args))
+                    latencies.append(perf_counter() - start)
                     query_args["emb_fn"] = emb_fn_name  # Saving for visualization
                     input_args.append(query_args)
 
@@ -129,12 +133,17 @@ class LanceDBExperiment(Experiment):
             if self.clean_up:
                 self.db.drop_table(self.table_name)
 
-        self._construct_result_dfs(input_args, results)
+        self._construct_result_dfs(input_args, results, latencies)
 
     def lancedb_completion_fn(self, table, embedding_fn, **kwargs):
         return query_builder(table, embedding_fn, **kwargs)
 
-    def _construct_result_dfs(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
+    def _construct_result_dfs(
+        self,
+        input_args: list[dict[str, object]],
+        results: list[dict[str, object]],
+        latencies: list[float],
+    ):
         r"""
         Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
 
@@ -144,6 +153,7 @@ class LanceDBExperiment(Experiment):
              input_args (list[dict[str, object]]): list of dictionaries, where each of them is a set of
                 input argument that was passed into the model
              results (list[dict[str, object]]): list of responses from the model
+             latencies (list[float]): list of latency measurements
         """
         # `input_arg_df` contains all all input args
         input_arg_df = pd.DataFrame(input_args)
@@ -160,7 +170,7 @@ class LanceDBExperiment(Experiment):
         result_df = response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
-        self.score_df = pd.DataFrame({})  # {"latency": latencies})
+        self.score_df = pd.DataFrame({"latency": latencies})
 
         # `partial_df` contains some input arguments, extracted responses, and score
         self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
