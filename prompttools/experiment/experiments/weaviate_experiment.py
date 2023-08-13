@@ -15,6 +15,7 @@ except ImportError:
     weaviate = None
 import logging
 
+from time import perf_counter
 from .experiment import Experiment
 from ._utils import _get_dynamic_columns
 
@@ -179,6 +180,7 @@ class WeaviateExperiment(Experiment):
 
     def run(self, runs: int = 1):
         results = []
+        latencies = []
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
@@ -207,17 +209,24 @@ class WeaviateExperiment(Experiment):
             # Query
             query_builder = self.query_builders[arg_dict["query_builder_name"]]
             for _ in range(runs):
+                start = perf_counter()
                 result = self.completion_fn(query_builder, arg_dict["text_query"])
+                latencies.append(perf_counter() - start)
                 results.append(result)
 
             # Clean up
             logging.info("Cleaning up items in Weaviate...")
             if not self.use_existing_data:
                 self.client.schema.delete_class(self.class_name)
-        self._construct_result_dfs([c for c in self.argument_combos for _ in range(runs)], results)
+        self._construct_result_dfs([c for c in self.argument_combos for _ in range(runs)], results, latencies)
 
     # TODO: Collect and add latency
-    def _construct_result_dfs(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
+    def _construct_result_dfs(
+        self,
+        input_args: list[dict[str, object]],
+        results: list[dict[str, object]],
+        latencies: list[float],
+    ):
         r"""
         Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
 
@@ -241,7 +250,7 @@ class WeaviateExperiment(Experiment):
         result_df = response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
-        self.score_df = pd.DataFrame({})  # {"latency": latencies})
+        self.score_df = pd.DataFrame({"latency": latencies})
 
         # `partial_df` contains some input arguments, extracted responses, and score
         self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
