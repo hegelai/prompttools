@@ -4,3 +4,4 @@ huggingface_hub
 llama-cpp-python
 anthropic
 pyperclip
+datasets
