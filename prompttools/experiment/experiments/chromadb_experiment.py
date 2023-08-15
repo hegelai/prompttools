@@ -16,6 +16,7 @@ except ImportError:
 import itertools
 import logging
 from prompttools.mock.mock import mock_chromadb_fn
+from time import perf_counter
 from .experiment import Experiment
 from ._utils import _get_dynamic_columns
 
@@ -115,6 +116,7 @@ class ChromaDBExperiment(Experiment):
     def run(self, runs: int = 1):
         input_args = []  # This will be used to construct DataFrame table
         results = []
+        latencies = []
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
@@ -133,13 +135,21 @@ class ChromaDBExperiment(Experiment):
                     continue
                 for _ in range(runs):
                     input_args.append(arg_combo)
+                    start = perf_counter()
+
                     results.append(self.chromadb_completion_fn(collection, **query_arg_dict))
+                    latencies.append(perf_counter() - start)
             # Clean up
             self.chroma_client.delete_collection(self.collection_name)
-        self._construct_result_dfs(input_args, results)
+        self._construct_result_dfs(input_args, results, latencies)
 
     # TODO: Collect and add latency
-    def _construct_result_dfs(self, input_args: list[dict[str, object]], results: list[dict[str, object]]):
+    def _construct_result_dfs(
+        self,
+        input_args: list[dict[str, object]],
+        results: list[dict[str, object]],
+        latencies: list[float],
+    ):
         r"""
         Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
 
@@ -149,6 +159,7 @@ class ChromaDBExperiment(Experiment):
              input_args (list[dict[str, object]]): list of dictionaries, where each of them is a set of
                 input argument that was passed into the model
              results (list[dict[str, object]]): list of responses from the model
+             latencies (list[float]): list of latency measurements
         """
         # `input_arg_df` contains all all input args
         input_arg_df = pd.DataFrame(input_args)
@@ -165,7 +176,7 @@ class ChromaDBExperiment(Experiment):
         result_df = response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
-        self.score_df = pd.DataFrame({})  # {"latency": latencies})
+        self.score_df = pd.DataFrame({"latency": latencies})
 
         # `partial_df` contains some input arguments, extracted responses, and score
         self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
