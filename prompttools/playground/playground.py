@@ -55,17 +55,11 @@ with st.sidebar:
             model = st.selectbox("Model", ("claude-2", "claude-instant-1"), key="model")
             api_key = st.text_input("Anthropic API Key")
         elif model_type == "OpenAI Chat":
-            # if 'model' in params and not unquote(params["model"][0]) in OPENAI_CHAT_MODELS:
-            #     del params['model']
-            #     st.experimental_set_query_params(**params)
             if "model" not in st.session_state and "model" in params:
                 st.session_state.model = unquote(params["model"][0])
             model = st.selectbox("Model", OPENAI_CHAT_MODELS, key="model")
             api_key = st.text_input("OpenAI API Key")
         elif model_type == "OpenAI Completion":
-            # if 'model' in params and not unquote(params["model"][0]) in OPENAI_COMPLETION_MODELS:
-            #     del params['model']
-            #     st.experimental_set_query_params(**params)
             model = st.selectbox("Model", OPENAI_COMPLETION_MODELS, key="model")
             api_key = st.text_input("OpenAI API Key")
 

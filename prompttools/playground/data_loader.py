@@ -78,8 +78,11 @@ def run_multiple(
 
     if openai_api_key:
         os.environ["OPENAI_API_KEY"] = openai_api_key
+    if anthropic_api_key:
         os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
+    if google_api_key:
         os.environ["GOOGLE_PALM_API_KEY"] = google_api_key
+    if hf_api_key:
         os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_key
     dfs = []
     for i in range(len(models)):
