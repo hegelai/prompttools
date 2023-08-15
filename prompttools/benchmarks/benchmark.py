@@ -17,7 +17,7 @@ class Benchmark:
     Args:
     ----
         experiment (experiment type): experiment to use
-        eval_methods (list(eval methods)): list of evaluation methods to measure response similarity
+        eval_methods (Callable): list of evaluation methods to measure response similarity
         prompts (list(str)): list of queries, questions, prompts for LLMs to respond to
         response_options (list(str)): possible responses to measure against
         correct_response_indices (list(int)): list of index of correct response in response_options
