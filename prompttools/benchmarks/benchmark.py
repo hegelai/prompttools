@@ -20,7 +20,7 @@ class Benchmark:
         eval_methods (list(eval methods)): list of evaluation methods to measure response similarity
         prompts (list(str)): list of queries, questions, prompts for LLMs to respond to
         response_options (list(str)): possible responses to measure against
-        correct_response_index (list(int)): list of index of correct response in response_options
+        correct_response_indices (list(int)): list of index of correct response in response_options
     """
 
     def __init__(
@@ -78,20 +78,20 @@ class Benchmark:
             self.experiment.full_df["prompt"] = self.experiment.full_df["messages"].map(lambda x: str(x))
             warnings.warn("Column 'prompt' does not exist. Using column 'messages' instead.", UserWarning, stacklevel=2)
         # Get option with highest similarity to LLM response
-        self.benchmark_df = self.experiment.full_df[["prompt", "response"]]
-        self.benchmark_df["response_options"] = self.response_options
-        self.benchmark_df = self.benchmark_df.explode(column="response_options").reset_index()
+        benchmark_df = self.experiment.full_df[["prompt", "response"]]
+        benchmark_df["response_options"] = self.response_options
+        benchmark_df = benchmark_df.explode(column="response_options").reset_index()
         scores = []
-        for _, row in self.benchmark_df.iterrows():
+        for _, row in benchmark_df.iterrows():
             scores.append(self.eval_method(row=row, expected=row["response_options"]))
-        self.benchmark_df["scores"] = scores
-        self.benchmark_df['max_value'] = self.benchmark_df.groupby("prompt")["scores"].transform('max')
-        self.benchmark_df = self.benchmark_df[self.benchmark_df["scores"] == self.benchmark_df["max_value"]]
-        self.benchmark_df = self.benchmark_df.sort_index()
+        benchmark_df["scores"] = scores
+        benchmark_df['max_value'] = benchmark_df.groupby("prompt")["scores"].transform('max')
+        benchmark_df = benchmark_df[benchmark_df["scores"] == benchmark_df["max_value"]]
+        benchmark_df = benchmark_df.sort_index()
         # Colect model choices
         model_choice = []
-        for i, choice in enumerate(self.benchmark_df["response_options"].values):
+        for i, choice in enumerate(benchmark_df["response_options"].values):
             model_choice.append(self.response_options[i].index(choice))
-        self.benchmark_df["model_choice"] = model_choice
-        self.benchmark_df["labels"] = self.correct_response_indices
-        return self.multiple_choice_accuracy(self.benchmark_df, "model_choice", "labels")
+        benchmark_df["model_choice"] = model_choice
+        benchmark_df["labels"] = self.correct_response_indices
+        return self.multiple_choice_accuracy(benchmark_df, "model_choice", "labels")
