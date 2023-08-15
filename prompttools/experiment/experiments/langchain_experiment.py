@@ -29,10 +29,9 @@ from .error import PromptExperimentException
 
 class SequentialChainExperiment(Experiment):
     r"""
-    Experiment for testing LangChain sequential chains.
+    Experiment for testing LangChain's sequential chains.
 
     Args:
-    ----
         llm (list): list of LLMs
         prompt_template (list[list]): list of prompt templates
         prompt (list[str]): list of prompts
@@ -136,13 +135,11 @@ class SequentialChainExperiment(Experiment):
 
 class RouterChainExperiment(Experiment):
     r"""
-    Experiment for testing LangChain router chains.
+    Experiment for testing LangChain's router chains.
 
     Args:
-    ----
         llm (list): list of LLMs
-        prompt_infos (list(list[dict(Any)])): list of
-            list of dicts describing key features of prompt chain
+        prompt_infos (list(list[dict(Any)])): list of list of dicts describing key features of prompt chain
         prompt (list[str]): list of prompts
         kwargs (dict): keyword arguments to call the model with
     """
