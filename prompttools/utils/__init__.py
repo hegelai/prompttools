@@ -10,6 +10,7 @@ from .autoeval import autoeval_binary_scoring
 from .autoeval_from_expected import autoeval_from_expected_response
 from .autoeval_scoring import autoeval_scoring
 from .expected import compute_similarity_against_model
+from .ranking_correlation import ranking_correlation
 from .similarity import semantic_similarity
 from .validate_json import validate_json_response
 from .validate_python import validate_python_response
@@ -25,6 +26,7 @@ __all__ = [
     "validate_json_response",
     "validate_python",
     "validate_python_response",
+    "ranking_correlation",
     "semantic_similarity",
     "similarity",
 ]
