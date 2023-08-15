@@ -186,14 +186,14 @@ class ChromaDBExperiment(Experiment):
     @staticmethod
     def _extract_top_doc_ids(output: Dict[str, object]) -> list[tuple[str, float]]:
         r"""Helper function to get distances between documents from ChromaDB."""
-        return output["ids"]
+        return output["ids"][0]
 
     @staticmethod
     def _extract_chromadb_dists(output: Dict[str, object]) -> list[tuple[str, float]]:
         r"""Helper function to get distances between documents from ChromaDB."""
-        return output["distances"]
+        return output["distances"][0]
 
     @staticmethod
     def _extract_chromadb_docs(output: Dict[str, object]) -> list[tuple[str, float]]:
         r"""Helper function to get distances between documents from ChromaDB."""
-        return output["documents"]
+        return output["documents"][0]
