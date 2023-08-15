@@ -175,7 +175,7 @@ if mode == "Instruction":
             model_type=model_type,
             model=model,
             instructions=instructions,
-            prompts=prompts,
+            user_inputs=prompts,
             temperature=temperature,
             top_p=top_p,
             max_tokens=max_tokens,
