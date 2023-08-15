@@ -172,16 +172,16 @@ if mode == "Instruction":
 
     if run:
         df = load_data(
-            model_type,
-            model,
-            instructions,
-            prompts,
-            temperature,
-            top_p,
-            max_tokens,
-            frequency_penalty,
-            presence_penalty,
-            api_key,
+            model_type=model_type,
+            model=model,
+            instructions=instructions,
+            prompts=prompts,
+            temperature=temperature,
+            top_p=top_p,
+            max_tokens=max_tokens,
+            frequency_penalty=frequency_penalty,
+            presence_penalty=presence_penalty,
+            api_key=api_key,
         )
         st.session_state.df = df
         for i in range(len(prompts)):
@@ -263,7 +263,7 @@ elif mode == "Prompt Template":
 
     if run:
         prompts = render_prompts(templates, vars)
-        df = load_data(model_type, model, [instruction], prompts, temperature, api_key)
+        df = load_data(model_type, model, [instruction], prompts, temperature, api_key=api_key)
         st.session_state.prompts = prompts
         st.session_state.df = df
         for i in range(len(prompts)):
