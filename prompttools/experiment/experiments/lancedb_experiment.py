@@ -185,7 +185,7 @@ class LanceDBExperiment(Experiment):
     @staticmethod
     def _extract_lancedb_dists(output: pd.DataFrame) -> list[tuple[str, float]]:
         r"""Helper function to get distances between documents from LanceDB."""
-        return output.to_dict(orient="list")["score"]
+        return output.to_dict(orient="list")["_distance"]
 
     @staticmethod
     def _extract_lancedb_docs(output: pd.DataFrame) -> list[tuple[str, float]]:
