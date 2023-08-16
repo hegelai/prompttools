@@ -10,6 +10,7 @@ allowing for lazy initialization.
 """
 from typing import Dict
 import pandas.core.series
+import logging
 
 EMBEDDING_MODEL = []  #
 CHROMA_CLIENT = []
@@ -88,7 +89,10 @@ def semantic_similarity(row: pandas.core.series.Series, expected: str, response_
     Args:
         row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
             metrics, etc).
-        expected (str): the expected response
+        expected (str): the expected responses for each row in the column
         response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
     """
+    if len(expected) == 1:
+        logging.warn("Expected should be a list of strings." + \
+                     "You may have passed in a single string")
     return compute(expected, row[response_column_name])
