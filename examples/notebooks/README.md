@@ -13,9 +13,13 @@ have something to share.
 ### LLM
 
 #### Single Model Examples
-- [OpenAI Chat Experiment](OpenAIChatExperiment.ipynb) shows how you can experiment with OpenAI with different parameters.
+- [OpenAI Chat Experiment](OpenAIChatExperiment.ipynb) shows how you can experiment with OpenAI with different models and parameters.
+- [OpenAI Chat Function Experiment](OpenAIChatFunctionExperiment.ipynb) shows how you can experiment with OpenAI's function calling API.
+- [Anthropic Experiment](AnthropicExperiment.ipynb) shows how you can experiment with Anthropic Claude with different models and parameters.
+- [LLaMA Cpp Experiment](LlamaCppExperiment.ipynb) executes LLaMA locally with various parameters and see how it does.
 - [LLaMA Cpp Experiment](LlamaCppExperiment.ipynb) executes LLaMA locally with various parameters and see how it does.
 - [HuggingFace Hub](HuggingFaceHub.ipynb) compares different OSS models hosted on HuggingFace.
+- [GPT-4 Regression](GPT4RegressionTesting.ipynb) examines how the current version GPT-4 model compares with the older, frozen versions.
 
 #### Head To Head Model Comparison
 
@@ -37,3 +41,10 @@ have something to share.
   ranking correlation against an expected output.
 - [Weaviate Experiment](WeaviateExperiment.ipynb) shows how you can easily try different vectorizers, configuration,
   and query functions, and compare the final results.
+- [LanceDB Experiment](LanceDBExperiment.ipynb) allows you to try different embedding functions, and query methods.
+
+### Frameworks
+
+- [LangChain Sequential Chain Experiment](LangChainSequentialChainExperiment.ipynb)
+- [LangChain Router Chain Experiment](LangChainRouterChainExperiment.ipynb)
+- [MindsDB Experiment](MindsDBExperiment.ipynb)
