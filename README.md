@@ -97,6 +97,7 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
+- Replicate - Exploratory
 - Ollama - _In Progress_
 
 Frameworks
