@@ -47,21 +47,21 @@ with st.sidebar:
             model = st.text_input("Local Model Path", key="model")
         elif model_type == "HuggingFace Hub":
             model = st.text_input("Repo ID", key="model")
-            api_key = st.text_input("HuggingFace Hub API Key")
+            api_key = st.text_input("HuggingFace Hub API Key", type='password')
         elif model_type == "Google PaLM":
             model = st.text_input("Model", key="model")
-            api_key = st.text_input("Google PaLM API Key")
+            api_key = st.text_input("Google PaLM API Key", type='password')
         elif model_type == "Anthropic":
             model = st.selectbox("Model", ("claude-2", "claude-instant-1"), key="model")
-            api_key = st.text_input("Anthropic API Key")
+            api_key = st.text_input("Anthropic API Key", type='password')
         elif model_type == "OpenAI Chat":
             if "model" not in st.session_state and "model" in params:
                 st.session_state.model = unquote(params["model"][0])
             model = st.selectbox("Model", OPENAI_CHAT_MODELS, key="model")
-            api_key = st.text_input("OpenAI API Key")
+            api_key = st.text_input("OpenAI API Key", type='password')
         elif model_type == "OpenAI Completion":
             model = st.selectbox("Model", OPENAI_COMPLETION_MODELS, key="model")
-            api_key = st.text_input("OpenAI API Key")
+            api_key = st.text_input("OpenAI API Key", type='password')
 
         variable_count = 0
         if mode == "Prompt Template":
@@ -110,10 +110,10 @@ with st.sidebar:
     else:
         model_count = st.number_input("Add Model", step=1, min_value=1, max_value=5)
         prompt_count = st.number_input("Add Prompt", step=1, min_value=1, max_value=10)
-        openai_api_key = st.text_input("OpenAI API Key")
-        anthropic_api_key = st.text_input("Anthropic Key")
-        google_api_key = st.text_input("Google PaLM Key")
-        hf_api_key = st.text_input("HuggingFace Hub Key")
+        openai_api_key = st.text_input("OpenAI API Key", type='password')
+        anthropic_api_key = st.text_input("Anthropic Key", type='password')
+        google_api_key = st.text_input("Google PaLM Key", type='password')
+        hf_api_key = st.text_input("HuggingFace Hub Key", type='password')
 
 
 if mode == "Instruction":
