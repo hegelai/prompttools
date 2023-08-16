@@ -14,11 +14,15 @@ from prompttools.playground.constants import ENVIRONMENT_VARIABLE, EXPERIMENTS
 
 
 def render_prompts(templates, vars):
+    print(templates)
+    print(vars)
     prompts = []
-    for i, template in enumerate(templates):
-        environment = jinja2.Environment()
-        jinja_template = environment.from_string(template)
-        prompts.append(jinja_template.render(**vars[i]))
+    for template in templates:
+        for var_set in vars:
+            environment = jinja2.Environment()
+            jinja_template = environment.from_string(template)
+            prompts.append(jinja_template.render(**var_set))
+    print(prompts)
     return prompts
 
 

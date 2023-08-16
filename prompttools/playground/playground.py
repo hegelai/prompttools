@@ -118,6 +118,7 @@ with st.sidebar:
 
 if mode == "Instruction":
     placeholders = [[st.empty() for _ in range(instruction_count + 1)] for _ in range(prompt_count)]
+    # placeholders = []
 
     cols = st.columns(instruction_count + 1)
 
@@ -150,9 +151,10 @@ if mode == "Instruction":
                     key=f"prompt_{i}",
                 )
             )
+        placeholders.append([])
         for j in range(1, instruction_count + 1):
             with cols[j]:
-                placeholders[i][j] = st.empty()  # placeholders for the future output
+                placeholders[i].append(st.empty())  # placeholders for the future output
         st.divider()
 
     run_button, clear_button, share_button = st.columns([1, 1, 1], gap="small")
@@ -266,15 +268,15 @@ elif mode == "Prompt Template":
         df = load_data(model_type, model, [instruction], prompts, temperature, api_key=api_key)
         st.session_state.prompts = prompts
         st.session_state.df = df
-        for i in range(len(prompts)):
+        for i in range(len(vars)):
             for j in range(len(templates)):
-                placeholders[i][j + variable_count].markdown(df["response"][i + len(prompts) * j])
+                placeholders[i][j + variable_count].markdown(df["response"][i + len(vars) * j])
     elif "df" in st.session_state and "prompts" in st.session_state and not clear:
         df = st.session_state.df
         prompts = st.session_state.prompts
-        for i in range(len(prompts)):
+        for i in range(len(vars)):
             for j in range(len(templates)):
-                placeholders[i][j + variable_count].markdown(df["response"][i + len(prompts) * j])
+                placeholders[i][j + variable_count].markdown(df["response"][i + len(vars) * j])
 elif mode == "Model Comparison":
     placeholders = [[st.empty() for _ in range(model_count + 1)] for _ in range(prompt_count)]
 
