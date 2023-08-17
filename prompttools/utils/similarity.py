@@ -93,6 +93,5 @@ def semantic_similarity(row: pandas.core.series.Series, expected: str, response_
         response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
     """
     if len(expected) == 1:
-        logging.warn("Expected should be a list of strings." + \
-                     "You may have passed in a single string")
+        logging.warn("Expected should be a list of strings." + "You may have passed in a single string")
     return compute(expected, row[response_column_name])

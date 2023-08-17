@@ -85,7 +85,7 @@ class Benchmark:
         for _, row in benchmark_df.iterrows():
             scores.append(self.eval_method(row=row, expected=row["response_options"]))
         benchmark_df["scores"] = scores
-        benchmark_df['max_value'] = benchmark_df.groupby("prompt")["scores"].transform('max')
+        benchmark_df["max_value"] = benchmark_df.groupby("prompt")["scores"].transform("max")
         benchmark_df = benchmark_df[benchmark_df["scores"] == benchmark_df["max_value"]]
         benchmark_df = benchmark_df.sort_index()
         # Colect model choices
