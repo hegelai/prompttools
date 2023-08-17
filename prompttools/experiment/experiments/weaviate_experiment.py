@@ -7,7 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import pandas as pd
-from typing import Callable, Dict, Optional
+from typing import Callable, Optional
 
 try:
     import weaviate
@@ -15,7 +15,9 @@ except ImportError:
     weaviate = None
 import logging
 
+from time import perf_counter
 from .experiment import Experiment
+from ._utils import _get_dynamic_columns
 
 VALID_TASKS = [""]
 
@@ -177,7 +179,8 @@ class WeaviateExperiment(Experiment):
                         )
 
     def run(self, runs: int = 1):
-        self.results = []
+        results = []
+        latencies = []
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
@@ -205,55 +208,54 @@ class WeaviateExperiment(Experiment):
 
             # Query
             query_builder = self.query_builders[arg_dict["query_builder_name"]]
-            result = self.completion_fn(query_builder, arg_dict["text_query"])
-            self.results.append(result)
+            for _ in range(runs):
+                start = perf_counter()
+                result = self.completion_fn(query_builder, arg_dict["text_query"])
+                latencies.append(perf_counter() - start)
+                results.append(result)
 
             # Clean up
             logging.info("Cleaning up items in Weaviate...")
             if not self.use_existing_data:
                 self.client.schema.delete_class(self.class_name)
+        self._construct_result_dfs([c for c in self.argument_combos for _ in range(runs)], results, latencies)
 
-    def get_table(self, pivot_data: Dict[str, object], pivot_columns: list[str], pivot: bool) -> pd.DataFrame:
+    # TODO: Collect and add latency
+    def _construct_result_dfs(
+        self,
+        input_args: list[dict[str, object]],
+        results: list[dict[str, object]],
+        latencies: list[float],
+    ):
+        r"""
+        Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
+
+        This version only extract the most relevant objects returned by Weaviate.
+
+        Args:
+             input_args (list[dict[str, object]]): list of dictionaries, where each of them is a set of
+                input argument that was passed into the model
+             results (list[dict[str, object]]): list of responses from the model
         """
-        This method creates a table of the experiment data. It can also be used
-        to create a pivot table, or a table for gathering human feedback.
-        """
-        data = {}
-        # Add scores for each eval fn, including feedback
-        for metric_name, evals in self.scores.items():
-            if metric_name != "comparison":
-                data[metric_name] = evals
+        # `input_arg_df` contains all all input args
+        input_arg_df = pd.DataFrame(input_args)
+        # `dynamic_input_arg_df` contains input args that has more than one unique values
+        dynamic_input_arg_df = _get_dynamic_columns(input_arg_df)
 
-        for combo in self.argument_combos:
-            for k, v in combo.items():
-                if k in ("vectorizer", "moduleConfig") and (
-                    self.vectorizers_and_moduleConfigs is None or len(self.vectorizers_and_moduleConfigs) <= 1
-                ):
-                    continue
-                if k == "vectorIndexConfig" and not self.is_custom_vectorIndexConfigs:
-                    continue
-                if k == "query_builder_name" and len(self.query_builders) <= 1:
-                    continue
-                if k not in data:
-                    data[k] = []
-                data[k].append(v)
+        # `response_df` contains the extracted response (often being the text response)
+        response_dict = dict()
+        response_dict["top objs"] = [self._extract_responses(result) for result in results]
+        response_df = pd.DataFrame(response_dict)
+        # `result_df` contains everything returned by the completion function
+        result_df = response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
-        data["top objs"] = [self._extract_responses(result) for result in self.results]
+        # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
+        self.score_df = pd.DataFrame({"latency": latencies})
 
-        if pivot_data:
-            data[pivot_columns[0]] = [str(pivot_data[str(combo[1])][0]) for combo in self.argument_combos]
-            data[pivot_columns[1]] = [str(pivot_data[str(combo[1])][1]) for combo in self.argument_combos]
-
-        df = pd.DataFrame(data)
-        if pivot:
-            df = pd.pivot_table(
-                df,
-                values="top doc ids",
-                index=[pivot_columns[1]],
-                columns=[pivot_columns[0]],
-                aggfunc=lambda x: x.iloc[0],
-            )
-        return df
+        # `partial_df` contains some input arguments, extracted responses, and score
+        self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
+        # `full_df` contains all input arguments, responses, and score
+        self.full_df = pd.concat([input_arg_df, result_df, self.score_df], axis=1)
 
     def _extract_responses(self, response: dict) -> list[dict]:
         return response["data"]["Get"][self.class_name]

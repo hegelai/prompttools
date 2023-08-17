@@ -7,4 +7,4 @@ jupyterlab
 ipywidgets
 sentence-transformers
 pylint
-streamlit
+sentry-sdk>=1.23.0

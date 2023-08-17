@@ -1,7 +1,11 @@
-<p align="center">
-  <a href="https://hegel-ai.com"><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Owl_of_Minerva.svg" width="75" height="75"></a>
-</p>
 <h1 align="center">
+ <a href="https://hegel-ai.com">
+ <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="img/hegel_ai_logo_dark.svg">
+  <img height="70" src="img/hegel_ai_logo.svg">
+ </picture>
+ </a>
+ <br>
  PromptTools
 </h1>
 <p align="center">
@@ -93,15 +97,20 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
-- LangChain - Exploratory
+- Replicate - Exploratory
+- Ollama - _In Progress_
+
+Frameworks
+- LangChain - **Supported**
+- MindsDB - **Supported**
 
 Vector Databases and Data Utility
 - Chroma - **Supported**
 - Weaviate - **Supported**
-- MindsDB - **Supported**
+- Qdrant - _In Progress_
+- LanceDB - **Supported**
 - Milvus - Exploratory
 - Pinecone - Exploratory
-- LanceDB - Exploratory
 - LlamaIndex - Exploratory
 
 If you have any API that you'd like to see being supported soon, please open an issue or
@@ -113,14 +122,25 @@ a PR to add it. Feel free to discuss in our Discord channel as well.
     - No, the source code will be executed on your machine. Any call to LLM APIs will be directly executed from your machine without any forwarding.
 
 2. Does `prompttools` store my API keys or LLM inputs and outputs to a server?
-    - No, all data stay on your local machine. No metrics, telemetry, or usage data are collected. As a result,
-      we would love to hear direct feedback from you. Please open an issue or join our Discord.
+    - No, all of those data stay on your local machine. We do not collect any PII (personally identifiable information).
 
 3. How do I persist my results?
    -  To persist the results of your tests and experiments, you can export your `Experiment` with the methods `to_csv`,
       `to_json`, `to_lora_json`, or `to_mongo_db`. We are building more persistence features and we will be happy to further discuss your use cases, pain points, and what export
       options may be useful for you.
 
+## Sentry
+<details>
+  <summary><b>Usage Tracking</b></summary>
+
+Since we are changing our API rapidly, there are some errors caused by our negligence or out of date documentation.
+To improve user experience, we collect data from normal package usage that helps us understand the
+errors that are raised. This data is collected and sent to [Sentry](https://sentry.io/),
+a third-party error tracking service, commonly used in open-source softwares. It only logs this library's own actions.
+
+You can easily opt-out by defining an environment variable called `SENTRY_OPT_OUT`.
+
+</details>
 
 ## Contributing
 

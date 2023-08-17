@@ -6,6 +6,7 @@
 
 
 from typing import Callable, Dict, List, Optional
+import pandas.core.series
 import json
 import re
 
@@ -74,7 +75,19 @@ def validate_keys(text: str, valid_keys: List[str]):
     return 1.0
 
 
-def validate_json_response(prompt: str, response: str, metadata: Dict) -> float:
+def validate_json_response(row: pandas.core.series.Series, response_column_name: str = "response") -> float:
+    r"""
+    Validate whether ``response`` string is in a valid JSON format.
+
+    Args:
+        row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
+            metrics, etc).
+        response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
+    """
+    return validate(row[response_column_name])
+
+
+def evaluate(prompt: str, response: str, metadata: Dict) -> float:
     r"""
     Validate whether ``response`` string is in a valid JSON format.
 
@@ -84,7 +97,3 @@ def validate_json_response(prompt: str, response: str, metadata: Dict) -> float:
         metadata (dict): Not used.
     """
     return validate(response)
-
-
-def evaluate(prompt: str, response: str, metadata: Dict) -> float:
-    return validate_json_response(prompt, response, metadata)

@@ -7,6 +7,7 @@
 
 import os
 from typing import Dict
+import pandas.core.series
 from .error import PromptToolsUtilityError
 from pylint import epylint as lint
 
@@ -29,7 +30,19 @@ def validate(text: str):
     return 0.0 if "error" in pylint_stdout.getvalue() else 1.0
 
 
-def validate_python_response(prompt: str, response: str, metadata: Dict) -> float:
+def validate_python_response(row: pandas.core.series.Series, response_column_name: str = "response") -> float:
+    r"""
+    Validate whether ``response`` string follows Python's syntax.
+
+    Args:
+        row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
+            metrics, etc).
+        response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
+    """
+    return validate(row[response_column_name])
+
+
+def evaluate(prompt: str, response: str, metadata: Dict) -> float:
     r"""
     Validate whether ``response`` string follows Python's syntax.
 
@@ -39,7 +52,3 @@ def validate_python_response(prompt: str, response: str, metadata: Dict) -> floa
         metadata (dict): Not used.
     """
     return validate(response)
-
-
-def evaluate(prompt: str, response: str, metadata: Dict) -> float:
-    return validate_python_response(prompt, response, metadata)

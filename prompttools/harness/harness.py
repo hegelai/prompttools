@@ -37,26 +37,21 @@ class ExperimentationHarness:
         """
         self.experiment.run(runs=self.runs)
 
-    def evaluate(
-        self, metric_name: str, eval_fn: Callable, use_input_pairs: bool = False, expected: str = None
-    ) -> None:
+    def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, **eval_fn_kwargs) -> None:
         r"""
         Uses the given eval_fn to evaluate the results of the underlying experiment.
         """
-        if use_input_pairs:
-            self.experiment.evaluate(metric_name, eval_fn, self.input_pairs_dict, expected=expected)
-        else:
-            self.experiment.evaluate(metric_name, eval_fn, expected=expected)
+        self.experiment.evaluate(metric_name, eval_fn, static_eval_fn_kwargs, **eval_fn_kwargs)
 
-    def gather_feedback(self) -> None:
-        self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)
+    # def gather_feedback(self) -> None:
+    #     self.experiment.gather_feedback(self.input_pairs_dict, self.PIVOT_COLUMNS)
 
     def visualize(self, pivot: bool = False) -> None:
         r"""
         Displays a visualization of the experiment results.
         """
         if pivot:
-            self.experiment.visualize(self.input_pairs_dict, self.PIVOT_COLUMNS)
+            self.experiment.visualize(pivot_columns=self.PIVOT_COLUMNS, pivot=True)
         else:
             self.experiment.visualize()
 

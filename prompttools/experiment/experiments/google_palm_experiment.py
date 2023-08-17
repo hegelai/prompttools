@@ -9,6 +9,7 @@ try:
 except ImportError:
     palm = None
 
+from prompttools.selector.prompt_selector import PromptSelector
 from prompttools.mock.mock import mock_palm_completion_fn
 from .experiment import Experiment
 from typing import Optional, Union, Iterable
@@ -33,7 +34,7 @@ class GooglePaLMCompletionExperiment(Experiment):
             generate text that completes the input text.
 
         temperature (list[float]): Controls the randomness of the output. Must be positive.
-            Typical values are in the range: ``[0.0,1.0]``. Higher values produce a
+            Typical values are in the range: ``[0.0, 1.0]``. Higher values produce a
             more random and varied response. A temperature of zero will be deterministic.
 
         candidate_count (list[int]): The **maximum** number of generated response messages to return.
@@ -77,6 +78,14 @@ class GooglePaLMCompletionExperiment(Experiment):
         else:
             self.completion_fn = self.palm_completion_fn
             palm.configure(api_key=os.environ["GOOGLE_PALM_API_KEY"])
+
+        # If we are using a prompt selector, we need to
+        # render the prompts from the selector
+        if isinstance(prompt[0], PromptSelector):
+            prompt = [selector.for_palm() for selector in prompt]
+        else:
+            prompt = prompt
+
         self.all_args = dict(
             model=model,
             prompt=prompt,
@@ -96,7 +105,7 @@ class GooglePaLMCompletionExperiment(Experiment):
     @staticmethod
     def _extract_responses(completion_response: "palm.text.text_types.Completion") -> list[str]:
         # `# completion_response.result` will return the top response
-        return [candidate["output"] for candidate in completion_response.candidates]
+        return [candidate["output"] for candidate in completion_response.candidates][0]
 
     def _get_model_names(self):
         return [combo["model"] for combo in self.argument_combos]

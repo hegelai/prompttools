@@ -23,9 +23,12 @@ from .error import PromptExperimentException
 
 class MindsDBExperiment(Experiment):
     r"""
-    Experiment MindsDB tool.
-    Combos of MindsDB inputs to form SQL queries are accepted.
-    A list of responses is returned.
+    An experiment class for MindsDB.
+    This accepts combinations of MindsDB inputs to form SQL queries, returning a list of responses.
+
+    Args:
+        db_connector (CMySQLConnection): Connector MindsDB
+        kwargs (dict): keyword arguments for the model
     """
 
     def __init__(
@@ -79,7 +82,8 @@ class MindsDBExperiment(Experiment):
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
-        self.results = []
+        results = []
+        latencies = []
         for model_combo in self.model_argument_combos:
             for call_combo in self.call_argument_combos:
                 call_combo["prompt"] = call_combo["prompt"].format(
@@ -91,12 +95,13 @@ class MindsDBExperiment(Experiment):
                     call_combo["client"] = self.cursor
                     start = perf_counter()
                     res = self.completion_fn(**call_combo)
-                    self.scores["latency"].append(perf_counter() - start)
-                    self.results.append(res)
+                    latencies.append(perf_counter() - start)
+                    results.append(res)
                     self.argument_combos.append(model_combo | call_combo)
-        if len(self.results) == 0:
+        if len(results) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
+        self._construct_result_dfs(self.argument_combos, results, latencies, extract_response_equal_full_result=True)
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> Tuple[str]:

@@ -28,3 +28,31 @@ EXPERIMENTS = {
     "Google PaLM": GooglePaLMCompletionExperiment,
     "HuggingFace Hub": HuggingFaceHubExperiment,
 }
+
+MODES = ("Instruction", "Prompt Template", "Model Comparison")
+
+MODEL_TYPES = (
+    "OpenAI Chat",
+    "OpenAI Completion",
+    "Anthropic",
+    "Google PaLM",
+    "LlamaCpp Chat",
+    "LlamaCpp Completion",
+    "HuggingFace Hub",
+)
+
+OPENAI_CHAT_MODELS = (
+    "gpt-3.5-turbo",
+    "gpt-3.5-turbo-16k",
+    "gpt-3.5-turbo-0613",
+    "gpt-3.5-turbo-16k-0613",
+    "gpt-3.5-turbo-0301",
+    "gpt-4",
+    "gpt-4-0613",
+    "gpt-4-32k",
+    "gpt-4-32k-0613",
+    "gpt-4-0314",
+    "gpt-4-32k-0314",
+)
+
+OPENAI_COMPLETION_MODELS = ("text-davinci-003", "text-davinci-002", "code-davinci-002")

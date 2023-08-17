@@ -24,6 +24,9 @@ The ``Experiment`` superclass's shared API is below.
     :members:
 
 Integrated Experiment APIs
+-----------------------------
+
+LLMs
 +++++++++++++++++++++++++++++++++++++++++
 
 .. autoclass:: OpenAIChatExperiment
@@ -38,6 +41,20 @@ Integrated Experiment APIs
 
 .. autoclass:: LlamaCppExperiment
 
+Frameworks
++++++++++++++++++++++++++++++++++++++++++
+
+.. autoclass:: SequentialChainExperiment
+
+.. autoclass:: RouterChainExperiment
+
+.. autoclass:: MindsDBExperiment
+
+Vector DBs
++++++++++++++++++++++++++++++++++++++++++
+
 .. autoclass:: ChromaDBExperiment
 
 .. autoclass:: WeaviateExperiment
+
+.. autoclass:: LanceDBExperiment

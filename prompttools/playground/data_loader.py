@@ -14,11 +14,15 @@ from prompttools.playground.constants import ENVIRONMENT_VARIABLE, EXPERIMENTS
 
 
 def render_prompts(templates, vars):
+    print(templates)
+    print(vars)
     prompts = []
-    for i, template in enumerate(templates):
-        environment = jinja2.Environment()
-        jinja_template = environment.from_string(template)
-        prompts.append(jinja_template.render(**vars[i]))
+    for template in templates:
+        for var_set in vars:
+            environment = jinja2.Environment()
+            jinja_template = environment.from_string(template)
+            prompts.append(jinja_template.render(**var_set))
+    print(prompts)
     return prompts
 
 
@@ -55,6 +59,11 @@ def load_data(
         )
     elif model_type == "HuggingFace Hub":
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+    elif model_type == "Anthropic":
+        experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+    elif model_type == "Google PaLM":
+        experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+
     return experiment.to_pandas_df()
 
 
@@ -73,8 +82,11 @@ def run_multiple(
 
     if openai_api_key:
         os.environ["OPENAI_API_KEY"] = openai_api_key
+    if anthropic_api_key:
         os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
+    if google_api_key:
         os.environ["GOOGLE_PALM_API_KEY"] = google_api_key
+    if hf_api_key:
         os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_key
     dfs = []
     for i in range(len(models)):

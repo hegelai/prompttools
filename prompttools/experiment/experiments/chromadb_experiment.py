@@ -16,7 +16,9 @@ except ImportError:
 import itertools
 import logging
 from prompttools.mock.mock import mock_chromadb_fn
+from time import perf_counter
 from .experiment import Experiment
+from ._utils import _get_dynamic_columns
 
 VALID_TASKS = [""]
 
@@ -77,7 +79,6 @@ class ChromaDBExperiment(Experiment):
         if not use_existing_collection and add_to_collection_params is None:
             raise RuntimeError("If you choose to create a new collection, you must also add to it.")
         self.add_to_collection_params = add_to_collection_params if add_to_collection_params else {}
-        self.query_args_combo: list[dict] = []
         super().__init__()
 
     @classmethod
@@ -109,84 +110,90 @@ class ChromaDBExperiment(Experiment):
         r"""
         Creates argument combinations by taking the cartesian product of all inputs.
         """
-        self.query_args_combo: list[dict] = []
         for combo in itertools.product(*self.query_collection_params.values()):
-            self.query_args_combo.append(dict(zip(self.query_collection_params.keys(), combo)))
+            self.argument_combos.append(dict(zip(self.query_collection_params.keys(), combo)))
 
     def run(self, runs: int = 1):
-        self.results = []
-        if not self.query_args_combo:
+        input_args = []  # This will be used to construct DataFrame table
+        results = []
+        latencies = []
+        if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
-        for emb_fn in self.embedding_fns:
+        for i, emb_fn in enumerate(self.embedding_fns):
             if self.use_existing_collection:
                 collection = self.chroma_client.get_collection(self.collection_name, embedding_function=emb_fn)
             else:  # Creating a new collection and add documents
                 collection = self.chroma_client.create_collection(self.collection_name, embedding_function=emb_fn)
                 collection.add(**self.add_to_collection_params)
-            for query_arg_dict in self.query_args_combo:
+
+            for query_arg_dict in self.argument_combos:
+                arg_combo = query_arg_dict.copy()
+                arg_combo["embed_fn"] = self.embedding_fn_names[i]  # Save embedding function name to combo
                 if "query_texts" in query_arg_dict and "query_embeddings" in query_arg_dict:
                     # `query` does not accept both arguments at the same time
                     continue
                 for _ in range(runs):
-                    self.results.append(self.chromadb_completion_fn(collection, **query_arg_dict))
+                    input_args.append(arg_combo)
+                    start = perf_counter()
+
+                    results.append(self.chromadb_completion_fn(collection, **query_arg_dict))
+                    latencies.append(perf_counter() - start)
             # Clean up
             self.chroma_client.delete_collection(self.collection_name)
+        self._construct_result_dfs(input_args, results, latencies)
 
-    def get_table(self, pivot_data: Dict[str, object], pivot_columns: list[str], pivot: bool) -> pd.DataFrame:
+    # TODO: Collect and add latency
+    def _construct_result_dfs(
+        self,
+        input_args: list[dict[str, object]],
+        results: list[dict[str, object]],
+        latencies: list[float],
+    ):
+        r"""
+        Construct a few DataFrames that contain all relevant data (i.e. input arguments, results, evaluation metrics).
+
+        This version only extract the most relevant objects returned by ChromaDB.
+
+        Args:
+             input_args (list[dict[str, object]]): list of dictionaries, where each of them is a set of
+                input argument that was passed into the model
+             results (list[dict[str, object]]): list of responses from the model
+             latencies (list[float]): list of latency measurements
         """
-        This method creates a table of the experiment data. It can also be used
-        to create a pivot table, or a table for gathering human feedback.
-        """
-        data = {}
-        # Add scores for each eval fn, including feedback
-        for metric_name, evals in self.scores.items():
-            if metric_name != "comparison":
-                data[metric_name] = evals
+        # `input_arg_df` contains all all input args
+        input_arg_df = pd.DataFrame(input_args)
+        # `dynamic_input_arg_df` contains input args that has more than one unique values
+        dynamic_input_arg_df = _get_dynamic_columns(input_arg_df)
 
-        data["embed_fn"] = []
-        self.argument_combos: list[dict] = []
-        # Add other args as cols if there was more than 1 input
-        for i, emb_fn in enumerate(self.embedding_fns):
-            for combo in self.query_args_combo:
-                arg_combo = {}
-                data["embed_fn"].append(self.embedding_fn_names[i])
-                arg_combo["embed_fn"] = self.embedding_fn_names[i]
-                for k, v in combo.items():
-                    if k not in data:
-                        data[k] = []
-                    data[k].append(v)
-                    arg_combo[k] = v
-                self.argument_combos.append(arg_combo)
+        # `response_df` contains the extracted response (often being the text response)
+        response_dict = dict()
+        response_dict["top doc ids"] = [self._extract_top_doc_ids(result) for result in results]
+        response_dict["distances"] = [self._extract_chromadb_dists(result) for result in results]
+        response_dict["documents"] = [self._extract_chromadb_docs(result) for result in results]
+        response_df = pd.DataFrame(response_dict)
+        # `result_df` contains everything returned by the completion function
+        result_df = response_df  # pd.concat([self.response_df, pd.DataFrame(results)], axis=1)
 
-        data["top doc ids"] = [self._extract_top_doc_ids(result) for result in self.results]
-        data["distances"] = [self._extract_chromadb_dists(result) for result in self.results]
-        data["documents"] = [self._extract_chromadb_docs(result) for result in self.results]
-        if pivot_data:
-            data[pivot_columns[0]] = [str(pivot_data[str(combo[1])][0]) for combo in self.argument_combos]
-            data[pivot_columns[1]] = [str(pivot_data[str(combo[1])][1]) for combo in self.argument_combos]
-        df = pd.DataFrame(data)
-        if pivot:
-            df = pd.pivot_table(
-                df,
-                values="top doc ids",
-                index=[pivot_columns[1]],
-                columns=[pivot_columns[0]],
-                aggfunc=lambda x: x.iloc[0],
-            )
-        return df
+        # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
+        self.score_df = pd.DataFrame({"latency": latencies})
+
+        # `partial_df` contains some input arguments, extracted responses, and score
+        self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
+        # `full_df` contains all input arguments, responses, and score
+        self.full_df = pd.concat([input_arg_df, result_df, self.score_df], axis=1)
 
     @staticmethod
     def _extract_top_doc_ids(output: Dict[str, object]) -> list[tuple[str, float]]:
         r"""Helper function to get distances between documents from ChromaDB."""
-        return output["ids"]
+        return output["ids"][0]
 
     @staticmethod
     def _extract_chromadb_dists(output: Dict[str, object]) -> list[tuple[str, float]]:
         r"""Helper function to get distances between documents from ChromaDB."""
-        return output["distances"]
+        return output["distances"][0]
 
     @staticmethod
     def _extract_chromadb_docs(output: Dict[str, object]) -> list[tuple[str, float]]:
         r"""Helper function to get distances between documents from ChromaDB."""
-        return output["documents"]
+        return output["documents"][0]
