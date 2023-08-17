@@ -197,6 +197,7 @@ class Experiment:
         results: list[dict[str, object]],
         latencies: list[float],
         extract_response_equal_full_result: bool = False,
+        response_extractors: Optional[dict[str, Callable]] = None,
     ):
         r"""
         Takes in the input, results, and other metrics from the experiment's run, and construct a few DataFrames that
@@ -212,11 +213,15 @@ class Experiment:
 
         Args:
              input_args (list[dict[str, object]]): list of dictionaries, where each of them is a set of
-                input argument that was passed into the model
+                 input argument that was passed into the model
              results (list[dict[str, object]]): list of responses from the model
              latencies (list[float]): list of latency measurements
              extract_response_equal_full_result (bool): if ``True``, ``result_df`` will only contain
-                the extracted response, lead to a simpler (but incomplete) columns of results.
+                 the extracted response, lead to a simpler (but incomplete) columns of results.
+             response_extractors (Optional[dict[str, Callable]]): Optional dictionary of response extractors,
+                 defaults to ``None``, which will use the ``_extract_responses`` defined by the class.
+                 The key of the dictionary will be the name of the resulting column, the value of the dictionary
+                 will be an extractor function that accepts the response from the model and returns a value.
         """
         # `input_arg_df` contains all all input args
         input_arg_df = pd.DataFrame(input_args)
@@ -224,7 +229,13 @@ class Experiment:
         dynamic_input_arg_df = _get_dynamic_columns(input_arg_df)
 
         # `response_df` contains the extracted response (often being the text response)
-        response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
+        if response_extractors is None:
+            response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
+        else:
+            res_dict = {}
+            for col_name, extractor in response_extractors.items():
+                res_dict[col_name] = [extractor(result) for result in results]
+            response_df = pd.DataFrame(res_dict)
         # `result_df` contains everything returned by the completion function
         if extract_response_equal_full_result:
             result_df = response_df
