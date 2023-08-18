@@ -125,3 +125,17 @@ def mock_mindsdb_completion_fn(**kwargs):
 
 def mock_lc_completion_fn(**kwargs):
     return "The first president of the United States was George Washington."
+
+
+def mock_qdrant_fn(**kwargs):
+    from qdrant_client.conversions.common_types import ScoredPoint
+
+    return [
+        ScoredPoint(
+            id="cf515c6f-1d95-4a21-9052-1a2ecdab34b3",
+            version=13,
+            score=0.7435235231239,
+            payload={"document": "The first president of the United States was George Washington."},
+            vector=[0.1, 0.2, 0.3],
+        )
+    ]

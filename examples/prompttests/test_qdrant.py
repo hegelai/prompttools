@@ -49,4 +49,4 @@ frozen_parameters = {
 experiment = QdrantExperiment.initialize(test_parameters=test_parameters, frozen_parameters=frozen_parameters)
 experiment.run()
 
-print(experiment.results)
+print(experiment.get_table(True))

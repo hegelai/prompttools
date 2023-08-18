@@ -1,12 +1,14 @@
 import itertools
 import json
 import logging
+import os
 import time
 import warnings
 from collections import defaultdict
 from typing import Callable, List, Iterable, Optional, Dict, Any
 
 from prompttools.experiment.experiments.error import PromptExperimentException
+from prompttools.mock.mock import mock_qdrant_fn
 
 try:
     import qdrant_client
@@ -27,7 +29,7 @@ class QdrantExperiment(Experiment):
 
     def __init__(
         self,
-        client: "qdrant_client.Client",
+        client: "qdrant_client.QdrantClient",
         collection_name: str,
         embedding_fn: EmbeddingFn,
         vector_size: int,
@@ -64,6 +66,8 @@ class QdrantExperiment(Experiment):
 
         self.query_params = query_params or {}
         self.completion_fn = self.qdrant_completion_fn
+        if os.getenv("DEBUG", default=False):
+            self.completion_fn = mock_qdrant_fn
         self.collection_args_combo: List[dict] = []
         self.query_argument_combos: List[dict] = []
         self.vectorized_documents: List["qdrant_client.models.Record"] = []
@@ -83,8 +87,8 @@ class QdrantExperiment(Experiment):
                 raise RuntimeError(f"'{arg_name}' must be a frozen parameter in QdrantExperiment.")
         return cls(**test_parameters, **frozen_parameters)
 
-    def qdrant_completion_fn(self, **kwargs) -> Dict[str, Any]:
-        query_result = self.client.search(self.collection_name, **kwargs)
+    def qdrant_completion_fn(self, **kwargs) -> List["qdrant_client.qdrant_client.types.ScoredPoint"]:
+        query_result = self.client.search(self.collection_name, with_vectors=True, with_payload=True, **kwargs)
         return query_result
 
     def prepare(self) -> None:
@@ -95,6 +99,7 @@ class QdrantExperiment(Experiment):
             models.Record(
                 id=i,
                 vector=self.embedding_fn(document),
+                payload={"document": document},
             )
             for i, document in enumerate(self.documents)
         ]
@@ -111,7 +116,7 @@ class QdrantExperiment(Experiment):
     def run(self, runs: int = 1) -> None:
         from qdrant_client import models
 
-        self.results = []
+        input_args, results, latencies = [], [], []
         if not self.query_argument_combos:
             logging.info("Preparing first...")
             self.prepare()
@@ -138,15 +143,19 @@ class QdrantExperiment(Experiment):
                 for query_args in self.query_argument_combos:
                     query_args = self._create_nested_object(query_args)
                     for _ in range(runs):
+                        input_args.append(query_args)
                         self.queue.enqueue(self.completion_fn, query_args)
 
-                self.results.extend(self.queue.results())
-                self.scores["latency"].extend(self.queue.latencies())
-                if len(self.results) == 0:
-                    logging.error("No results. Something went wrong.")
-                    raise PromptExperimentException
+                results.extend(self.queue.get_results())
+                latencies.extend(self.queue.get_latencies())
             finally:
                 self.client.delete_collection(self.collection_name)
+
+        self._construct_result_dfs(input_args, results, latencies)
+
+    @staticmethod
+    def _extract_responses(output: List["qdrant_client.qdrant_client.types.ScoredPoint"]) -> list[str]:
+        return [response.payload["document"] for response in output]
 
     def _create_nested_object(self, args: Dict[str, Any]) -> Dict[str, Any]:
         r"""
