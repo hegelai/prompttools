@@ -11,6 +11,10 @@ allowing for lazy initialization.
 from typing import Dict
 import pandas.core.series
 import logging
+import warnings
+
+import cv2
+from skimage.metrics import structural_similarity
 
 EMBEDDING_MODEL = []  #
 CHROMA_CLIENT = []
@@ -79,6 +83,30 @@ def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float
         expected (str): the expected response
     """
     return compute(expected, response)
+
+
+def ssim(img1_path, img2_path) -> float:
+    r"""
+    Structural similarity index measure (SSIM) between two images.
+
+    Args:
+        img1_path (str): path to first image of comparison
+        img2_path (str): path to second image of comparison
+    """
+    img1 = cv2.imread(img1_path)
+    img2 = cv2.imread(img2_path)
+    try:
+        img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+        img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        (score, _) = structural_similarity(img1_gray, img2_gray, full=True)
+    except ValueError:
+        warnings.warn("Images are different dimensions. Image 2 will be resized to match dimensions of image 1.")
+        img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
+        img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+        img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        (score, _) = structural_similarity(img1_gray, img2_gray, full=True)
+    return score
+    
 
 
 def semantic_similarity(row: pandas.core.series.Series, expected: str, response_column_name: str = "response") -> float:
