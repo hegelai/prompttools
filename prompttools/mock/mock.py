@@ -8,6 +8,7 @@ r"""
 These mock functions exist for testing and demo purposes.
 """
 import json
+import warnings
 
 
 def mock_openai_chat_completion_fn(**kwargs):
@@ -125,3 +126,8 @@ def mock_mindsdb_completion_fn(**kwargs):
 
 def mock_lc_completion_fn(**kwargs):
     return "The first president of the United States was George Washington."
+
+
+def mock_stable_diffusion(**kwargs):
+    warnings.warn("Need access to Hugging Face or comparison images will be overwritten")
+    return None

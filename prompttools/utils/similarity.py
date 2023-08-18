@@ -13,10 +13,13 @@ import pandas.core.series
 import logging
 import warnings
 
-import cv2
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 from skimage.metrics import structural_similarity
 
-EMBEDDING_MODEL = []  #
+EMBEDDING_MODEL = []
 CHROMA_CLIENT = []
 
 
@@ -85,26 +88,26 @@ def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float
     return compute(expected, response)
 
 
-def ssim(img1_path, img2_path) -> float:
+def ssim(row: pandas.core.series.Series, expected: str, response_column_name: str = "response") -> float:
     r"""
     Structural similarity index measure (SSIM) between two images.
 
     Args:
-        img1_path (str): path to first image of comparison
-        img2_path (str): path to second image of comparison
+        row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
+            metrics, etc).
+        expected (str): the path to the expected image responses for each row in the column
+        response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
     """
-    img1 = cv2.imread(img1_path)
-    img2 = cv2.imread(img2_path)
-    try:
-        img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-        img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        (score, _) = structural_similarity(img1_gray, img2_gray, full=True)
-    except ValueError:
-        warnings.warn("Images are different dimensions. Image 2 will be resized to match dimensions of image 1.")
-        img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
-        img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-        img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-        (score, _) = structural_similarity(img1_gray, img2_gray, full=True)
+    if cv2 is None:
+        raise ModuleNotFoundError(
+            "Package `cv2` is required to be installed to use this experiment."
+            "Please use `opencv-python` to install the package"
+        )
+    if len(expected) == 1:
+        logging.warn("Expected should be a list of strings." + "You may have passed in a single string")
+    expected_img = cv2.imread(expected)
+    expected_img = cv2.cvtColor(expected_img, cv2.COLOR_BGR2GRAY)
+    (score, _) = structural_similarity(row[response_column_name], expected_img, full=True)
     return score
     
 
