@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 import itertools
 
 from time import perf_counter
@@ -17,7 +17,7 @@ except ImportError:
     cv2 = None
 
 try:
-    from diffusers import DiffusionPipeline, StableDiffusionPipeline, LMSDiscreteScheduler
+    from diffusers import DiffusionPipeline, StableDiffusionPipeline
 except ImportError:
     DiffusionPipeline = None
 try:
@@ -26,8 +26,6 @@ except ImportError:
     torch = None
 
 from prompttools.mock.mock import mock_stable_diffusion
-
-import subprocess
 
 from .experiment import Experiment
 from .error import PromptExperimentException
@@ -38,6 +36,7 @@ class StableDiffusionExperiment(Experiment):
     Experiment for testing Stable Diffusion.
 
     Args:
+    ----
         hf_model_path (str): path to model on hugging face
         use_auth_token (bool): boolean to determine if hf login is necessary [needed without GPU]
         kwargs (dict): keyword arguments to call the model with
@@ -58,7 +57,8 @@ class StableDiffusionExperiment(Experiment):
         if DiffusionPipeline is None:
             raise ModuleNotFoundError(
                 "Package `diffusers` is required to be installed to use this experiment."
-                "Please use `pip install diffusers` and `pip install invisible_watermark transformers accelerate safetensors` to install the package"
+                "Please use `pip install diffusers` and \
+                `pip install invisible_watermark transformers accelerate safetensors` to install the package"
             )
         if torch is None:
             raise ModuleNotFoundError(
@@ -136,9 +136,15 @@ class StableDiffusionExperiment(Experiment):
         for model_combo in self.model_argument_combos:
             for call_combo in self.call_argument_combos:
                 if self.use_auth_token:
-                    client = StableDiffusionPipeline.from_pretrained(model_combo["hf_model_path"], use_auth_token=self.use_auth_token)
+                    client = StableDiffusionPipeline.from_pretrained(
+                        model_combo["hf_model_path"],
+                        use_auth_token=self.use_auth_token
+                    )
                 else:
-                    client = DiffusionPipeline.from_pretrained(model_combo["hf_model_path"], {k: call_combo[k] for k in call_combo if k != "prompt"})
+                    client = DiffusionPipeline.from_pretrained(
+                        model_combo["hf_model_path"],
+                        {k: call_combo[k] for k in call_combo if k != "prompt"}
+                    )
                     client.to("cuda")
                 for _ in range(runs):
                     call_combo["client"] = client
