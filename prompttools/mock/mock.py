@@ -9,6 +9,10 @@ These mock functions exist for testing and demo purposes.
 """
 import json
 import warnings
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 
 def mock_openai_chat_completion_fn(**kwargs):
@@ -129,5 +133,9 @@ def mock_lc_completion_fn(**kwargs):
 
 
 def mock_stable_diffusion(**kwargs):
-    warnings.warn("Need access to Hugging Face or comparison images will be overwritten")
-    return None
+    if cv2 is None:
+        raise ModuleNotFoundError(
+            "Package `cv2` is required to be installed to use this experiment."
+            "Please use `pip install opencv-python` to install the package"
+        )
+    return cv2.imread("/mock_data/images/Just_a_fruit_basket.png")
