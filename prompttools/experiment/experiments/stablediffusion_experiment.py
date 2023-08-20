@@ -101,7 +101,7 @@ class StableDiffusionExperiment(Experiment):
         if cv2 is None:
             raise ModuleNotFoundError(
                 "Package `cv2` is required to be installed to use this experiment."
-                "Please use `opencv-python` to install the package"
+                "Please use `pip opencv-python` to install the package"
             )
         client = params["client"]
         image_folder = params["image_folder"]

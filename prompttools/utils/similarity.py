@@ -19,7 +19,7 @@ except ImportError:
 try:
     from skimage.metrics import structural_similarity
 except ImportError:
-    skimage = None
+    structural_similarity = None
 
 
 EMBEDDING_MODEL = []
@@ -107,7 +107,7 @@ def ssim(row: pandas.core.series.Series, expected: str, response_column_name: st
             "Package `cv2` is required to be installed to use this experiment."
             "Please use `pip install opencv-python` to install the package"
         )
-    if skimage is None:
+    if structural_similarity is None:
         raise ModuleNotFoundError(
             "Package `skimage` is required to be installed to use this experiment."
             "Please use `pip install scikit-image` to install the package"
