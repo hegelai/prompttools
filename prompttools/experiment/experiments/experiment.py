@@ -6,6 +6,7 @@
 
 from typing import Callable, Dict, List, Optional, Union
 from operator import itemgetter
+import base64
 from collections import defaultdict
 import itertools
 import logging
@@ -14,6 +15,11 @@ from tabulate import tabulate
 import pandas as pd
 import sentry_sdk
 import os
+
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 try:
     import pymongo
@@ -45,6 +51,7 @@ class Experiment:
         self.full_df = None
         self.partial_df = None
         self.score_df = None
+        self.image_experiment = False
         try:
             if "SENTRY_OPT_OUT" not in os.environ:
                 sentry_sdk.capture_message(f"Initializing {self.__class__.__name__}", "info")
@@ -268,13 +275,32 @@ class Experiment:
             table = self.pivot_table(pivot_columns, get_all_cols=get_all_cols)
         else:
             table = self.get_table(get_all_cols)
-        if is_interactive():
+        if is_interactive() and self.image_experiment:
+            # revert to color, display as image in notebook cells
+            # for user friendly experience
+            table["response"] = table["response"].map(lambda x: cv2.cvtColor(x, cv2.COLOR_GRAY2BGR))
+            table["response"] = table["response"].map(lambda x: self.cv2_image_to_base64(x))
+            table["response"] = table["response"].apply(self.display_image_html)
+            display.display(display.HTML(table.to_html(escape=False)))
+        elif is_interactive():
             display.display(table)
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
 
-    def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, **eval_fn_kwargs) -> None:
+    def cv2_image_to_base64(self, image):
+        if cv2 is None:
+            raise ModuleNotFoundError(
+                "Package `cv2` is required to be installed to use this experiment."
+                "Please use `pip opencv-python` to install the package"
+            )
+        _, buffer = cv2.imencode('.png', image)
+        return base64.b64encode(buffer).decode('utf-8')
+
+    def display_image_html(self, base64_string):
+        return f'<img src="data:image/png;base64,{base64_string}" width="150" height="150"/>'
+
+    def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, image_experiment: bool = False, **eval_fn_kwargs) -> None:
         """
         Using the given evaluation function that accepts a row of data, compute a new column with the evaluation
         result. Each row of data generally contain inputs, model response, and other previously computed metrics.
@@ -294,6 +320,7 @@ class Experiment:
             >>> experiment.evaluate("is_json", validate_json_response,
             >>>                     static_eval_fn_kwargs={"response_column_name": "response"})
         """
+        self.image_experiment = image_experiment
         if metric_name in self.score_df.columns:
             logging.warning(metric_name + " is already present, skipping.")
             return
