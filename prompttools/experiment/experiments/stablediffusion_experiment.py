@@ -65,6 +65,11 @@ class StableDiffusionExperiment(Experiment):
                 "Package `torch` is required to be installed to use this experiment."
                 "Please use `pip install torch torchvision torchaudio` to install the package"
             )
+        if cv2 is None:
+            raise ModuleNotFoundError(
+                "Package `cv2` is required to be installed to use this experiment."
+                "Please use `pip opencv-python` to install the package"
+            )
         self.use_auth_token = use_auth_token
         self.completion_fn = self.sd_completion_fn
         self.compare_images_folder = compare_images_folder
@@ -98,11 +103,6 @@ class StableDiffusionExperiment(Experiment):
         r"""
         Local model helper function to make request.
         """
-        if cv2 is None:
-            raise ModuleNotFoundError(
-                "Package `cv2` is required to be installed to use this experiment."
-                "Please use `pip opencv-python` to install the package"
-            )
         client = params["client"]
         image_folder = params["image_folder"]
         if not os.path.exists(image_folder):
