@@ -33,10 +33,9 @@ from .error import PromptExperimentException
 
 class StableDiffusionExperiment(Experiment):
     r"""
-    Experiment for testing Stable Diffusion.
+    Experiment for experiment with the Stable Diffusion model.
 
     Args:
-    ----
         hf_model_path (str): path to model on hugging face
         use_auth_token (bool): boolean to determine if hf login is necessary [needed without GPU]
         kwargs (dict): keyword arguments to call the model with
@@ -114,9 +113,9 @@ class StableDiffusionExperiment(Experiment):
         main_img = cv2.imread(img_path)
         logging.info("Resizing comparison images to match Stable Diffusion response image size for comparison.")
         for fil in os.listdir(self.compare_images_folder):
-            compare_img = cv2.imread(self.compare_images_folder+fil)
+            compare_img = cv2.imread(self.compare_images_folder + fil)
             compare_img = cv2.resize(compare_img, (main_img.shape[1], main_img.shape[0]))
-            cv2.imwrite(self.compare_images_folder+fil, compare_img)
+            cv2.imwrite(self.compare_images_folder + fil, compare_img)
         return main_img
 
     def run(
@@ -137,13 +136,11 @@ class StableDiffusionExperiment(Experiment):
             for call_combo in self.call_argument_combos:
                 if self.use_auth_token:
                     client = StableDiffusionPipeline.from_pretrained(
-                        model_combo["hf_model_path"],
-                        use_auth_token=self.use_auth_token
+                        model_combo["hf_model_path"], use_auth_token=self.use_auth_token
                     )
                 else:
                     client = DiffusionPipeline.from_pretrained(
-                        model_combo["hf_model_path"],
-                        {k: call_combo[k] for k in call_combo if k != "prompt"}
+                        model_combo["hf_model_path"], {k: call_combo[k] for k in call_combo if k != "prompt"}
                     )
                     client.to("cuda")
                 for _ in range(runs):

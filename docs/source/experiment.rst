@@ -58,3 +58,8 @@ Vector DBs
 .. autoclass:: WeaviateExperiment
 
 .. autoclass:: LanceDBExperiment
+
+Computer Vision
++++++++++++++++++++++++++++++++++++++++++
+
+.. autoclass:: StableDiffusionExperiment

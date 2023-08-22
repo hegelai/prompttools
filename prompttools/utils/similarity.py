@@ -17,9 +17,9 @@ try:
 except ImportError:
     cv2 = None
 try:
-    from skimage.metrics import structural_similarity
+    from skimage.metrics import structural_similarity as skimage_structural_similarity
 except ImportError:
-    structural_similarity = None
+    skimage_structural_similarity = None
 
 
 EMBEDDING_MODEL = []
@@ -91,32 +91,33 @@ def evaluate(prompt: str, response: str, metadata: Dict, expected: str) -> float
     return compute(expected, response)
 
 
-def ssim(row: pandas.core.series.Series, expected: str, response_column_name: str = "response") -> float:
+def structural_similarity(
+    row: pandas.core.series.Series, expected: str, response_column_name: str = "response"
+) -> float:
     r"""
-    Structural similarity index measure (SSIM) between two images.
+    Compute the structural similarity index measure (SSIM) between two images.
 
     Args:
-    ----
         row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
             metrics, etc).
-        expected (str): the path to the expected image responses for each row in the column
-        response_column_name (str): name of the column that contains the model's response, defaults to ``"response"``
+        expected (str): the column name of the expected image responses in each row
+        response_column_name (str): the column name that contains the model's response, defaults to ``"response"``
     """
     if cv2 is None:
         raise ModuleNotFoundError(
             "Package `cv2` is required to be installed to use this experiment."
             "Please use `pip install opencv-python` to install the package"
         )
-    if structural_similarity is None:
+    if skimage_structural_similarity is None:
         raise ModuleNotFoundError(
             "Package `skimage` is required to be installed to use this experiment."
             "Please use `pip install scikit-image` to install the package"
         )
     if len(expected) == 1:
-        logging.warn("Expected should be a list of strings." + "You may have passed in a single string")
+        logging.warning("Expected should be a list of strings. You may have passed in a single string.")
     expected_img = cv2.imread(expected)
     expected_img = cv2.cvtColor(expected_img, cv2.COLOR_BGR2GRAY)
-    (score, _) = structural_similarity(row[response_column_name], expected_img, full=True)
+    score, _ = skimage_structural_similarity(row[response_column_name], expected_img, full=True)
     return score
 
 

@@ -22,4 +22,6 @@ They can also be used with ``prompttest`` for be part of your CI/CD system.
 
 .. autofunction:: prompttools.utils.semantic_similarity
 
+.. autofunction:: prompttools.utils.structural_similarity
+
 .. autofunction:: prompttools.utils.similarity.compute
