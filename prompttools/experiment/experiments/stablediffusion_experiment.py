@@ -131,7 +131,7 @@ class StableDiffusionExperiment(Experiment):
                     )
                 else:
                     client = DiffusionPipeline.from_pretrained(
-                        model_combo["hf_model_path"], {k: call_combo[k] for k in call_combo if k != "prompt"}
+                        model_combo["hf_model_path"], **{k: call_combo[k] for k in call_combo if k != "prompt"}
                     )
                     client.to("cuda")
                 for _ in range(runs):
