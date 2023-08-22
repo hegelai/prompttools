@@ -48,3 +48,7 @@ have something to share.
 - [LangChain Sequential Chain Experiment](LangChainSequentialChainExperiment.ipynb)
 - [LangChain Router Chain Experiment](LangChainRouterChainExperiment.ipynb)
 - [MindsDB Experiment](MindsDBExperiment.ipynb)
+
+### Computer Vision
+- [Stable Diffusion](image_experiments/StableDiffusion.ipynb)
+- [Replicate's hosted Stable Diffusion](ReplicateExperiment.ipynb)

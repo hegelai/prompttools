@@ -8,6 +8,11 @@ r"""
 These mock functions exist for testing and demo purposes.
 """
 import json
+import warnings
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 
 def mock_openai_chat_completion_fn(**kwargs):
@@ -118,13 +123,38 @@ def mock_palm_completion_fn(**kwargs):
 def mock_mindsdb_completion_fn(**kwargs):
     return [
         (
-            "The first president of the United States was George Washington. However, if you're referring to a different country, please specify so I can provide the correct information.",
+            "The first president of the United States was George Washington. However, "
+            "if you're referring to a different country, please specify so I can provide the correct information.",
         )
     ]
 
 
 def mock_lc_completion_fn(**kwargs):
     return "The first president of the United States was George Washington."
+
+
+def mock_stable_diffusion(**kwargs):
+    if cv2 is None:
+        raise ModuleNotFoundError(
+            "Package `cv2` is required to be installed to use this experiment."
+            "Please use `pip install opencv-python` to install the package"
+        )
+    return cv2.imread("/mock_data/images/Just_a_fruit_basket.png")
+
+
+# TODO: Consider return URI pointing to local images instead
+def mock_replicate_stable_diffusion_completion_fn(model_version: str, **kwargs):
+    json_string = r"""
+    {
+      "title": "Output",
+      "data": [
+        "https://mock.com/1.jpeg",
+        "https://mock.com/2.jpeg",
+        "https://mock.com/3.jpeg"
+      ]
+    }
+    """
+    return json.loads(json_string)
 
 
 def mock_qdrant_fn(**kwargs):
