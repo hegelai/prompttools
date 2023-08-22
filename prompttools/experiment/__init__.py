@@ -18,6 +18,7 @@ from .experiments.lancedb_experiment import LanceDBExperiment
 from .experiments.mindsdb_experiment import MindsDBExperiment
 from .experiments.langchain_experiment import SequentialChainExperiment, RouterChainExperiment
 from .experiments.stablediffusion_experiment import StableDiffusionExperiment
+from .experiments.replicate_experiment import ReplicateExperiment
 
 __all__ = [
     "AnthropicCompletionExperiment",
@@ -30,6 +31,7 @@ __all__ = [
     "MindsDBExperiment",
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
+    "ReplicateExperiment",
     "RouterChainExperiment",
     "SequentialChainExperiment",
     "StableDiffusionExperiment",
