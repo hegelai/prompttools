@@ -20,10 +20,6 @@ try:
     from diffusers import DiffusionPipeline, StableDiffusionPipeline
 except ImportError:
     DiffusionPipeline = None
-try:
-    import torch
-except ImportError:
-    torch = None
 
 from prompttools.mock.mock import mock_stable_diffusion
 
@@ -58,11 +54,6 @@ class StableDiffusionExperiment(Experiment):
                 "Package `diffusers` is required to be installed to use this experiment."
                 "Please use `pip install diffusers` and \
                 `pip install invisible_watermark transformers accelerate safetensors` to install the package"
-            )
-        if torch is None:
-            raise ModuleNotFoundError(
-                "Package `torch` is required to be installed to use this experiment."
-                "Please use `pip install torch torchvision torchaudio` to install the package"
             )
         if cv2 is None:
             raise ModuleNotFoundError(
