@@ -27,6 +27,7 @@ class OpenAICompletionExperiment(Experiment):
 
     Args:
         model (list[str]): list of ID(s) of the model(s) to use
+            If you are using Azure OpenAI service, put the models' deployment names here
 
         prompt (list[str]): the prompt(s) to generate completions for, encoded as a string, array of strings,
             array of tokens, or array of token arrays.
@@ -77,9 +78,15 @@ class OpenAICompletionExperiment(Experiment):
             probability per token). Results cannot be streamed.
 
         logit_bias (list[dict]):
-            Defaults to [None]. Modify the likelihood of specified tokens appearing in the completion. Accepts a
+            Defaults to ``[None]``. Modify the likelihood of specified tokens appearing in the completion. Accepts a
             json object that maps tokens (specified by their token ID in the tokenizer) to an associated bias value
             from -100 to 100.
+
+        azure_openai_service_configs (Optional[dict]):
+            Defaults to ``None``. If it is set, the experiment will use Azure OpenAI Service. The input dict should
+            contain these 3 keys (but with values based on your use case and configuration):
+            ``{"AZURE_OPENAI_ENDPOINT": "https://YOUR_RESOURCE_NAME.openai.azure.com/",
+               "API_TYPE": "azure", "API_VERSION": "2023-05-15"``
     """
 
     def __init__(
@@ -99,6 +106,7 @@ class OpenAICompletionExperiment(Experiment):
         frequency_penalty: Optional[List[float]] = [0],
         best_of: Optional[List[int]] = [1],
         logit_bias: Optional[Dict] = [None],
+        azure_openai_service_configs: Optional[dict] = None,
     ):
         self.completion_fn = openai.Completion.create
         if os.getenv("DEBUG", default=False):
@@ -132,6 +140,14 @@ class OpenAICompletionExperiment(Experiment):
             best_of=best_of,
             logit_bias=logit_bias,
         )
+        if azure_openai_service_configs:
+            openai.api_key = os.environ["AZURE_OPENAI_KEY"]
+            openai.api_base = azure_openai_service_configs["AZURE_OPENAI_ENDPOINT"]
+            openai.api_type = azure_openai_service_configs["API_TYPE"]
+            openai.api_version = azure_openai_service_configs["API_VERSION"]
+            del self.all_args["model"]
+            self.all_args["engine"] = model
+
         super().__init__()
 
     @staticmethod
