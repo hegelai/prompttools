@@ -140,6 +140,16 @@ class OpenAICompletionExperiment(Experiment):
             best_of=best_of,
             logit_bias=logit_bias,
         )
+
+        # These parameters aren't supported by `gpt-35-turbo`, we can remove them if they are equal to defaults
+        # This has no impact on the default case
+        if self.all_args["echo"] == [False]:
+            del self.all_args["echo"]
+        if self.all_args["logit_bias"] == [None]:
+            del self.all_args["logit_bias"]
+        if self.all_args["best_of"] == [1]:
+            del self.all_args["best_of"]
+
         if azure_openai_service_configs:
             openai.api_key = os.environ["AZURE_OPENAI_KEY"]
             openai.api_base = azure_openai_service_configs["AZURE_OPENAI_ENDPOINT"]
