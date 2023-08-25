@@ -97,21 +97,26 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
-- Replicate - Exploratory
+- Azure OpenAI Service - **Supported**
+- Replicate - _In Progress_
 - Ollama - _In Progress_
-
-Frameworks
-- LangChain - **Supported**
-- MindsDB - **Supported**
 
 Vector Databases and Data Utility
 - Chroma - **Supported**
 - Weaviate - **Supported**
-- Qdrant - _In Progress_
+- Qdrant - **Supported**
 - LanceDB - **Supported**
 - Milvus - Exploratory
 - Pinecone - Exploratory
+
+Frameworks
+- LangChain - **Supported**
+- MindsDB - **Supported**
 - LlamaIndex - Exploratory
+
+Computer Vision
+- Stable Diffusion - **Supported**
+- Replicate's hosted Stable Diffusion - _In Progress_
 
 If you have any API that you'd like to see being supported soon, please open an issue or
 a PR to add it. Feel free to discuss in our Discord channel as well.
