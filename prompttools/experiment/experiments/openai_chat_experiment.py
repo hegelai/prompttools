@@ -27,7 +27,7 @@ class OpenAIChatExperiment(Experiment):
         - For detailed description of the input arguments, please reference at OpenAI's chat completion API.
 
     Args:
-        model (list[str]): list of ID(s) of the model(s) to use
+        model (list[str]): list of ID(s) of the model(s) to use, e.g. ``["gpt-3.5-turbo", "ft:gpt-3.5-turbo:org_id"]``
         messages (list[dict]): A list of messages comprising the conversation so far. Each message is represented as a
             dictionary with the following keys: ``role: str``, ``content: str``.
 

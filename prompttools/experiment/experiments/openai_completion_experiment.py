@@ -26,7 +26,7 @@ class OpenAICompletionExperiment(Experiment):
         - For detailed description of the input arguments, please reference at OpenAI's completion API.
 
     Args:
-        model (list[str]): list of ID(s) of the model(s) to use
+        model (list[str]): list of ID(s) of the model(s) to use, e.g. ``["gpt-3.5-turbo", "ft:gpt-3.5-turbo:org_id"]``
             If you are using Azure OpenAI service, put the models' deployment names here
 
         prompt (list[str]): the prompt(s) to generate completions for, encoded as a string, array of strings,

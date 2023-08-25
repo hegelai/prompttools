@@ -92,7 +92,7 @@ and more description of individual components. Check it out!
 Here is a list of APIs that we support with our experiments:
 
 LLMs
-- OpenAI (Completion, ChatCompletion) - **Supported**
+- OpenAI (Completion, ChatCompletion, Fine-tuned models) - **Supported**
 - LLaMA.Cpp (LLaMA 1, LLaMA 2) - **Supported**
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
