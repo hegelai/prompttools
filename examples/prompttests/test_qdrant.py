@@ -3,7 +3,7 @@ from typing import List
 
 from qdrant_client import QdrantClient
 
-from prompttools.experiment.experiments.qdrant_experiment import QdrantExperiment
+from prompttools.experiment import QdrantExperiment
 
 
 def embedding_function(text: str) -> List[float]:

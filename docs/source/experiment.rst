@@ -59,6 +59,8 @@ Vector DBs
 
 .. autoclass:: LanceDBExperiment
 
+.. autoclass:: QdrantExperiment
+
 Computer Vision
 +++++++++++++++++++++++++++++++++++++++++
 

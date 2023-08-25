@@ -42,6 +42,7 @@ have something to share.
 - [Weaviate Experiment](WeaviateExperiment.ipynb) shows how you can easily try different vectorizers, configuration,
   and query functions, and compare the final results.
 - [LanceDB Experiment](LanceDBExperiment.ipynb) allows you to try different embedding functions, and query methods.
+- [Qdrant Experiment](QdrantExperiment.ipynb) explores different ways to query Qdrant, including with vectors.
 
 ### Frameworks
 
