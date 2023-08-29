@@ -65,3 +65,5 @@ Computer Vision
 +++++++++++++++++++++++++++++++++++++++++
 
 .. autoclass:: StableDiffusionExperiment
+
+.. autoclass:: ReplicateExperiment

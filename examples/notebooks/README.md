@@ -52,4 +52,4 @@ have something to share.
 
 ### Computer Vision
 - [Stable Diffusion](image_experiments/StableDiffusion.ipynb)
-- [Replicate's hosted Stable Diffusion](ReplicateExperiment.ipynb)
+- [Replicate's hosted Stable Diffusion](image_experiments/ReplicateStableDiffusion.ipynb)
