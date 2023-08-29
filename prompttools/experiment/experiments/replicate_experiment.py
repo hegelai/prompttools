@@ -74,5 +74,15 @@ class ReplicateExperiment(Experiment):
 
     @staticmethod
     def _extract_responses(output: dict) -> list[str]:
-        # TODO: May need to extract image from the URI, perhaps with `cv2.imread`
-        return output["data"]
+        return output[0]
+
+    @staticmethod
+    def _image_tag(url):
+        return f'<img src="{url}" width="100"/>'
+
+    def visualize(self, get_all_cols: bool = False, pivot: bool = False, pivot_columns: list = []) -> None:
+        images = self.full_df["response"].apply(self._image_tag)
+        self.full_df["images"] = images
+        self.partial_df["images"] = images
+        self.partial_df = self.partial_df.drop("response", axis=1)
+        super().visualize(get_all_cols, pivot, pivot_columns)
