@@ -3,9 +3,15 @@
 #
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
+
+import logging
 import itertools
 
 from prompttools.mock.mock import mock_replicate_stable_diffusion_completion_fn
+from IPython.display import display, HTML
+from tabulate import tabulate
+from ..widgets.utility import is_interactive
+
 
 import os
 
@@ -81,8 +87,16 @@ class ReplicateExperiment(Experiment):
         return f'<img src="{url}" width="100"/>'
 
     def visualize(self, get_all_cols: bool = False, pivot: bool = False, pivot_columns: list = []) -> None:
-        images = self.full_df["response"].apply(self._image_tag)
-        self.full_df["images"] = images
-        self.partial_df["images"] = images
-        self.partial_df = self.partial_df.drop("response", axis=1)
-        super().visualize(get_all_cols, pivot, pivot_columns)
+        if pivot:
+            table = self.pivot_table(pivot_columns, get_all_cols=get_all_cols)
+        else:
+            table = self.get_table(get_all_cols)
+
+        images = table["response"].apply(self._image_tag)
+        table["images"] = images
+
+        if is_interactive():
+            display(HTML(table.to_html(escape=False, columns=[col for col in table.columns if col != "response"])))
+        else:
+            logging.getLogger().setLevel(logging.INFO)
+            logging.info(tabulate(table, headers="keys", tablefmt="psql"))

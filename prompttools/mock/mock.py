@@ -8,7 +8,7 @@ r"""
 These mock functions exist for testing and demo purposes.
 """
 import json
-import warnings
+
 try:
     import cv2
 except ImportError:
@@ -142,19 +142,8 @@ def mock_stable_diffusion(**kwargs):
     return cv2.imread("/mock_data/images/Just_a_fruit_basket.png")
 
 
-# TODO: Consider return URI pointing to local images instead
 def mock_replicate_stable_diffusion_completion_fn(model_version: str, **kwargs):
-    json_string = r"""
-    {
-      "title": "Output",
-      "data": [
-        "https://mock.com/1.jpeg",
-        "https://mock.com/2.jpeg",
-        "https://mock.com/3.jpeg"
-      ]
-    }
-    """
-    return json.loads(json_string)
+    return ["/mock_data/images/19th_century_wombat_gentleman.png"]
 
 
 def mock_qdrant_fn(**kwargs):
