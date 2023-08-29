@@ -6,6 +6,7 @@
 
 import logging
 import itertools
+from functools import partial
 
 from prompttools.mock.mock import mock_replicate_stable_diffusion_completion_fn
 from IPython.display import display, HTML
@@ -76,23 +77,25 @@ class ReplicateExperiment(Experiment):
 
     @staticmethod
     def replicate_completion_fn(model_version: str, **kwargs):
-        return replicate.run(model_version, input=kwargs)
+        return replicate.run(model_version, **kwargs)
 
     @staticmethod
     def _extract_responses(output: dict) -> list[str]:
         return output[0]
 
     @staticmethod
-    def _image_tag(url):
-        return f'<img src="{url}" width="100"/>'
+    def _image_tag(url, image_width):
+        return f'<img src="{url}" width="{image_width}"/>'
 
-    def visualize(self, get_all_cols: bool = False, pivot: bool = False, pivot_columns: list = []) -> None:
+    def visualize(
+        self, get_all_cols: bool = False, pivot: bool = False, pivot_columns: list = [], image_width=300
+    ) -> None:
         if pivot:
             table = self.pivot_table(pivot_columns, get_all_cols=get_all_cols)
         else:
             table = self.get_table(get_all_cols)
 
-        images = table["response"].apply(self._image_tag)
+        images = table["response"].apply(partial(self._image_tag, image_width=image_width))
         table["images"] = images
 
         if is_interactive():
