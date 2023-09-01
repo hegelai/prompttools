@@ -13,6 +13,7 @@ from .experiments.huggingface_hub_experiment import HuggingFaceHubExperiment
 from .experiments.google_palm_experiment import GooglePaLMCompletionExperiment
 from .experiments.llama_cpp_experiment import LlamaCppExperiment
 from .experiments.chromadb_experiment import ChromaDBExperiment
+from .experiments.epsilla_experiment import EpsillaExperiment
 from .experiments.weaviate_experiment import WeaviateExperiment
 from .experiments.lancedb_experiment import LanceDBExperiment
 from .experiments.mindsdb_experiment import MindsDBExperiment
@@ -24,6 +25,7 @@ from .experiments.qdrant_experiment import QdrantExperiment
 __all__ = [
     "AnthropicCompletionExperiment",
     "ChromaDBExperiment",
+    "EpsillaExperiment",
     "Experiment",
     "GooglePaLMCompletionExperiment",
     "LanceDBExperiment",
