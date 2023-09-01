@@ -28,23 +28,26 @@ from .experiment import Experiment
 
 class ReplicateExperiment(Experiment):
     r"""
-    Perform an experiment with the Replicate API to test different embedding functions or retrieval arguments.
-    You can query from an existing table, or create a new one (and insert documents into it) during
-    the experiment.
+    Perform an experiment with the Replicate API for both image models and LLMs.
 
     Note:
         Set your API token to ``os.environ["REPLICATE_API_TOKEN"]``.
+        If you are using an image model, set ``use_image_model=True`` as input argument.
 
     Args:
         models (list[str]): "stability-ai/stable-diffusion:27b93a2413e"
         input_kwargs (dict[str, list]): keyword arguments that can be used across all models
-
         model_specific_kwargs (dict[str, dict[str, list]]): model-specific keyword arguments that will only be used
             by a specific model (e.g. ``stability-ai/stable-diffusion:27b93a2413``
+        use_image_model (bool): Defaults to ``False``, must set to ``True`` to render output from image models.
     """
 
     def __init__(
-        self, models: list[str], input_kwargs: dict[str, list], model_specific_kwargs: dict[str, dict[str, list]] = {}
+        self,
+        models: list[str],
+        input_kwargs: dict[str, list],
+        model_specific_kwargs: dict[str, dict[str, list]] = {},
+        use_image_model: bool = False,
     ):
         if replicate is None:
             raise ModuleNotFoundError(
@@ -62,6 +65,7 @@ class ReplicateExperiment(Experiment):
             self.completion_fn = mock_replicate_stable_diffusion_completion_fn
         else:
             self.completion_fn = self.replicate_completion_fn
+        self.image_experiment = use_image_model
         super().__init__()
 
     def prepare(self):
@@ -79,27 +83,38 @@ class ReplicateExperiment(Experiment):
     def replicate_completion_fn(model_version: str, **kwargs):
         return replicate.run(model_version, **kwargs)
 
-    @staticmethod
-    def _extract_responses(output: dict) -> list[str]:
-        return output[0]
+    def _extract_responses(self, output) -> str:
+        if self.image_experiment:
+            return output[0]  # Output should be a list of URIs
+        else:  # Assume `output` is a generator of text
+            res = ""
+            for item in output:
+                res += item
+            return res
 
     @staticmethod
     def _image_tag(url, image_width):
+        r"""
+        Create the HTML code to render the image.
+        """
         return f'<img src="{url}" width="{image_width}"/>'
 
     def visualize(
-        self, get_all_cols: bool = False, pivot: bool = False, pivot_columns: list = [], image_width=300
+        self, get_all_cols: bool = False, pivot: bool = False, pivot_columns: list = [], image_width: int = 300
     ) -> None:
-        if pivot:
-            table = self.pivot_table(pivot_columns, get_all_cols=get_all_cols)
+        if not self.image_experiment:
+            super().visualize(get_all_cols, pivot, pivot_columns)
         else:
-            table = self.get_table(get_all_cols)
+            if pivot:
+                table = self.pivot_table(pivot_columns, get_all_cols=get_all_cols)
+            else:
+                table = self.get_table(get_all_cols)
 
-        images = table["response"].apply(partial(self._image_tag, image_width=image_width))
-        table["images"] = images
+            images = table["response"].apply(partial(self._image_tag, image_width=image_width))
+            table["images"] = images
 
-        if is_interactive():
-            display(HTML(table.to_html(escape=False, columns=[col for col in table.columns if col != "response"])))
-        else:
-            logging.getLogger().setLevel(logging.INFO)
-            logging.info(tabulate(table, headers="keys", tablefmt="psql"))
+            if is_interactive():
+                display(HTML(table.to_html(escape=False, columns=[col for col in table.columns if col != "response"])))
+            else:
+                logging.getLogger().setLevel(logging.INFO)
+                logging.info(tabulate(table, headers="keys", tablefmt="psql"))
