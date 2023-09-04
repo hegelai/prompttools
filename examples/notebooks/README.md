@@ -36,19 +36,19 @@ have something to share.
 
 ### Vector Databases
 
-- [ChromaDB Experiment](ChromaDBExperiment.ipynb) demonstrates how to experiment with different
+- [ChromaDB Experiment](vectordb_experiments/ChromaDBExperiment.ipynb) demonstrates how to experiment with different
   embedding functions and query parameters of `Chroma`. The example evaluates the results by computing the
   ranking correlation against an expected output.
-- [Weaviate Experiment](WeaviateExperiment.ipynb) shows how you can easily try different vectorizers, configuration,
+- [Weaviate Experiment](vectordb_experiments/WeaviateExperiment.ipynb) shows how you can easily try different vectorizers, configuration,
   and query functions, and compare the final results.
-- [LanceDB Experiment](LanceDBExperiment.ipynb) allows you to try different embedding functions, and query methods.
-- [Qdrant Experiment](QdrantExperiment.ipynb) explores different ways to query Qdrant, including with vectors.
+- [LanceDB Experiment](vectordb_experiments/LanceDBExperiment.ipynb) allows you to try different embedding functions, and query methods.
+- [Qdrant Experiment](vectordb_experiments/QdrantExperiment.ipynb) explores different ways to query Qdrant, including with vectors.
 
 ### Frameworks
 
-- [LangChain Sequential Chain Experiment](LangChainSequentialChainExperiment.ipynb)
-- [LangChain Router Chain Experiment](LangChainRouterChainExperiment.ipynb)
-- [MindsDB Experiment](MindsDBExperiment.ipynb)
+- [LangChain Sequential Chain Experiment](frameworks/LangChainSequentialChainExperiment.ipynb)
+- [LangChain Router Chain Experiment](frameworks/LangChainRouterChainExperiment.ipynb)
+- [MindsDB Experiment](frameworks/MindsDBExperiment.ipynb)
 
 ### Computer Vision
 - [Stable Diffusion](image_experiments/StableDiffusion.ipynb)

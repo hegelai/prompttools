@@ -98,7 +98,7 @@ LLMs
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
 - Azure OpenAI Service - **Supported**
-- Replicate - _In Progress_
+- Replicate - **Supported**
 - Ollama - _In Progress_
 
 Vector Databases and Data Utility
