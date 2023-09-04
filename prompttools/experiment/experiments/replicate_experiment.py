@@ -65,8 +65,8 @@ class ReplicateExperiment(Experiment):
             self.completion_fn = mock_replicate_stable_diffusion_completion_fn
         else:
             self.completion_fn = self.replicate_completion_fn
-        self.image_experiment = use_image_model
         super().__init__()
+        self.image_experiment = use_image_model
 
     def prepare(self):
         for model in self.models:
@@ -77,11 +77,12 @@ class ReplicateExperiment(Experiment):
                     model_arg_dict = dict(zip(self.model_specific_kwargs[model].keys(), model_combo))
                     for k, v in model_arg_dict.items():
                         arg_dict[k] = v
-                    self.argument_combos.append({"model_version": model, "input": arg_dict})
+                    arg_dict["model_version"] = model
+                    self.argument_combos.append(arg_dict)
 
     @staticmethod
     def replicate_completion_fn(model_version: str, **kwargs):
-        return replicate.run(model_version, **kwargs)
+        return replicate.run(model_version, input=kwargs)
 
     def _extract_responses(self, output) -> str:
         if self.image_experiment:
