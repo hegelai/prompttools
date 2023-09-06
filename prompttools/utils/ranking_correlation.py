@@ -32,5 +32,8 @@ def ranking_correlation(
         >>> ]
         >>> experiment.evaluate("ranking_correlation", ranking_correlation, expected_ranking=EXPECTED_RANKING_LIST)
     """
-    correlation, _ = stats.spearmanr(row[ranking_column_name], expected_ranking)
+    actual_ranking = row[ranking_column_name]
+    if len(expected_ranking) == 1 and len(actual_ranking) == 1:
+        return 1.0 if expected_ranking == actual_ranking else -1.0
+    correlation, _ = stats.spearmanr(actual_ranking, expected_ranking)
     return correlation
