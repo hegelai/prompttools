@@ -108,6 +108,7 @@ Vector Databases and Data Utility
 - LanceDB - **Supported**
 - Milvus - Exploratory
 - Pinecone - Exploratory
+- Epsilla - _In Progress_
 
 Frameworks
 - LangChain - **Supported**
@@ -116,7 +117,7 @@ Frameworks
 
 Computer Vision
 - Stable Diffusion - **Supported**
-- Replicate's hosted Stable Diffusion - _In Progress_
+- Replicate's hosted Stable Diffusion - **Supported**
 
 If you have any API that you'd like to see being supported soon, please open an issue or
 a PR to add it. Feel free to discuss in our Discord channel as well.
