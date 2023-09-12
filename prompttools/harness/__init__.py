@@ -10,6 +10,7 @@ from .chat_history_harness import ChatHistoryExperimentationHarness
 from .chat_model_comparison_harness import ChatModelComparisonHarness
 from .multi_experiment_harness import MultiExperimentHarness
 from .prompt_template_harness import PromptTemplateExperimentationHarness
+from .rag_harness import RetrievalAugmentedGenerationExperimentationHarness
 from .system_prompt_harness import SystemPromptExperimentationHarness
 
 
@@ -19,5 +20,6 @@ __all__ = [
     "ExperimentationHarness",
     "MultiExperimentHarness",
     "PromptTemplateExperimentationHarness",
+    "RetrievalAugmentedGenerationExperimentationHarness",
     "SystemPromptExperimentationHarness",
 ]
