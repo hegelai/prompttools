@@ -36,6 +36,8 @@ have something to share.
 
 ### Vector Databases
 
+- [Retrieval Augmented Generation](vectordb_experiments/RetrievalAugmentedGeneration.ipynb) combines a vector database
+  experiment with LLM to evaluate the whole RAG process.
 - [ChromaDB Experiment](vectordb_experiments/ChromaDBExperiment.ipynb) demonstrates how to experiment with different
   embedding functions and query parameters of `Chroma`. The example evaluates the results by computing the
   ranking correlation against an expected output.
