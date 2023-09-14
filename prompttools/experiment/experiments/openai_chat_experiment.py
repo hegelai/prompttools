@@ -159,7 +159,8 @@ class OpenAIChatExperiment(Experiment):
         else:
             return message["content"]
 
-    def _is_chat(self):
+    @staticmethod
+    def _is_chat():
         return True
 
     def _get_model_names(self):
