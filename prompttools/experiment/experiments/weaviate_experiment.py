@@ -220,7 +220,6 @@ class WeaviateExperiment(Experiment):
                 self.client.schema.delete_class(self.class_name)
         self._construct_result_dfs([c for c in self.argument_combos for _ in range(runs)], results, latencies)
 
-    # TODO: Collect and add latency
     def _construct_result_dfs(
         self,
         input_args: list[dict[str, object]],
