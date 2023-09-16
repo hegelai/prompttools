@@ -5,8 +5,10 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
+import time
+
 import pandas as pd
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Iterable
 
 try:
     import pinecone
@@ -37,11 +39,11 @@ class PineconeExperiment(Experiment):
             an existing one
         query_index_params (dict[str, list]): parameters used to query the collection
             Each value is expected to be a list to create all possible combinations
-        create_index_params (Optional[dict]): documents or embeddings that will be added to
+        create_index_params (Optional[dict]): configuration of the new index (e.g. number of dimensions,
+            distance function)
+        data (Optional[list]): documents or embeddings that will be added to
             the newly created collection
     """
-
-    PARAMETER_NAMES = ["chroma_client"]
 
     def __init__(
         self,
@@ -49,6 +51,7 @@ class PineconeExperiment(Experiment):
         use_existing_index: bool,
         query_index_params: dict,
         create_index_params: Optional[dict] = None,
+        data: Optional[list] = None,
     ):
         if pinecone is None:
             raise ModuleNotFoundError(
@@ -62,10 +65,11 @@ class PineconeExperiment(Experiment):
         #     self.completion_fn = mock_chromadb_fn
         self.use_existing_index = use_existing_index
         self.create_index_params = create_index_params if create_index_params else {}
+        self.data = data
         self.query_index_params = query_index_params
         if use_existing_index and create_index_params:
             raise RuntimeError("You can either use an existing collection or create a new one during the experiment.")
-        if not use_existing_index and create_index_params is None:
+        if not use_existing_index and data is None:
             raise RuntimeError("If you choose to create a new collection, you must also add to it.")
         super().__init__()
 
@@ -91,8 +95,8 @@ class PineconeExperiment(Experiment):
         r"""
         Pinecone helper function to make request
         """
-        results = index.query(**query_params)
-        return results
+        result = index.query(**query_params)
+        return result
 
     def prepare(self) -> None:
         r"""
@@ -102,6 +106,26 @@ class PineconeExperiment(Experiment):
         for combo in itertools.product(*self.query_index_params.values()):
             self.argument_combos.append(dict(zip(self.query_index_params.keys(), combo)))
 
+    @staticmethod
+    def _batch_upsert(pinecone_index: "pinecone.Index", data: Iterable) -> None:
+        batch = []
+        for d in data:
+            batch.append(d)
+            if len(batch) == 100:
+                pinecone_index.upsert(batch)
+                batch = []
+        pinecone_index.upsert(batch)
+
+    @staticmethod
+    def _wait_for_eventual_consistency(pinecone_index: "pinecone.Index", n_sample: int) -> None:
+        i = 0
+        while pinecone_index.describe_index_stats()["total_vector_count"] < n_sample:
+            i += 1
+            print("Waiting for Pinecone's eventual consistency after inserting data.")
+            time.sleep(3)
+            if i == 20:
+                raise TimeoutError("Pinecone has not insert data due to eventual consistency after 1 minute.")
+
     def run(self, runs: int = 1):
         input_args = []  # This will be used to construct DataFrame table
         results = []
@@ -109,12 +133,20 @@ class PineconeExperiment(Experiment):
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
+
+        # Insert data
         if not self.use_existing_index:
             # TODO: Add support for the case where params are a list , add logic to `prepare`
             pinecone.create_index(self.index_name, **self.create_index_params)
+            index = pinecone.Index(self.index_name)
+            self._batch_upsert(index, self.data)
+        else:
+            index = pinecone.Index(self.index_name)
 
-        index = pinecone.Index(self.index_name)
+        if not self.use_existing_index:
+            self._wait_for_eventual_consistency(index, len(self.data))
 
+        # Query
         for query_arg_dict in self.argument_combos:
             arg_combo = query_arg_dict.copy()
             for _ in range(runs):
@@ -122,6 +154,7 @@ class PineconeExperiment(Experiment):
                 start = perf_counter()
                 results.append(self.pinecone_completion_fn(index, **query_arg_dict))
                 latencies.append(perf_counter() - start)
+
         # Clean up
         if not self.use_existing_index:
             pinecone.delete_index(self.index_name)
