@@ -45,6 +45,7 @@ have something to share.
   and query functions, and compare the final results.
 - [LanceDB Experiment](vectordb_experiments/LanceDBExperiment.ipynb) allows you to try different embedding functions, and query methods.
 - [Qdrant Experiment](vectordb_experiments/QdrantExperiment.ipynb) explores different ways to query Qdrant, including with vectors.
+- [Pinecone Experiment](vectordb_experiments/PineconeExperiment.ipynb) looks into different ways to add data into and query from Pinecone.
 
 ### Frameworks
 
