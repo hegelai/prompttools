@@ -64,8 +64,8 @@ class PineconeExperiment(Experiment):
         # if os.getenv("DEBUG", default=False):
         #     self.completion_fn = mock_chromadb_fn
         self.use_existing_index = use_existing_index
-        self.create_index_params = create_index_params if create_index_params else {}
-        self.data = data
+        self.create_index_params: dict = create_index_params if create_index_params else {}
+        self.data: list = data if data is not None else []
         self.query_index_params = query_index_params
         if use_existing_index and create_index_params:
             raise RuntimeError("You can either use an existing collection or create a new one during the experiment.")
