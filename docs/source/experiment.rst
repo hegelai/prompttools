@@ -41,6 +41,8 @@ LLMs
 
 .. autoclass:: LlamaCppExperiment
 
+.. autoclass:: ReplicateExperiment
+
 Frameworks
 +++++++++++++++++++++++++++++++++++++++++
 
@@ -60,6 +62,8 @@ Vector DBs
 .. autoclass:: LanceDBExperiment
 
 .. autoclass:: QdrantExperiment
+
+.. autoclass:: PineconeExperiment
 
 Computer Vision
 +++++++++++++++++++++++++++++++++++++++++

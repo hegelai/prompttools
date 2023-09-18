@@ -107,7 +107,7 @@ Vector Databases and Data Utility
 - Qdrant - **Supported**
 - LanceDB - **Supported**
 - Milvus - Exploratory
-- Pinecone - Exploratory
+- Pinecone - **Supported**
 - Epsilla - _In Progress_
 
 Frameworks

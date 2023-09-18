@@ -41,4 +41,17 @@ def _get_dynamic_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     unique_counts = df[hashable_columns].nunique()
     columns_with_multiple_unique_values = unique_counts[unique_counts > 1].index
-    return pd.concat([df[columns_with_multiple_unique_values], df[unhashable_columns]], axis=1)
+    dfs_to_concat = [df[columns_with_multiple_unique_values], df[unhashable_columns]]
+    if (
+        "prompt" in df
+        and "prompt" not in df[columns_with_multiple_unique_values]
+        and "prompt" not in df[unhashable_columns]
+    ):
+        dfs_to_concat.append(df["prompt"])
+    elif (
+        "messages" in df
+        and "messages" not in df[columns_with_multiple_unique_values]
+        and "messages" not in df[unhashable_columns]
+    ):
+        dfs_to_concat.append(df["messages"])
+    return pd.concat(dfs_to_concat, axis=1)

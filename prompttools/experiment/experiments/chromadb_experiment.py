@@ -143,7 +143,6 @@ class ChromaDBExperiment(Experiment):
             self.chroma_client.delete_collection(self.collection_name)
         self._construct_result_dfs(input_args, results, latencies)
 
-    # TODO: Collect and add latency
     def _construct_result_dfs(
         self,
         input_args: list[dict[str, object]],
@@ -185,15 +184,15 @@ class ChromaDBExperiment(Experiment):
 
     @staticmethod
     def _extract_top_doc_ids(output: Dict[str, object]) -> list[tuple[str, float]]:
-        r"""Helper function to get distances between documents from ChromaDB."""
+        r"""Helper function to get the top document IDs from ChromaDB."""
         return output["ids"][0]
 
     @staticmethod
     def _extract_chromadb_dists(output: Dict[str, object]) -> list[tuple[str, float]]:
-        r"""Helper function to get distances between documents from ChromaDB."""
+        r"""Helper function to get distances between the prompt and documents from ChromaDB."""
         return output["distances"][0]
 
     @staticmethod
     def _extract_chromadb_docs(output: Dict[str, object]) -> list[tuple[str, float]]:
-        r"""Helper function to get distances between documents from ChromaDB."""
+        r"""Helper function to get the top documents from ChromaDB."""
         return output["documents"][0]

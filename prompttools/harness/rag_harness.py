@@ -4,14 +4,13 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Optional, Type, Callable
+from typing import Optional, Type, Callable, Union
 import jinja2
 from .harness import ExperimentationHarness, Experiment
 import copy
 
 
-DOC_PROMPT_TEMPLATE = r"""
-Given these documents:{{documents}}
+DOC_PROMPT_TEMPLATE = r"""Given these documents:{{documents}}
 
 {{prompt}}
 """
@@ -25,7 +24,11 @@ def _doc_list_to_str(documents: list[str]) -> str:
     return res
 
 
-def _generate_doc_prompt(documents: list[str], prompt: str):
+def _generate_doc_prompt(documents: list[str], prompt_or_msg: Union[str, list[dict[str, str]]], is_chat: bool):
+    if not is_chat:
+        prompt = prompt_or_msg
+    else:  # You have a chat message object
+        prompt = prompt_or_msg[-1]["content"]
     environment = jinja2.Environment()
     template = environment.from_string(DOC_PROMPT_TEMPLATE)
     doc_str = _doc_list_to_str(documents)
@@ -36,7 +39,12 @@ def _generate_doc_prompt(documents: list[str], prompt: str):
             "prompt": prompt,
         }
     )
-    return doc_prompt
+    if not is_chat:
+        return doc_prompt
+    else:
+        new_msg = copy.copy(prompt_or_msg)
+        new_msg[-1]["content"] = doc_prompt
+        return new_msg
 
 
 class RetrievalAugmentedGenerationExperimentationHarness(ExperimentationHarness):
@@ -77,21 +85,24 @@ class RetrievalAugmentedGenerationExperimentationHarness(ExperimentationHarness)
         for i, row in self.vector_db_experiment.full_df.iterrows():
             document_lists.append(self.extract_document_fn(row))
             # latencies.append(row["latencies"])
+
         # Put documents into prompt template
         augmented_prompts = []
+        is_chat = self.llm_experiment_cls._is_chat()
+        input_arg_name = "messages" if is_chat else "prompt"
         for doc in document_lists:
-            for prompt in self.llm_arguments["prompt"]:  # TODO: Make this work for chat, check `experiment._is_chat()`
-                augmented_prompts.append(_generate_doc_prompt(doc, prompt))
+            for prompt_or_msg in self.llm_arguments[input_arg_name]:
+                augmented_prompts.append(_generate_doc_prompt(doc, prompt_or_msg, is_chat))
 
         # Pass documents into LLM
-        self.llm_arguments["prompt"]: list[str] = augmented_prompts
+        self.llm_arguments[input_arg_name]: list[str] = augmented_prompts
         self.experiment = self.llm_experiment_cls(**self.llm_arguments)
 
         # Run the LLM experiment
         self.experiment.run()
-        # TODO: Need to clean up results, ideally display these columns ("top doc ids", "prompt")
+        # TODO: We can clean up results for visualization, ideally show these columns ("top doc ids", "prompt")
         #       Right now it is displaying the fully augmented prompt for every row, which take up too much space
-        #       Permutation ordering (doc_list1, prompt, then other arguments)
+        #       Note: Permutation ordering (doc_list1, prompt, then other arguments)
         self.partial_df = self.experiment.partial_df
         self.full_df = self.experiment.full_df
 

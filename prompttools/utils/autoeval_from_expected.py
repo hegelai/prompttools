@@ -14,7 +14,10 @@ from .error import PromptToolsUtilityError
 EVALUATION_SYSTEM_PROMPT = """
 You are a grader evaluating responses to math questions.
 Given the PROMPT and EXPECTED, evaluate the ACTUAL answer.
+The ACTUAL answer should be the same as the EXPECTED.
 You should grade the response as either RIGHT or WRONG.
+If the ACTUAL answer is the same as the EXPECTED, mark it RIGHT.
+Otherwise, mark it WRONG.
 """
 
 EVALUATION_USER_TEMPLATE = """
@@ -35,7 +38,6 @@ def _get_messages(prompt: str, expected: str, response: str):
     ]
 
 
-# TODO: Should this be removed since no one is using it?
 def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> float:
     r"""
     Uses a high quality chat model, like GPT-4, to automatically evaluate a given

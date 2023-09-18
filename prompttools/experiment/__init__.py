@@ -20,6 +20,7 @@ from .experiments.langchain_experiment import SequentialChainExperiment, RouterC
 from .experiments.stablediffusion_experiment import StableDiffusionExperiment
 from .experiments.replicate_experiment import ReplicateExperiment
 from .experiments.qdrant_experiment import QdrantExperiment
+from .experiments.pinecone_experiment import PineconeExperiment
 
 __all__ = [
     "AnthropicCompletionExperiment",
@@ -32,6 +33,7 @@ __all__ = [
     "MindsDBExperiment",
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
+    "PineconeExperiment",
     "QdrantExperiment",
     "ReplicateExperiment",
     "RouterChainExperiment",

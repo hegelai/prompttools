@@ -96,7 +96,8 @@ class Experiment:
         frozen_parameters = {k: [v] for k, v in frozen_parameters.items()}
         return cls(**test_parameters, **frozen_parameters)
 
-    def _is_chat(self):
+    @staticmethod
+    def _is_chat():
         return False
 
     # def _get_human_eval_listener(self, i: int) -> Callable:
@@ -305,13 +306,20 @@ class Experiment:
                 "Package `cv2` is required to be installed to use this experiment."
                 "Please use `pip opencv-python` to install the package"
             )
-        _, buffer = cv2.imencode('.png', image)
-        return base64.b64encode(buffer).decode('utf-8')
+        _, buffer = cv2.imencode(".png", image)
+        return base64.b64encode(buffer).decode("utf-8")
 
     def display_image_html(self, base64_string):
         return f'<img src="data:image/png;base64,{base64_string}" width="150" height="150"/>'
 
-    def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, image_experiment: bool = False, **eval_fn_kwargs) -> None:
+    def evaluate(
+        self,
+        metric_name: str,
+        eval_fn: Callable,
+        static_eval_fn_kwargs: dict = {},
+        image_experiment: bool = False,
+        **eval_fn_kwargs,
+    ) -> None:
         """
         Using the given evaluation function that accepts a row of data, compute a new column with the evaluation
         result. Each row of data generally contain inputs, model response, and other previously computed metrics.
