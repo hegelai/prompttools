@@ -11,6 +11,7 @@ from .experiments.openai_completion_experiment import OpenAICompletionExperiment
 from .experiments.anthropic_completion_experiment import AnthropicCompletionExperiment
 from .experiments.huggingface_hub_experiment import HuggingFaceHubExperiment
 from .experiments.google_palm_experiment import GooglePaLMCompletionExperiment
+from .experiments.google_vertex_chat_experiment import GoogleVertexChatCompletionExperiment
 from .experiments.llama_cpp_experiment import LlamaCppExperiment
 from .experiments.chromadb_experiment import ChromaDBExperiment
 from .experiments.weaviate_experiment import WeaviateExperiment
@@ -27,6 +28,7 @@ __all__ = [
     "ChromaDBExperiment",
     "Experiment",
     "GooglePaLMCompletionExperiment",
+    "GoogleVertexChatCompletionExperiment",
     "LanceDBExperiment",
     "LlamaCppExperiment",
     "HuggingFaceHubExperiment",

@@ -39,6 +39,8 @@ LLMs
 
 .. autoclass:: GooglePaLMCompletionExperiment
 
+.. autoclass:: GoogleVertexChatCompletionExperiment
+
 .. autoclass:: LlamaCppExperiment
 
 .. autoclass:: ReplicateExperiment

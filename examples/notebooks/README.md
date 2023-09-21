@@ -16,6 +16,8 @@ have something to share.
 - [OpenAI Chat Experiment](OpenAIChatExperiment.ipynb) shows how you can experiment with OpenAI with different models and parameters.
 - [OpenAI Chat Function Experiment](OpenAIChatFunctionExperiment.ipynb) shows how you can experiment with OpenAI's function calling API.
 - [Anthropic Experiment](AnthropicExperiment.ipynb) shows how you can experiment with Anthropic Claude with different models and parameters.
+- [Google PaLM 2 Text Completion](PaLM2Experiment.ipynb)
+  and [Google Vertex AI Chat Completion](GoogleVertexChatExperiment.ipynb) utilizes Google's LLM models.
 - [LLaMA Cpp Experiment](LlamaCppExperiment.ipynb) executes LLaMA locally with various parameters and see how it does.
 - [LLaMA Cpp Experiment](LlamaCppExperiment.ipynb) executes LLaMA locally with various parameters and see how it does.
 - [HuggingFace Hub](HuggingFaceHub.ipynb) compares different OSS models hosted on HuggingFace.

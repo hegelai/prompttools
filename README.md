@@ -97,6 +97,7 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Google PaLM - **Supported**
+- Google Vertex AI - **Supported**
 - Azure OpenAI Service - **Supported**
 - Replicate - **Supported**
 - Ollama - _In Progress_
