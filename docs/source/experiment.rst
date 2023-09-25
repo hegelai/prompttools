@@ -13,7 +13,7 @@ using those potential inputs. An example of using experiment is `here <https://g
 
 There are two ways to initialize an experiment:
 
-  1. Wrap your parameters in ``list`` s and pass them into the ``__init__`` method. See each class's
+  1. Wrap your parameters in ``list``\ s and pass them into the ``__init__`` method. See each class's
      method signature in the "Integrated Experiment APIs" section for details.
   2. Define which parameters should be tested and which ones should be frozen in two dictionaries. Pass the
      dictionaries to the ``initialize`` method. See the ``classmethod initialize`` below for details.
