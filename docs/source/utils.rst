@@ -12,6 +12,8 @@ They can also be used with ``prompttest`` for be part of your CI/CD system.
 
 .. autofunction:: prompttools.utils.autoeval_with_documents
 
+.. autofunction:: prompttools.utils.chunk_text
+
 .. autofunction:: prompttools.utils.compute_similarity_against_model
 
 .. autofunction:: prompttools.utils.ranking_correlation
