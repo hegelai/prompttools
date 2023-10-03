@@ -9,7 +9,11 @@ import os
 from typing import Dict
 import pandas.core.series
 from .error import PromptToolsUtilityError
-from pylint import epylint as lint
+
+try:
+    from pylint import epylint as lint
+except ImportError:
+    lint = None
 
 PROMPTTOOLS_TMP = "prompttools_tmp.py"
 
@@ -21,6 +25,11 @@ def validate(text: str):
     Args:
         text (str): The generated text, which should be valid python.
     """
+    if lint is None:
+        raise RuntimeError(
+            "Our built-in `validate_python` function requires pylint<3.0. Please use a custom eval function."
+            "Feel free to open a GitHub issue or PR."
+        )
     if os.path.isfile(PROMPTTOOLS_TMP):
         raise PromptToolsUtilityError
     with open(PROMPTTOOLS_TMP, "w") as f:
