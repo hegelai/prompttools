@@ -11,6 +11,8 @@ from functools import partial
 from prompttools.mock.mock import mock_replicate_stable_diffusion_completion_fn
 from IPython.display import display, HTML
 from tabulate import tabulate
+
+from prompttools.selector.prompt_selector import PromptSelector
 from ..widgets.utility import is_interactive
 
 
@@ -58,6 +60,12 @@ class ReplicateExperiment(Experiment):
             os.environ["REPLICATE_API_TOKEN"]
         except KeyError:
             raise RuntimeError('`os.environ["REPLICATE_API_TOKEN]` needs to be set.')
+        
+        # If we are using a prompt selector, we need to
+        # render the prompts from the selector        
+        if isinstance(input_kwargs['prompt'][0], PromptSelector):
+            input_kwargs['prompt'] = [selector.for_llama() for selector in input_kwargs['prompt']]
+
         self.models = models
         self.input_kwargs = input_kwargs
         self.model_specific_kwargs = model_specific_kwargs

@@ -62,6 +62,9 @@ with st.sidebar:
         elif model_type == "OpenAI Completion":
             model = st.selectbox("Model", OPENAI_COMPLETION_MODELS, key="model")
             api_key = st.text_input("OpenAI API Key", type="password")
+        elif model_type == "Replicate":
+            model = st.text_input("Model", key="model")
+            api_key = st.text_input("Replicate API Key", type="password")
 
         variable_count = 0
         if mode == "Prompt Template":
@@ -93,7 +96,7 @@ with st.sidebar:
                     key=f"varname_{i}",
                 )
             )
-        temperature = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.01, key="temperature")
+        temperature = st.slider("Temperature", min_value=0.01 if model_type == "Replicate" else 0.0, max_value=1.0, value=0.01 if model_type == "Replicate" else 0.0, step=0.01, key="temperature")
         top_p = None
         max_tokens = None
         presence_penalty = None
@@ -114,11 +117,12 @@ with st.sidebar:
         anthropic_api_key = st.text_input("Anthropic Key", type="password")
         google_api_key = st.text_input("Google PaLM Key", type="password")
         hf_api_key = st.text_input("HuggingFace Hub Key", type="password")
+        replicate_api_key = st.text_input("Replicate API Key", type="password")
 
 
 if mode == "Instruction":
-    placeholders = [[st.empty() for _ in range(instruction_count + 1)] for _ in range(prompt_count)]
-    # placeholders = []
+    # placeholders = [[st.empty() for _ in range(instruction_count + 1)] for _ in range(prompt_count)]
+    placeholders = []
 
     cols = st.columns(instruction_count + 1)
 
@@ -168,7 +172,8 @@ if mode == "Instruction":
     link = "https://prompttools.streamlit.app?"
     link += "mode=" + urllib.parse.quote(mode)
     link += "&model_type=" + urllib.parse.quote(model_type)
-    link += "&model=" + urllib.parse.quote(model)
+    if model:
+        link += "&model=" + urllib.parse.quote(model)
     link += "&instruction=" + urllib.parse.quote(instructions[0])
     link += "&prompt=" + urllib.parse.quote(prompts[0])
 
@@ -188,12 +193,12 @@ if mode == "Instruction":
         st.session_state.df = df
         for i in range(len(prompts)):
             for j in range(len(instructions)):
-                placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
+                placeholders[i][j].markdown(df["response"][i + len(prompts) * j])
     elif "df" in st.session_state and not clear:
         df = st.session_state.df
         for i in range(len(prompts)):
             for j in range(len(instructions)):
-                placeholders[i][j + 1].markdown(df["response"][i + len(prompts) * j])
+                placeholders[i][j].markdown(df["response"][i + len(prompts) * j])
 elif mode == "Prompt Template":
     instruction = None
     if model_type == "LlamaCpp Chat":
@@ -300,6 +305,7 @@ elif mode == "Model Comparison":
                         "LlamaCpp Chat",
                         "LlamaCpp Completion",
                         "HuggingFace Hub",
+                        "Replicate",
                     ),
                     key=f"type_{j}",
                 )
@@ -314,6 +320,9 @@ elif mode == "Model Comparison":
                 models.append(st.text_input("Repo ID", key=f"model_id_{j}"))
             elif model_types[j - 1] == "Google PaLM":
                 models.append(st.text_input("Model", key=f"palm_model_{j}"))
+            elif model_types[j - 1] == "Replicate":
+                models.append(st.text_input("Model", key=f"replicate_model_{j}"))
+                instructions[j] = st.text_area("Instruction", key=f"instruction_{j}")
             elif model_types[j - 1] == "Anthropic":
                 models.append(st.selectbox("Model", ("claude-2", "claude-instant-1"), key=f"anthropic_{j}"))
             elif model_types[j - 1] == "OpenAI Chat":

@@ -83,8 +83,6 @@ class GooglePaLMCompletionExperiment(Experiment):
         # render the prompts from the selector
         if isinstance(prompt[0], PromptSelector):
             prompt = [selector.for_palm() for selector in prompt]
-        else:
-            prompt = prompt
 
         self.all_args = dict(
             model=model,
