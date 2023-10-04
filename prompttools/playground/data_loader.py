@@ -60,6 +60,11 @@ def load_data(
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
     elif model_type == "Google PaLM":
         experiment = EXPERIMENTS[model_type]([model], selectors, temperature=[temperature])
+    elif model_type == "Replicate":
+        input_kwargs = {"prompt": selectors,
+                        "temperature": [temperature]}
+        model_specific_kwargs = {model: {}}
+        experiment = EXPERIMENTS[model_type]([model], input_kwargs, model_specific_kwargs)
 
     return experiment.to_pandas_df()
 
@@ -74,6 +79,7 @@ def run_multiple(
     anthropic_api_key=None,
     google_api_key=None,
     hf_api_key=None,
+    replicate_api_key=None,
 ):
     import os
 
@@ -85,14 +91,26 @@ def run_multiple(
         os.environ["GOOGLE_PALM_API_KEY"] = google_api_key
     if hf_api_key:
         os.environ["HUGGINGFACEHUB_API_TOKEN"] = hf_api_key
+    if replicate_api_key:
+        os.environ["REPLICATE_API_TOKEN"] = replicate_api_key
     dfs = []
     for i in range(len(models)):
         # TODO Support temperature and other parameters
         selectors = []
         if i + 1 in instructions:
             selectors = [PromptSelector(instructions[i + 1], prompt) for prompt in prompts]
-            experiment = EXPERIMENTS[model_types[i]]([models[i]], selectors)
+            if model_types[i] == "Replicate":
+                input_kwargs = {"prompt": selectors}
+                model_specific_kwargs = {models[i]: {}}
+                experiment = EXPERIMENTS[model_types[i]]([models[i]], input_kwargs, model_specific_kwargs)
+            else:
+                experiment = EXPERIMENTS[model_types[i]]([models[i]], selectors)
         else:
-            experiment = EXPERIMENTS[model_types[i]]([models[i]], prompts)
+            if model_types[i] == "Replicate":
+                input_kwargs = {"prompt": prompts}
+                model_specific_kwargs = {models[i]: {}}
+                experiment = EXPERIMENTS[model_types[i]]([models[i]], input_kwargs, model_specific_kwargs)
+            else:
+                experiment = EXPERIMENTS[model_types[i]]([models[i]], prompts)
         dfs.append(experiment.to_pandas_df())
     return dfs

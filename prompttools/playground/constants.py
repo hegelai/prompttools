@@ -11,8 +11,10 @@ from prompttools.experiment import OpenAICompletionExperiment
 from prompttools.experiment import AnthropicCompletionExperiment
 from prompttools.experiment import GooglePaLMCompletionExperiment
 from prompttools.experiment import HuggingFaceHubExperiment
+from prompttools.experiment import ReplicateExperiment
 
 ENVIRONMENT_VARIABLE = {
+    "Replicate": "REPLICATE_API_TOKEN",
     "OpenAI Chat": "OPENAI_API_KEY",
     "OpenAI Completion": "OPENAI_API_KEY",
     "Anthropic": "ANTHROPIC_API_KEY",
@@ -27,6 +29,7 @@ EXPERIMENTS = {
     "Anthropic": AnthropicCompletionExperiment,
     "Google PaLM": GooglePaLMCompletionExperiment,
     "HuggingFace Hub": HuggingFaceHubExperiment,
+    "Replicate": ReplicateExperiment,
 }
 
 MODES = ("Instruction", "Prompt Template", "Model Comparison")
@@ -39,6 +42,7 @@ MODEL_TYPES = (
     "LlamaCpp Chat",
     "LlamaCpp Completion",
     "HuggingFace Hub",
+    "Replicate",
 )
 
 OPENAI_CHAT_MODELS = (
