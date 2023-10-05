@@ -5,3 +5,4 @@ llama-cpp-python
 anthropic
 pyperclip
 google-generativeai
+replicate
