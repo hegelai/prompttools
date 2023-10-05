@@ -1,6 +1,6 @@
 ## Notebook Examples
 
-In this folder, you will find various examples of how you can `prompttools` for
+In this folder, you will find various examples of how you can use `prompttools` for
 various experimentation and testing. Often, you can simply change a few parameters
 and put in your own test data to make `prompttools` suitable for your use case.
 
