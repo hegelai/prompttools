@@ -372,7 +372,7 @@ elif mode == "Model Comparison":
 
     if run:
         dfs = run_multiple(
-            model_types, models, instructions, prompts, openai_api_key, anthropic_api_key, google_api_key, hf_api_key
+            model_types, models, instructions, prompts, openai_api_key, anthropic_api_key, google_api_key, hf_api_key, replicate_api_key
         )
         st.session_state.dfs = dfs
         for i in range(len(prompts)):
