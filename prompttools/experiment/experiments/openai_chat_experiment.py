@@ -6,12 +6,15 @@
 
 import os
 import json
+import pickle
 from typing import Dict, List, Optional, Union
 import openai
+import requests
 
 from prompttools.selector.prompt_selector import PromptSelector
 from prompttools.mock.mock import mock_openai_chat_completion_fn, mock_openai_chat_function_completion_fn
 from .experiment import Experiment
+import pandas as pd
 
 
 class OpenAIChatExperiment(Experiment):
@@ -168,3 +171,60 @@ class OpenAIChatExperiment(Experiment):
 
     def _get_prompts(self):
         return [self.prompt_keys[str(combo["messages"][-1]["content"])] for combo in self.argument_combos]
+
+    def _get_state(self, name: str):
+        state_params = {
+            "prompt_keys": self.prompt_keys,
+            "all_args": self.all_args,
+        }
+        partial_col_names = self.partial_df.columns.tolist()
+        score_col_names = self.score_df.columns.tolist()
+        state = (
+            name,
+            state_params,
+            self.full_df,
+            partial_col_names,
+            score_col_names,
+        )
+        print("Creating serialized state of experiment...")
+        serialized_state = pickle.dumps(state)
+        return serialized_state
+
+    def save_experiment(self, name: str):
+        state = self._get_state(name)
+        url = "http://127.0.0.1:5000/experiment/save"
+        headers = {"Content-Type": "application/octet-stream"}  # Use a binary content type for pickled data
+        print("Sending HTTP POST request...")
+        response = requests.post(url, data=state, headers=headers)
+        return response
+
+    @classmethod
+    def load_experiment(cls, uuid: str):
+        url = f"http://127.0.0.1:5000/experiment/load/{uuid}"
+        headers = {"Content-Type": "application/octet-stream"}  # Use a binary content type for pickled data
+        print("Sending HTTP GET request...")
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            state = pickle.loads(response.content)  # Note that state should not have `name` included
+            return cls._load_state(state)
+        else:
+            print(f"Error: {response.status_code}, {response.text}")
+
+    @classmethod
+    def _load_state(cls, state):
+        (
+            state_params,
+            full_df,
+            partial_col_names,
+            score_col_names,
+        ) = state
+
+        all_args, prompt_keys = state_params["all_args"], state_params["prompt_keys"]
+        experiment = cls(all_args["model"], all_args["messages"])
+        experiment.prompt_keys = prompt_keys
+        experiment.all_args = all_args
+        experiment.full_df = pd.DataFrame(full_df)
+        experiment.partial_df = experiment.full_df[partial_col_names].copy()
+        experiment.score_df = experiment.full_df[score_col_names].copy()
+        print("Loaded experiment.")
+        return experiment
