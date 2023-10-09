@@ -8,3 +8,5 @@ ipywidgets
 sentence-transformers
 pylint
 sentry-sdk>=1.23.0
+pyperclip
+streamlit
