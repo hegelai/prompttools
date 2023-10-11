@@ -52,7 +52,7 @@ class Experiment:
         self.partial_df = None
         self.score_df = None
         self.image_experiment = False
-        self._experiment_uuid = None
+        self._experiment_id = None
         try:
             if "SENTRY_OPT_OUT" not in os.environ:
                 sentry_sdk.capture_message(f"Initializing {self.__class__.__name__}", "info")
