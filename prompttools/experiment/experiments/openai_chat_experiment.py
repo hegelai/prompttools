@@ -181,7 +181,7 @@ class OpenAIChatExperiment(Experiment):
         score_col_names = self.score_df.columns.tolist()
         state = (
             name,
-            self._experiment_uuid,
+            self._experiment_id,
             state_params,
             self.full_df,
             partial_col_names,
@@ -192,28 +192,39 @@ class OpenAIChatExperiment(Experiment):
         return serialized_state
 
     def save_experiment(self, name: str):
+        if os.environ["HEGELAI_API_KEY"] is None:
+            raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
         state = self._get_state(name)
         url = "http://127.0.0.1:5000/experiment/save"
-        headers = {"Content-Type": "application/octet-stream"}  # Use a binary content type for pickled data
+        headers = {
+            "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
+            "Authorization": os.environ["HEGELAI_API_KEY"],
+        }
         print("Sending HTTP POST request...")
         response = requests.post(url, data=state, headers=headers)
-        self._experiment_uuid = response.json().get("experiment_uuid")
+        self._experiment_id = response.json().get("experiment_id")
         return response
 
     @classmethod
-    def load_experiment(cls, uuid: str):
-        url = f"http://127.0.0.1:5000/experiment/load/{uuid}"
-        headers = {"Content-Type": "application/octet-stream"}  # Use a binary content type for pickled data
+    def load_experiment(cls, experiment_id: str):
+        if os.environ["HEGELAI_API_KEY"] is None:
+            raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
+
+        url = f"http://127.0.0.1:5000/experiment/load/{experiment_id}"
+        headers = {
+            "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
+            "Authorization": os.environ["HEGELAI_API_KEY"],
+        }
         print("Sending HTTP GET request...")
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             state = pickle.loads(response.content)  # Note that state should not have `name` included
-            return cls._load_state(state, uuid)
+            return cls._load_state(state, experiment_id)
         else:
             print(f"Error: {response.status_code}, {response.text}")
 
     @classmethod
-    def _load_state(cls, state, uuid: str):
+    def _load_state(cls, state, experiment_id: str):
         (
             state_params,
             full_df,
@@ -228,6 +239,6 @@ class OpenAIChatExperiment(Experiment):
         experiment.full_df = pd.DataFrame(full_df)
         experiment.partial_df = experiment.full_df[partial_col_names].copy()
         experiment.score_df = experiment.full_df[score_col_names].copy()
-        experiment._experiment_uuid = uuid
+        experiment._experiment_id = experiment_id
         print("Loaded experiment.")
         return experiment
