@@ -181,6 +181,7 @@ class OpenAIChatExperiment(Experiment):
         score_col_names = self.score_df.columns.tolist()
         state = (
             name,
+            self._experiment_uuid,
             state_params,
             self.full_df,
             partial_col_names,
@@ -196,6 +197,7 @@ class OpenAIChatExperiment(Experiment):
         headers = {"Content-Type": "application/octet-stream"}  # Use a binary content type for pickled data
         print("Sending HTTP POST request...")
         response = requests.post(url, data=state, headers=headers)
+        self._experiment_uuid = response.json().get("experiment_uuid")
         return response
 
     @classmethod
@@ -206,12 +208,12 @@ class OpenAIChatExperiment(Experiment):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             state = pickle.loads(response.content)  # Note that state should not have `name` included
-            return cls._load_state(state)
+            return cls._load_state(state, uuid)
         else:
             print(f"Error: {response.status_code}, {response.text}")
 
     @classmethod
-    def _load_state(cls, state):
+    def _load_state(cls, state, uuid: str):
         (
             state_params,
             full_df,
@@ -226,5 +228,6 @@ class OpenAIChatExperiment(Experiment):
         experiment.full_df = pd.DataFrame(full_df)
         experiment.partial_df = experiment.full_df[partial_col_names].copy()
         experiment.score_df = experiment.full_df[score_col_names].copy()
+        experiment._experiment_uuid = uuid
         print("Loaded experiment.")
         return experiment
