@@ -195,7 +195,7 @@ class OpenAIChatExperiment(Experiment):
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
         state = self._get_state(name)
-        url = "http://127.0.0.1:5000/experiment/save"
+        url = "http://127.0.0.1:5000/sdk/save"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
@@ -210,7 +210,7 @@ class OpenAIChatExperiment(Experiment):
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 
-        url = f"http://127.0.0.1:5000/experiment/load/{experiment_id}"
+        url = f"http://127.0.0.1:5000/sdk/get/experiment/{experiment_id}"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
