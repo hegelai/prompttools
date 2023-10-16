@@ -17,7 +17,6 @@ from prompttools.selector.prompt_selector import PromptSelector
 from prompttools.mock.mock import mock_openai_chat_completion_fn, mock_openai_chat_function_completion_fn
 from .experiment import Experiment
 from .error import PromptExperimentException
-from ._utils import _get_dynamic_columns
 import pandas as pd
 
 
@@ -290,55 +289,18 @@ class OpenAIChatExperiment(Experiment):
             )
 
         # Verify new results are added
-        n_new_elements = len(partial_argument_combos)
         if original_n_results - len(self.queue.get_results()) == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
 
-        # results = self.queue.get_results()
-        # input_args = self.queue.get_input_args()
-        # latencies = self.queue.get_latencies()
-        #
-        # self._construct_result_dfs(self.queue.get_input_args(), self.queue.get_results(), self.queue.get_latencies())
-
-        # Extract partial result
-        results = self.queue.get_results()[-n_new_elements:]
-        input_args = self.queue.get_input_args()[-n_new_elements:]
-        latencies = self.queue.get_latencies()[-n_new_elements:]
-
-        if self.full_df is None:  # The experiment has never been executed before
-            self._construct_result_dfs(input_args, results, latencies)
-        else:
-            # Currently, it always append new rows to the results.
-            # In the future, we may want to replace existing rows instead.
-            self._insert_new_values_to_dataframe(input_args, results, latencies)
+        # Currently, it always append new rows to the results.
+        # In the future, we may want to replace existing rows instead.
+        self._construct_result_dfs(self.queue.get_input_args(), self.queue.get_results(), self.queue.get_latencies())
 
         # If `arg_value` didn't exist before, add to `argument_combos`, which will be used in the next `.run()`
         if arg_value not in self.all_args[arg_name]:
             self.all_args[arg_name].append(arg_value)
-            self.argument_combos.append(partial_argument_combos)
-
-    def _insert_new_values_to_dataframe(
-        self, input_args: list[dict[str, object]], results: list[dict[str, object]], latencies: list[float]
-    ):
-        new_input_arg_df = pd.DataFrame(input_args)
-        self.input_arg_df = pd.concat([self.input_arg_df, new_input_arg_df], ignore_index=True)
-        dynamic_input_arg_df = _get_dynamic_columns(self.input_arg_df)
-
-        new_response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
-        self.response_df = pd.concat([self.response_df, new_response_df], axis=0, ignore_index=True)
-
-        self.score_df = pd.concat([self.score_df, pd.DataFrame({"latency": latencies})], ignore_index=True)
-
-        # Result DF
-        new_result_df = pd.DataFrame(results)
-        common_columns = set(new_input_arg_df.columns) & set(new_result_df.columns)
-        new_result_df = new_result_df.add_prefix("response_") if common_columns else new_result_df
-        new_result_df = pd.concat([new_response_df, new_result_df], axis=1)
-        self.result_df = pd.concat([self.result_df, new_result_df], axis=0, ignore_index=True)
-
-        self.partial_df = pd.concat([dynamic_input_arg_df, self.response_df, self.score_df], axis=1)
-        self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
+            self.prepare()
 
     # def _update_values_in_dataframe(self):
     #     r"""
