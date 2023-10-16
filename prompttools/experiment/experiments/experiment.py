@@ -230,35 +230,35 @@ class Experiment:
                  will be an extractor function that accepts the response from the model and returns a value.
         """
         # `input_arg_df` contains all all input args
-        input_arg_df = pd.DataFrame(input_args)
+        self.input_arg_df = pd.DataFrame(input_args)
         # `dynamic_input_arg_df` contains input args that has more than one unique values
-        dynamic_input_arg_df = _get_dynamic_columns(input_arg_df)
+        dynamic_input_arg_df = _get_dynamic_columns(self.input_arg_df)
 
         # `response_df` contains the extracted response (often being the text response)
         if response_extractors is None:
-            response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
+            self.response_df = pd.DataFrame({"response": [self._extract_responses(result) for result in results]})
         else:
             res_dict = {}
             for col_name, extractor in response_extractors.items():
                 res_dict[col_name] = [extractor(result) for result in results]
-            response_df = pd.DataFrame(res_dict)
+            self.response_df = pd.DataFrame(res_dict)
         # `result_df` contains everything returned by the completion function
         if extract_response_equal_full_result:
-            result_df = response_df
+            self.result_df = self.response_df
         else:
             # Handle the case where `input_arg_df` has the same column names as `result_df`
             result_df = pd.DataFrame(results)
-            common_columns = set(input_arg_df.columns) & set(result_df.columns)
+            common_columns = set(self.input_arg_df.columns) & set(result_df.columns)
             result_df = result_df.add_prefix("response_") if common_columns else result_df
-            result_df = pd.concat([response_df, result_df], axis=1)
+            self.result_df = pd.concat([self.response_df, result_df], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({"latency": latencies})
 
         # `partial_df` contains some input arguments, extracted responses, and score
-        self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
+        self.partial_df = pd.concat([dynamic_input_arg_df, self.response_df, self.score_df], axis=1)
         # `full_df` contains all input arguments, responses, and score
-        self.full_df = pd.concat([input_arg_df, result_df, self.score_df], axis=1)
+        self.full_df = pd.concat([self.input_arg_df, self.result_df, self.score_df], axis=1)
 
     def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
         r"""
