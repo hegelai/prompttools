@@ -103,7 +103,7 @@ class OpenAIChatExperiment(Experiment):
         max_tokens: Optional[List[int]] = [float("inf")],
         presence_penalty: Optional[List[float]] = [0.0],
         frequency_penalty: Optional[List[float]] = [0.0],
-        logit_bias: Optional[Dict] = [None],
+        logit_bias: Optional[List[Dict]] = [None],
         functions: Optional[List[Dict]] = [None],
         function_call: Optional[List[Dict[str, str]]] = [None],
         azure_openai_service_configs: Optional[dict] = None,
