@@ -278,7 +278,7 @@ class OpenAIChatExperiment(Experiment):
         partial_argument_combos = [
             dict(zip(partial_all_args, val)) for val in itertools.product(*partial_all_args.values())
         ]
-        original_n_results = len(self.queue.get_results())
+        original_n_results = len(self.queue.get_results()) if self.queue else 0
 
         # Execute partial experiment
         for combo in partial_argument_combos:
@@ -289,7 +289,7 @@ class OpenAIChatExperiment(Experiment):
             )
 
         # Verify new results are added
-        if original_n_results - len(self.queue.get_results()) == 0:
+        if len(self.queue.get_results()) - original_n_results == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
 
@@ -301,6 +301,57 @@ class OpenAIChatExperiment(Experiment):
         if arg_value not in self.all_args[arg_name]:
             self.all_args[arg_name].append(arg_value)
             self.prepare()
+
+    def run_one(
+        self,
+        model: str,
+        messages: Union[List[Dict[str, str]], PromptSelector],
+        temperature: Optional[float] = 1.0,
+        top_p: Optional[float] = 1.0,
+        n: Optional[int] = 1,
+        stream: Optional[bool] = False,
+        stop: Optional[List[str]] = None,
+        max_tokens: Optional[int] = float("inf"),
+        presence_penalty: Optional[float] = 0.0,
+        frequency_penalty: Optional[float] = 0.0,
+        logit_bias: Optional[Dict] = None,
+        functions: Optional[Dict] = None,
+        function_call: Optional[Dict[str, str]] = None,
+    ):
+        r"""
+        Execute one particular configuration of the experiment and add that to the result DataFrame.
+
+        Unlike `run_partial`, this doesn't change the argument combination of the experiment.
+        """
+        kwargs = {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature,
+            "top_p": top_p,
+            "n": n,
+            "stream": stream,
+            "stop": stop,
+            "max_tokens": max_tokens,
+            "presence_penalty": presence_penalty,
+            "frequency_penalty": frequency_penalty,
+            "logit_bias": logit_bias,
+            "functions": functions,
+            "function_call": function_call,
+        }
+        kwargs = {k: v for k, v in kwargs.items() if (v is not None) and (v != float("inf"))}
+
+        original_n_results = len(self.queue.get_results()) if self.queue else 0
+        self.queue.enqueue(
+            self.completion_fn,
+            kwargs,
+        )
+        if len(self.queue.get_results()) - original_n_results != 1:
+            print(original_n_results)
+            print(len(self.queue.get_results()))
+            logging.error("No results. Something went wrong.")
+            raise PromptExperimentException
+
+        self._construct_result_dfs(self.queue.get_input_args(), self.queue.get_results(), self.queue.get_latencies())
 
     # def _update_values_in_dataframe(self):
     #     r"""
