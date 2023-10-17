@@ -198,7 +198,7 @@ class OpenAIChatExperiment(Experiment):
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
         state = self._get_state(name)
-        url = "http://127.0.0.1:5000/experiment/save"
+        url = "http://127.0.0.1:5000/sdk/save"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
@@ -213,7 +213,7 @@ class OpenAIChatExperiment(Experiment):
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 
-        url = f"http://127.0.0.1:5000/experiment/load/{experiment_id}"
+        url = f"http://127.0.0.1:5000/sdk/get/experiment/{experiment_id}"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
@@ -222,6 +222,25 @@ class OpenAIChatExperiment(Experiment):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             state = pickle.loads(response.content)  # Note that state should not have `name` included
+            return cls._load_state(state, experiment_id)
+        else:
+            print(f"Error: {response.status_code}, {response.text}")
+
+    @classmethod
+    def load_revision(cls, revision_id: str):
+        if os.environ["HEGELAI_API_KEY"] is None:
+            raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
+
+        url = f"http://127.0.0.1:5000/sdk/get/revision/{revision_id}"
+        headers = {
+            "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
+            "Authorization": os.environ["HEGELAI_API_KEY"],
+        }
+        print("Sending HTTP GET request...")
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            # Note: This is different from `load_experiment`
+            experiment_id, state = pickle.loads(response.content)
             return cls._load_state(state, experiment_id)
         else:
             print(f"Error: {response.status_code}, {response.text}")
