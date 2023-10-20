@@ -20,6 +20,9 @@ from .error import PromptExperimentException
 import pandas as pd
 
 
+HEGEL_BACKEND_URL = """http://127.0.0.1:5000"""
+
+
 class OpenAIChatExperiment(Experiment):
     r"""
     This class defines an experiment for OpenAI's chat completion API.
@@ -198,7 +201,7 @@ class OpenAIChatExperiment(Experiment):
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
         state = self._get_state(name)
-        url = "http://127.0.0.1:5000/sdk/save"
+        url = f"{HEGEL_BACKEND_URL}/sdk/save"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
@@ -213,7 +216,7 @@ class OpenAIChatExperiment(Experiment):
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 
-        url = f"http://127.0.0.1:5000/sdk/get/experiment/{experiment_id}"
+        url = f"{HEGEL_BACKEND_URL}/sdk/get/experiment/{experiment_id}"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
@@ -231,7 +234,7 @@ class OpenAIChatExperiment(Experiment):
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 
-        url = f"http://127.0.0.1:5000/sdk/get/revision/{revision_id}"
+        url = f"{HEGEL_BACKEND_URL}/sdk/get/revision/{revision_id}"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
