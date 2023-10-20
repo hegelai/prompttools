@@ -163,6 +163,7 @@ class Experiment:
     def run(
         self,
         runs: int = 1,
+        clear_previous_results: bool = False,
     ) -> None:
         r"""
         Create tuples of input and output for every possible combination of arguments.
@@ -174,10 +175,13 @@ class Experiment:
 
         Args:
             runs (int): number of times to execute each possible combination of arguments, defaults to 1.
+            clear_previous_results (bool): clear previous results before running
         """
         if not self.argument_combos:
             logging.info("Preparing first...")
             self.prepare()
+        if clear_previous_results:
+            self.queue = RequestQueue()
         for combo in self.argument_combos:
             for _ in range(runs):
                 self.queue.enqueue(
