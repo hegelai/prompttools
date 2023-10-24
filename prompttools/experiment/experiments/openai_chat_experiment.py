@@ -294,6 +294,10 @@ class OpenAIChatExperiment(Experiment):
             raise RuntimeError("Not supported.")
         arg_name, arg_value = list(kwargs.items())[0]
 
+        orginal_arg_value = arg_value
+        if arg_name == "messages" and isinstance(arg_value, PromptSelector):
+            arg_value = arg_value.for_openai_chat()
+
         partial_all_args = copy.deepcopy(self.all_args)
         partial_all_args[arg_name] = [arg_value]
 
@@ -321,6 +325,13 @@ class OpenAIChatExperiment(Experiment):
 
         # If `arg_value` didn't exist before, add to `argument_combos`, which will be used in the next `.run()`
         if arg_value not in self.all_args[arg_name]:
+            if arg_name == "messages":
+                if isinstance(orginal_arg_value, PromptSelector):
+                    self.prompt_keys[
+                        str(orginal_arg_value.for_openai_chat()[-1]["content"])
+                    ] = orginal_arg_value.for_llama()
+                else:
+                    self.prompt_keys.append(arg_value)
             self.all_args[arg_name].append(arg_value)
             self.prepare()
 
