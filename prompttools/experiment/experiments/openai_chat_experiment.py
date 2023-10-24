@@ -188,6 +188,7 @@ class OpenAIChatExperiment(Experiment):
         state = (
             name,
             self._experiment_id,
+            "OpenAIChat",  # Experiment Type
             state_params,
             self.full_df,
             partial_col_names,
@@ -255,7 +256,13 @@ class OpenAIChatExperiment(Experiment):
             full_df,
             partial_col_names,
             score_col_names,
+            experiment_type_str,
         ) = state
+        if experiment_type_str != "OpenAIChat":
+            raise RuntimeError(
+                f"The Experiment Type you are trying to load is {experiment_type_str},"
+                "which does not match the current class."
+            )
 
         all_args, prompt_keys = state_params["all_args"], state_params["prompt_keys"]
         experiment = cls(all_args["model"], all_args["messages"])
