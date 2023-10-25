@@ -245,7 +245,11 @@ class Experiment:
         if extract_response_equal_full_result:
             result_df = response_df
         else:
-            result_df = pd.concat([response_df, pd.DataFrame(results)], axis=1)
+            # Handle the case where `input_arg_df` has the same column names as `result_df`
+            result_df = pd.DataFrame(results)
+            common_columns = set(input_arg_df.columns) & set(result_df.columns)
+            result_df = result_df.add_prefix("response_") if common_columns else result_df
+            result_df = pd.concat([response_df, result_df], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
         self.score_df = pd.DataFrame({"latency": latencies})
