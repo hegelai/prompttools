@@ -8,3 +8,4 @@ ipywidgets
 pylint
 sentry-sdk>=1.23.0
 scipy
+sentence_transformers
