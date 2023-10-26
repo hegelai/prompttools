@@ -5,7 +5,10 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import scipy.stats as stats
+try:
+    import scipy.stats as stats
+except ImportError:
+    stats = None
 import pandas
 
 
@@ -32,6 +35,11 @@ def ranking_correlation(
         >>> ]
         >>> experiment.evaluate("ranking_correlation", ranking_correlation, expected_ranking=EXPECTED_RANKING_LIST)
     """
+    if stats is None:
+        raise ModuleNotFoundError(
+            "Package `SciPy` is required to be installed to use this evaluation method."
+            "Please use `pip install scipy` to install the package"
+        )
     actual_ranking = row[ranking_column_name]
     if len(expected_ranking) == 1 and len(actual_ranking) == 1:
         return 1.0 if expected_ranking == actual_ranking else -1.0
