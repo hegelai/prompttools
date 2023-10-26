@@ -9,8 +9,8 @@ import openai
 import jinja2
 from prompttools import prompttest
 from prompttools.prompttest.threshold_type import ThresholdType
-from prompttools.utils import similarity
 from prompttools.utils import validate_json
+from prompttools.utils import validate_python
 from prompttools.mock.mock import mock_openai_completion_fn
 
 if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
@@ -40,7 +40,6 @@ def create_prompt():
     prompts=[create_json_prompt()],
 )
 def json_completion_fn(prompt: str):
-    response = None
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
@@ -49,15 +48,14 @@ def json_completion_fn(prompt: str):
 
 
 @prompttest.prompttest(
-    metric_name="similar_to_expected",
-    eval_fn=similarity.evaluate,
+    metric_name="is_valid_python",
+    eval_fn=validate_python.evaluate,
     prompts=[create_prompt()],
     expected=["George Washington"],
     threshold=1.0,
     threshold_type=ThresholdType.MAXIMUM,
 )
 def completion_fn(prompt: str):
-    response = None
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
