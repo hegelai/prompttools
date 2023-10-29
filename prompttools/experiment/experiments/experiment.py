@@ -48,11 +48,10 @@ class Experiment:
     def __init__(self):
         self.queue = RequestQueue()
         self.argument_combos: list[dict] = []
-        self.full_df = None
-        self.partial_df = None
-        self.score_df = None
+        self.full_df, self.partial_df, self.score_df = None, None, None
         self.image_experiment = False
         self._experiment_id = None
+        self._revision_id = None
         try:
             if "SENTRY_OPT_OUT" not in os.environ:
                 sentry_sdk.capture_message(f"Initializing {self.__class__.__name__}", "info")
@@ -183,6 +182,8 @@ class Experiment:
             self.prepare()
         if clear_previous_results:
             self.queue = RequestQueue()
+            self.full_df, self.partial_df, self.score_df = None, None, None
+        original_n_results = len(self.queue.get_results()) if self.queue else 0
         for combo in self.argument_combos:
             for _ in range(runs):
                 self.queue.enqueue(
@@ -190,12 +191,14 @@ class Experiment:
                     # We need to filter out defaults that are invalid JSON from the request
                     {k: v for k, v in combo.items() if (v is not None) and (v != float("inf"))},
                 )
-        results = self.queue.get_results()
-        input_args = self.queue.get_input_args()
-        if len(results) == 0:
+        number_of_new_results = len(self.queue.get_results()) - original_n_results
+        if number_of_new_results == 0:
             logging.error("No results. Something went wrong.")
             raise PromptExperimentException
-        self._construct_result_dfs(input_args, results, self.queue.get_latencies())
+        results = self.queue.get_results()[-number_of_new_results:]
+        input_args = self.queue.get_input_args()[-number_of_new_results:]
+        latencies = self.queue.get_latencies()[-number_of_new_results:]
+        self._construct_result_dfs(input_args, results, latencies)
 
     def _construct_result_dfs(
         self,
@@ -253,12 +256,16 @@ class Experiment:
             result_df = pd.concat([response_df, result_df], axis=1)
 
         # `score_df` contains computed metrics (e.g. latency, evaluation metrics)
-        self.score_df = pd.DataFrame({"latency": latencies})
+        new_score_df = pd.DataFrame({"latency": latencies})
+        self.score_df = new_score_df if self.score_df is None else pd.concat([self.score_df, new_score_df])
 
         # `partial_df` contains some input arguments, extracted responses, and score
-        self.partial_df = pd.concat([dynamic_input_arg_df, response_df, self.score_df], axis=1)
+        new_partial_df = pd.concat([dynamic_input_arg_df, response_df, new_score_df], axis=1)
+        self.partial_df = new_partial_df if self.partial_df is None else pd.concat([self.partial_df, new_partial_df])
+
         # `full_df` contains all input arguments, responses, and score
-        self.full_df = pd.concat([input_arg_df, result_df, self.score_df], axis=1)
+        new_full_df = pd.concat([input_arg_df, result_df, new_score_df], axis=1)
+        self.full_df = new_full_df if self.full_df is None else pd.concat([self.full_df, new_full_df])
 
     def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
         r"""
@@ -273,6 +280,7 @@ class Experiment:
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
         if self.full_df is None:
+            print("Running first...")
             logging.info("Running first...")
             self.run()
         if get_all_cols:

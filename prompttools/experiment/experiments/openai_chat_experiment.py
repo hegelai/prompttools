@@ -18,9 +18,7 @@ from prompttools.mock.mock import mock_openai_chat_completion_fn, mock_openai_ch
 from .experiment import Experiment
 from .error import PromptExperimentException
 import pandas as pd
-
-
-HEGEL_BACKEND_URL = """http://127.0.0.1:5000"""
+from prompttools.common import HEGEL_BACKEND_URL
 
 
 class OpenAIChatExperiment(Experiment):
@@ -93,6 +91,8 @@ class OpenAIChatExperiment(Experiment):
             ``{"AZURE_OPENAI_ENDPOINT": "https://YOUR_RESOURCE_NAME.openai.azure.com/",
                "API_TYPE": "azure", "API_VERSION": "2023-05-15"``
     """
+
+    _experiment_type = "RawExperiment"
 
     def __init__(
         self,
@@ -178,38 +178,38 @@ class OpenAIChatExperiment(Experiment):
     def _get_prompts(self):
         return [self.prompt_keys[str(combo["messages"][-1]["content"])] for combo in self.argument_combos]
 
-    def _get_state(self, name: str):
+    def _get_state(self):
+        partial_col_names = self.partial_df.columns.tolist()
+        score_col_names = self.score_df.columns.tolist()
         state_params = {
             "prompt_keys": self.prompt_keys,
             "all_args": self.all_args,
+            "partial_col_names": partial_col_names,
+            "score_col_names": score_col_names,
         }
-        partial_col_names = self.partial_df.columns.tolist()
-        score_col_names = self.score_df.columns.tolist()
         state = (
-            name,
-            self._experiment_id,
-            "OpenAIChat",  # Experiment Type
             state_params,
             self.full_df,
-            partial_col_names,
-            score_col_names,
         )
-        print("Creating serialized state of experiment...")
-        serialized_state = pickle.dumps(state)
-        return serialized_state
+        print("Creating state of experiment...")
+        return state
 
     def save_experiment(self, name: str):
+        if self.full_df is None:
+            raise RuntimeError("Cannot save empty experiment. Please run it first.")
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
-        state = self._get_state(name)
+        state = self._get_state()
         url = f"{HEGEL_BACKEND_URL}/sdk/save"
         headers = {
             "Content-Type": "application/octet-stream",  # Use a binary content type for pickled data
             "Authorization": os.environ["HEGELAI_API_KEY"],
         }
         print("Sending HTTP POST request...")
-        response = requests.post(url, data=state, headers=headers)
+        data = pickle.dumps((name, self._experiment_id, self._experiment_type, state))
+        response = requests.post(url, data=data, headers=headers)
         self._experiment_id = response.json().get("experiment_id")
+        self._revision_id = response.json().get("revision_id")
         return response
 
     @classmethod
@@ -224,9 +224,11 @@ class OpenAIChatExperiment(Experiment):
         }
         print("Sending HTTP GET request...")
         response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            state = pickle.loads(response.content)  # Note that state should not have `name` included
-            return cls._load_state(state, experiment_id)
+        if response.status_code == 200:  # Note that state should not have `name` included
+            new_experiment_id, revision_id, experiment_type_str, state = pickle.loads(response.content)
+            if new_experiment_id != experiment_id:
+                raise RuntimeError("Experiment ID mismatch between request and response.")
+            return cls._load_state(state, experiment_id, revision_id, experiment_type_str)
         else:
             print(f"Error: {response.status_code}, {response.text}")
 
@@ -243,22 +245,20 @@ class OpenAIChatExperiment(Experiment):
         print("Sending HTTP GET request...")
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            # Note: This is different from `load_experiment`
-            experiment_id, state = pickle.loads(response.content)
-            return cls._load_state(state, experiment_id)
+            experiment_id, new_revision_id, experiment_type_str, state = pickle.loads(response.content)
+            if new_revision_id != revision_id:
+                raise RuntimeError("Revision ID mismatch between request and response.")
+            return cls._load_state(state, experiment_id, revision_id, experiment_type_str)
         else:
             print(f"Error: {response.status_code}, {response.text}")
 
     @classmethod
-    def _load_state(cls, state, experiment_id: str):
+    def _load_state(cls, state, experiment_id: str, revision_id: str, experiment_type_str: str):
         (
             state_params,
             full_df,
-            partial_col_names,
-            score_col_names,
-            experiment_type_str,
         ) = state
-        if experiment_type_str != "OpenAIChat":
+        if experiment_type_str != cls._experiment_type:
             raise RuntimeError(
                 f"The Experiment Type you are trying to load is {experiment_type_str},"
                 "which does not match the current class."
@@ -269,9 +269,10 @@ class OpenAIChatExperiment(Experiment):
         experiment.prompt_keys = prompt_keys
         experiment.all_args = all_args
         experiment.full_df = pd.DataFrame(full_df)
-        experiment.partial_df = experiment.full_df[partial_col_names].copy()
-        experiment.score_df = experiment.full_df[score_col_names].copy()
+        experiment.partial_df = experiment.full_df[state_params["partial_col_names"]].copy()
+        experiment.score_df = experiment.full_df[state_params["score_col_names"]].copy()
         experiment._experiment_id = experiment_id
+        experiment._revision_id = revision_id
         print("Loaded experiment.")
         return experiment
 
