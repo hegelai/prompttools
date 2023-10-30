@@ -27,10 +27,16 @@ In just a few lines of codes, you can test your prompts and parameters across di
 OpenAI, Anthropic, or LLaMA models). You can even evaluate the retrieval accuracy of vector databases.
 
 ```python
-prompts = ["Tell me a joke.", "Is 17077 a prime number?"]
+from prompttools.experiment import OpenAIChatExperiment
+
+messages = [
+    [{"role": "user", "content": "Tell me a joke."},],
+    [{"role": "user", "content": "Is 17077 a prime number?"},],
+]
+
 models = ["gpt-3.5-turbo", "gpt-4"]
 temperatures = [0.0]
-openai_experiment = OpenAIChatExperiment(models, prompts, temperature=temperatures)
+openai_experiment = OpenAIChatExperiment(models, messages, temperature=temperatures)
 openai_experiment.run()
 openai_experiment.visualize()
 ```

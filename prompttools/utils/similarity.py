@@ -105,12 +105,12 @@ def structural_similarity(
     """
     if cv2 is None:
         raise ModuleNotFoundError(
-            "Package `cv2` is required to be installed to use this experiment."
+            "Package `cv2` is required to be installed to use this evaluation method."
             "Please use `pip install opencv-python` to install the package"
         )
     if skimage_structural_similarity is None:
         raise ModuleNotFoundError(
-            "Package `skimage` is required to be installed to use this experiment."
+            "Package `skimage` is required to be installed to use this evaluation method."
             "Please use `pip install scikit-image` to install the package"
         )
     if len(expected) == 1:

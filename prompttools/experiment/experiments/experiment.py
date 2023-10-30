@@ -280,7 +280,6 @@ class Experiment:
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
         if self.full_df is None:
-            print("Running first...")
             logging.info("Running first...")
             self.run()
         if get_all_cols:

@@ -96,8 +96,8 @@ class OpenAIChatExperiment(Experiment):
 
     def __init__(
         self,
-        model: List[str],
-        messages: Union[List[List[Dict[str, str]]], List[PromptSelector]],
+        model: List[str] = ["gpt-3.5-turbo"],
+        messages: Union[List[List[Dict[str, str]]], List[PromptSelector]] = [],
         temperature: Optional[List[float]] = [1.0],
         top_p: Optional[List[float]] = [1.0],
         n: Optional[List[int]] = [1],
@@ -121,7 +121,7 @@ class OpenAIChatExperiment(Experiment):
         # If we are using a prompt selector, we need to render
         # messages, as well as create prompt_keys to map the messages
         # to corresponding prompts in other models.
-        if isinstance(messages[0], PromptSelector):
+        if len(messages) > 0 and isinstance(messages[0], PromptSelector):
             self.prompt_keys = {
                 str(selector.for_openai_chat()[-1]["content"]): selector.for_llama() for selector in messages
             }
