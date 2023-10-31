@@ -1,3 +1,10 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+
 # Sentry collects crash reports and performance numbers
 # It is possible to turn off data collection using an environment variable named "SENTRY_OPT_OUT"
 import sentry_sdk
