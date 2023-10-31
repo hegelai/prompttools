@@ -641,3 +641,10 @@ class Experiment:
 
     def _get_prompts(self):
         pass
+
+    def _get_state(self):
+        raise NotImplementedError("Should be implemented by specific harness class.")
+
+    @classmethod
+    def _load_state(cls, state, experiment_id: str, revision_id: str, experiment_type_str: str):
+        raise NotImplementedError("Should be implemented by specific harness class.")
