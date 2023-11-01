@@ -29,7 +29,7 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
         experiment (Type[Experiment]): The experiment constructor that you would like to execute within the harness
             (e.g. ``prompttools.experiment.OpenAICompletionExperiment``)
         model_name (str): The name of the model.
-        prompt_templates (List[str]): A list of prompt ``jinja``-styled templates.
+        message_templates (List[str]): A list of prompt ``jinja``-styled templates.
         user_inputs (List[Dict[str, str]]): A list of dictionaries representing user inputs.
         model_arguments (Optional[Dict[str, object]], optional): Additional arguments for the model.
             Defaults to ``None``. Note that the values are not lists.

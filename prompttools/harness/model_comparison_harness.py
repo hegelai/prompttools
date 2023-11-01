@@ -14,6 +14,7 @@ from .utility import is_interactive
 from IPython import display
 from tabulate import tabulate
 import logging
+from copy import deepcopy
 
 
 class ModelComparisonHarness(ExperimentationHarness):
@@ -41,7 +42,7 @@ class ModelComparisonHarness(ExperimentationHarness):
     ):
         self.model_names = model_names
         self.system_prompts = system_prompts
-        self.model_arguments = model_arguments
+        self.model_arguments = deepcopy(model_arguments)
         self.user_messages = user_messages
         self.runs = runs
         self.experiments = []
