@@ -57,12 +57,14 @@ def init_sentry():
         sentry_sdk.init(
             dsn=SENTRY_DSN,
             release=__version__,
-            traces_sample_rate=1,
+            traces_sample_rate=1.0,
             include_local_variables=False,
             send_default_pii=False,
             attach_stacktrace=False,
             before_send=filter_info,
             include_source_context=False,
+            # the rate at which transaction and performance data is sampled for profiling purposes
+            profiles_sample_rate=0.0,
         )
         try:
             filename = os.path.join(os.environ.get("HOME", "/tmp"), ".token")
