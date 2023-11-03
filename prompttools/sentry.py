@@ -1,3 +1,10 @@
+# Copyright (c) Hegel AI, Inc.
+# All rights reserved.
+#
+# This source code's license can be found in the
+# LICENSE file in the root directory of this source tree.
+
+
 # Sentry collects crash reports and performance numbers
 # It is possible to turn off data collection using an environment variable named "SENTRY_OPT_OUT"
 import sentry_sdk
@@ -50,12 +57,14 @@ def init_sentry():
         sentry_sdk.init(
             dsn=SENTRY_DSN,
             release=__version__,
-            traces_sample_rate=1,
+            traces_sample_rate=1.0,
             include_local_variables=False,
             send_default_pii=False,
             attach_stacktrace=False,
             before_send=filter_info,
             include_source_context=False,
+            # the rate at which transaction and performance data is sampled for profiling purposes
+            profiles_sample_rate=0.0,
         )
         try:
             filename = os.path.join(os.environ.get("HOME", "/tmp"), ".token")

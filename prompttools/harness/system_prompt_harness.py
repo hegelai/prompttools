@@ -19,9 +19,10 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         system_prompts (List[str]): A list of system prompts for the model
         human_messages (List[str]): A list of human (user) messages to pass into the model
         model_arguments (Optional[Dict[str, object]], optional): Additional arguments for the model.
-            Defaults to ``None``.
+            Defaults to ``None``. Note that the values are not lists.
     """
 
+    _experiment_type = "Instruction"
     PIVOT_COLUMNS = ["system_prompt", "user_input"]
 
     def __init__(
@@ -32,7 +33,7 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         human_messages: List[str],
         model_arguments: Optional[Dict[str, object]] = None,
     ):
-        self.experiment_cls_constructor = (experiment,)
+        self.experiment_cls_constructor = experiment
         self.model_name = model_name
         self.system_prompts = system_prompts
         self.human_messages = human_messages
@@ -72,3 +73,47 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         if not self.experiment:
             self.prepare()
         super().run()
+
+    def _get_state(self):
+        state_params = {
+            "experiment_cls_constructor": self.experiment_cls_constructor,
+            "model_name": self.model_name,
+            "system_prompts": self.system_prompts,
+            "human_messages": self.human_messages,
+            "model_arguments": self.model_arguments,
+            "child_experiment_state": self.experiment._get_state() if self.experiment else None,
+        }
+        state = (
+            state_params,
+            self.experiment.full_df,
+        )
+        print("Creating state of experiment...")
+        return state
+
+    @classmethod
+    def _load_state(cls, state, experiment_id: str, revision_id: str, experiment_type_str: str):
+        (
+            state_params,
+            full_df,
+        ) = state
+        if experiment_type_str != cls._experiment_type:
+            raise RuntimeError(
+                f"The Experiment Type you are trying to load is {experiment_type_str},"
+                "which does not match the current class."
+            )
+
+        experiment_cls_constructor = state_params["experiment_cls_constructor"]
+        model_name = state_params["model_name"]
+        system_prompts = state_params["system_prompts"]
+        human_messages = state_params["human_messages"]
+        model_arguments = state_params["model_arguments"]
+        child_experiment_state = state_params["child_experiment_state"]
+
+        harness = cls(experiment_cls_constructor, model_name, system_prompts, human_messages, model_arguments)
+        harness.experiment = experiment_cls_constructor._load_state(
+            child_experiment_state, None, None, experiment_cls_constructor._experiment_type
+        )
+        harness._experiment_id = experiment_id
+        harness._revision_id = revision_id
+        print("Loaded harness.")
+        return harness
