@@ -15,7 +15,9 @@ from copy import deepcopy
 
 def _render_messages_openai_chat(message_template: list[dict], user_input: dict, environment):
     rendered_message = deepcopy(message_template)
+    sys_msg_template = environment.from_string(rendered_message[0]["content"])
     user_msg_template = environment.from_string(rendered_message[-1]["content"])
+    rendered_message[0]["content"] = sys_msg_template.render(**user_input)
     rendered_message[-1]["content"] = user_msg_template.render(**user_input)
     return rendered_message
 
@@ -29,7 +31,8 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
         experiment (Type[Experiment]): The experiment constructor that you would like to execute within the harness
             (e.g. ``prompttools.experiment.OpenAICompletionExperiment``)
         model_name (str): The name of the model.
-        message_templates (List[str]): A list of prompt ``jinja``-styled templates.
+        message_templates (List[str]): A list of prompt ``jinja``-styled templates. Each template should have two
+            messages inside (first system prompt and second a user message).
         user_inputs (List[Dict[str, str]]): A list of dictionaries representing user inputs.
         model_arguments (Optional[Dict[str, object]], optional): Additional arguments for the model.
             Defaults to ``None``. Note that the values are not lists.
