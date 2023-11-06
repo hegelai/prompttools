@@ -5,11 +5,9 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import os
-import openai
 import jinja2
 import pandas
-from .error import PromptToolsUtilityError
+from .model_evaluators.EvaluatorUtils import get_evaluator_for_model
 
 EVALUATION_SYSTEM_PROMPT = """
 You are a grader evaluating responses to math questions.
@@ -28,14 +26,11 @@ ANSWER:
 """
 
 
-def _get_messages(prompt: str, expected: str, response: str):
+def _get_user_prompt(prompt: str, expected: str, response: str):
     environment = jinja2.Environment()
     template = environment.from_string(EVALUATION_USER_TEMPLATE)
-    user_message = template.render({"prompt": prompt, "expected": expected, "actual": response})
-    return [
-        {"role": "system", "content": EVALUATION_SYSTEM_PROMPT},
-        {"role": "user", "content": user_message},
-    ]
+    user_prompt = template.render({"prompt": prompt, "expected": expected, "actual": response})
+    return user_prompt
 
 
 def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> float:
@@ -49,9 +44,9 @@ def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> 
         model (str): The OpenAI chat model to use for generating an expected response.
             Defaults to GPT-4.
     """
-    if not os.environ["OPENAI_API_KEY"]:
-        raise PromptToolsUtilityError("Missing API key for evaluation.")
-    evaluation = openai.ChatCompletion.create(model=model, messages=_get_messages(prompt, expected, response))
+    evaluation = get_evaluator_for_model(model).evaluate(
+        model, EVALUATION_SYSTEM_PROMPT, _get_user_prompt(prompt, expected, response)
+    )
     return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
 
 

@@ -5,12 +5,11 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import os
 from typing import Dict
-import openai
 import pandas.core.series
 import jinja2
-from .error import PromptToolsUtilityError
+
+from .model_evaluators.EvaluatorUtils import get_evaluator_for_model
 
 EVALUATION_SYSTEM_PROMPT = """
 Determine whether or not the response is following directions.
@@ -21,18 +20,14 @@ or "WRONG" if the model is not following directions.
 EVALUATION_USER_TEMPLATE = """
 PROMPT: {{prompt}}
 RESPONSE: {{response}}
-ANSWER:
 """
 
 
-def _get_messages(prompt: str, response: str):
+def _get_user_prompt(prompt: str, response: str):
     environment = jinja2.Environment()
     template = environment.from_string(EVALUATION_USER_TEMPLATE)
-    user_message = template.render({"prompt": prompt, "response": response})
-    return [
-        {"role": "system", "content": EVALUATION_SYSTEM_PROMPT},
-        {"role": "user", "content": user_message},
-    ]
+    user_prompt = template.render({"prompt": prompt, "response": response})
+    return user_prompt
 
 
 def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
@@ -46,10 +41,8 @@ def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
         model (str): The OpenAI chat model to use for generating an expected response.
             Defaults to GPT-4.
     """
-    if not os.environ["OPENAI_API_KEY"]:
-        raise PromptToolsUtilityError
-    evaluation = openai.ChatCompletion.create(model=model, messages=_get_messages(prompt, response))
-    return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
+    response = get_evaluator_for_model(model).evaluate(model, prompt, )
+    return 1.0 if "RIGHT" in response else 0.0
 
 
 def evaluate(prompt: str, response: str, _metadata: Dict) -> float:
