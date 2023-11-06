@@ -194,7 +194,13 @@ class OpenAIChatExperiment(Experiment):
         print("Creating state of experiment...")
         return state
 
-    def save_experiment(self, name: str):
+    def save_experiment(self, name: Optional[str] = None):
+        r"""
+        name (str, optional): Name of the experiment. This is optional if you have previously loaded an experiment
+            into this object.
+        """
+        if name is None and self._experiment_id is None:
+            raise RuntimeError("Please provide a name for your experiment.")
         if self.full_df is None:
             raise RuntimeError("Cannot save empty experiment. Please run it first.")
         if os.environ["HEGELAI_API_KEY"] is None:
@@ -214,6 +220,9 @@ class OpenAIChatExperiment(Experiment):
 
     @classmethod
     def load_experiment(cls, experiment_id: str):
+        r"""
+        experiment_id (str): experiment ID of the experiment that you wish to load.
+        """
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 
@@ -234,6 +243,9 @@ class OpenAIChatExperiment(Experiment):
 
     @classmethod
     def load_revision(cls, revision_id: str):
+        r"""
+        revision_id (str): revision ID of the experiment that you wish to load.
+        """
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 
@@ -269,8 +281,12 @@ class OpenAIChatExperiment(Experiment):
         experiment.prompt_keys = prompt_keys
         experiment.all_args = all_args
         experiment.full_df = pd.DataFrame(full_df)
-        experiment.partial_df = experiment.full_df[state_params["partial_col_names"]].copy()
-        experiment.score_df = experiment.full_df[state_params["score_col_names"]].copy()
+        experiment.partial_df = (
+            experiment.full_df[state_params["partial_col_names"]].copy() if experiment.full_df is not None else None
+        )
+        experiment.score_df = (
+            experiment.full_df[state_params["score_col_names"]].copy() if experiment.full_df is not None else None
+        )
         experiment._experiment_id = experiment_id
         experiment._revision_id = revision_id
         print("Loaded experiment.")

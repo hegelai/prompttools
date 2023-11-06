@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable
+from typing import Callable, Optional
 from prompttools.experiment import Experiment
 
 
@@ -89,7 +89,13 @@ class ExperimentationHarness:
     def _load_state(cls, state, experiment_id: str, revision_id: str, experiment_type_str: str):
         raise NotImplementedError("Should be implemented by specific harness class.")
 
-    def save_experiment(self, name: str):
+    def save_experiment(self, name: Optional[str] = None):
+        r"""
+        name (str, optional): Name of the experiment. This is optional if you have previously loaded an experiment
+            into this object.
+        """
+        if name is None and self._experiment_id is None:
+            raise RuntimeError("Please provide a name for your experiment.")
         if self.full_df is None:
             raise RuntimeError("Cannot save empty experiment. Please run it first.")
         if os.environ["HEGELAI_API_KEY"] is None:
@@ -109,6 +115,9 @@ class ExperimentationHarness:
 
     @classmethod
     def load_experiment(cls, experiment_id: str):
+        r"""
+        experiment_id (str): experiment ID of the experiment that you wish to load.
+        """
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 
@@ -129,6 +138,9 @@ class ExperimentationHarness:
 
     @classmethod
     def load_revision(cls, revision_id: str):
+        r"""
+        revision_id (str): revision ID of the experiment that you wish to load.
+        """
         if os.environ["HEGELAI_API_KEY"] is None:
             raise PermissionError("Please set HEGELAI_API_KEY (e.g. os.environ['HEGELAI_API_KEY']).")
 

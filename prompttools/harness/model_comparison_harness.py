@@ -172,6 +172,11 @@ class ModelComparisonHarness(ExperimentationHarness):
         model_arguments = state_params["model_arguments"]
         child_experiment_states = state_params["child_experiment_states"]
 
+        for i, state in enumerate(child_experiment_states):
+            print(f"{i = }")
+            print(f"{state[0] = }")
+            print(f"{state[1] = }")
+
         harness = cls(model_names, system_prompts, user_messages, model_arguments)
         harness.experiments = [
             OpenAIChatExperiment._load_state(state, None, None, OpenAIChatExperiment._experiment_type)
