@@ -15,66 +15,102 @@ except ImportError:
     cv2 = None
 
 
+class DotDict(dict):
+    r"""
+    Have dot access to dictionary attributes
+    """
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+    def __getattr__(self, key):
+        try:
+            val = self.get(key)
+            if val is None:  # Doesn't support `None` as value
+                raise KeyError
+            else:
+                return val
+        except KeyError:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{key}'")
+
+
 def mock_openai_chat_completion_fn(**kwargs):
-    return {
-        "choices": [
-            {
-                "finish_reason": "stop",
-                "index": 0,
-                "message": {
-                    "content": "George Washington",
-                    "role": "assistant",
-                },
-            }
-        ],
-        "created": 1687839008,
-        "id": "",
-        "model": "gpt-3.5-turbo-0301",
-        "object": "chat.completion",
-        "usage": {"completion_tokens": 18, "prompt_tokens": 57, "total_tokens": 75},
-    }
+    return DotDict(
+        {
+            "choices": [
+                DotDict(
+                    {
+                        "finish_reason": "stop",
+                        "index": 0,
+                        "message": DotDict(
+                            {
+                                "content": "George Washington",
+                                "role": "assistant",
+                            }
+                        ),
+                    }
+                )
+            ],
+            "created": 1687839008,
+            "id": "",
+            "model": "gpt-3.5-turbo-0301",
+            "object": "chat.completion",
+            "usage": DotDict({"completion_tokens": 18, "prompt_tokens": 57, "total_tokens": 75}),
+        }
+    )
 
 
 def mock_openai_chat_function_completion_fn(**kwargs):
-    return {
-        "choices": [
-            {
-                "finish_reason": "stop",
-                "index": 0,
-                "message": {
-                    "role": "assistant",
-                    "content": None,
-                    "function_call": {
-                        "name": "get_current_weather",
-                        "arguments": '{\n  "location": "Toronto, Canada",\n  "format": "celsius"\n}',
-                    },
-                },
-            }
-        ],
-        "created": 1687839008,
-        "id": "",
-        "model": "gpt-3.5-turbo-0301",
-        "object": "chat.completion",
-        "usage": {"completion_tokens": 18, "prompt_tokens": 57, "total_tokens": 75},
-    }
+    return DotDict(
+        {
+            "choices": [
+                DotDict(
+                    {
+                        "finish_reason": "stop",
+                        "index": 0,
+                        "message": DotDict(
+                            {
+                                "role": "assistant",
+                                "content": None,
+                                "function_call": DotDict(
+                                    {
+                                        "name": "get_current_weather",
+                                        "arguments": '{\n  "location": "Toronto, Canada",\n  "format": "celsius"\n}',
+                                    }
+                                ),
+                            }
+                        ),
+                    }
+                )
+            ],
+            "created": 1687839008,
+            "id": "",
+            "model": "gpt-3.5-turbo-0301",
+            "object": "chat.completion",
+            "usage": DotDict({"completion_tokens": 18, "prompt_tokens": 57, "total_tokens": 75}),
+        }
+    )
 
 
 def mock_openai_completion_fn(**kwargs):
-    return {
-        "id": "",
-        "object": "text_completion",
-        "created": 1589478378,
-        "model": "text-davinci-003",
-        "choices": [
-            {
-                "text": json.dumps({"text": "George Washington"}),
-                "index": 0,
-                "logprobs": None,
-                "finish_reason": "length",
-            }
-        ],
-        "usage": {"prompt_tokens": 5, "completion_tokens": 7, "total_tokens": 12},
-    }
+    return DotDict(
+        {
+            "id": "",
+            "object": "text_completion",
+            "created": 1589478378,
+            "model": "text-davinci-003",
+            "choices": [
+                DotDict(
+                    {
+                        "text": json.dumps({"text": "George Washington"}),
+                        "index": 0,
+                        "logprobs": None,
+                        "finish_reason": "length",
+                    }
+                )
+            ],
+            "usage": DotDict({"prompt_tokens": 5, "completion_tokens": 7, "total_tokens": 12}),
+        }
+    )
 
 
 def mock_hf_completion_fn(**kwargs):
