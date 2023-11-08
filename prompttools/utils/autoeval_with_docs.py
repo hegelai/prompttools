@@ -6,7 +6,7 @@
 
 
 import os
-import openai
+from openai import OpenAI
 import pandas.core.series
 import jinja2
 from .error import PromptToolsUtilityError
@@ -25,6 +25,9 @@ DOCUMENTS:
 RESPONSE: {{response}}
 ANSWER:
 """
+
+
+client = OpenAI()
 
 
 def _get_messages(documents: list[str], response: str):
@@ -49,8 +52,8 @@ def compute(documents: list[str], response: str, model: str = "gpt-4") -> float:
     """
     if not os.environ["OPENAI_API_KEY"]:
         raise PromptToolsUtilityError
-    evaluation = openai.ChatCompletion.create(model=model, messages=_get_messages(documents, response))
-    score_text = evaluation["choices"][0]["message"]["content"]
+    evaluation = client.chat.completions.create(model=model, messages=_get_messages(documents, response))
+    score_text = evaluation.choices[0].message.content
     return int(score_text)
 
 

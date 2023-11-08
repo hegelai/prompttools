@@ -6,7 +6,7 @@
 
 
 import os
-import openai
+from openai import OpenAI
 import jinja2
 import pandas
 from .error import PromptToolsUtilityError
@@ -26,6 +26,8 @@ EXPECTED: {{expected}}
 ACTUAL: {{actual}}
 ANSWER:
 """
+
+client = OpenAI()
 
 
 def _get_messages(prompt: str, expected: str, response: str):
@@ -51,8 +53,8 @@ def compute(prompt: str, expected: str, response: str, model: str = "gpt-4") -> 
     """
     if not os.environ["OPENAI_API_KEY"]:
         raise PromptToolsUtilityError("Missing API key for evaluation.")
-    evaluation = openai.ChatCompletion.create(model=model, messages=_get_messages(prompt, expected, response))
-    return 1.0 if "RIGHT" in evaluation["choices"][0]["message"]["content"] else 0.0
+    evaluation = client.chat.completions.create(model=model, messages=_get_messages(prompt, expected, response))
+    return 1.0 if "RIGHT" in evaluation.choices[0].message.content else 0.0
 
 
 def evaluate(prompt: str, response: str, metadata: dict, expected: str) -> float:
