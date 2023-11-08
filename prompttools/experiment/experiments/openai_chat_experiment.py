@@ -118,7 +118,7 @@ class OpenAIChatExperiment(Experiment):
         function_call: Optional[List[Dict[str, str]]] = [None],
         azure_openai_service_configs: Optional[dict] = None,
     ):
-        self.completion_fn = openai.ChatCompletion.create
+        self.completion_fn = openai.chat.completions.create
         if os.getenv("DEBUG", default=False):
             if functions[0] is not None:
                 self.completion_fn = mock_openai_chat_function_completion_fn
@@ -169,12 +169,12 @@ class OpenAIChatExperiment(Experiment):
         super().__init__()
 
     @staticmethod
-    def _extract_responses(output: Dict[str, object]) -> str:
-        message = output["choices"][0]["message"]
-        if "function_call" in message:
-            return json.dumps(json.loads(message["function_call"]["arguments"]))
+    def _extract_responses(output: openai.types.Completion) -> str:
+        message = output.choices[0].message
+        if hasattr(message, "function_call"):
+            return json.dumps(json.loads(message.function_call.arguments))
         else:
-            return message["content"]
+            return message.content
 
     @staticmethod
     def _is_chat():

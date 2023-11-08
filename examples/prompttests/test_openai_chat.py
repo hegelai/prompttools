@@ -5,13 +5,17 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-import openai
+from openai import OpenAI
 import jinja2
 from prompttools import prompttest
 from prompttools.prompttest.threshold_type import ThresholdType
 from prompttools.utils import similarity
 from prompttools.utils import validate_json
 from prompttools.mock.mock import mock_openai_completion_fn
+
+
+client = OpenAI()
+
 
 if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
     print("Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1")
@@ -44,8 +48,8 @@ def json_completion_fn(prompt: str):
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
-        response = openai.Completion.create(prompt)
-    return response["choices"][0]["text"]
+        response = client.completions.create(model="babbage-002", prompt=prompt)
+    return response.choices[0].text
 
 
 @prompttest.prompttest(
@@ -61,8 +65,8 @@ def completion_fn(prompt: str):
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
-        response = openai.Completion.create(prompt)
-    return response["choices"][0]["text"]
+        response = client.completions.create(prompt)
+    return response.choices[0].text
 
 
 if __name__ == "__main__":

@@ -32,11 +32,13 @@ def generate_retry_decorator(wait_lower_bound: int = 3, wait_upper_bound: int = 
         stop=stop_after_attempt(max_retry_attempts),
         reraise=True,
         retry=(  # Retry for these specific exceptions
-            retry_if_exception_type(openai.error.APIConnectionError)
-            | retry_if_exception_type(openai.error.APIError)
-            | retry_if_exception_type(openai.error.RateLimitError)
-            | retry_if_exception_type(openai.error.ServiceUnavailableError)
-            | retry_if_exception_type(openai.error.Timeout)
+            retry_if_exception_type(openai.APIConnectionError)
+            | retry_if_exception_type(openai.APIError)
+            | retry_if_exception_type(openai.RateLimitError)
+            | retry_if_exception_type(openai.APIStatusError)
+            | retry_if_exception_type(openai.APIConnectionError)
+            | retry_if_exception_type(openai.APIResponseValidationError)
+            | retry_if_exception_type(openai.APITimeoutError)
         ),
         before_sleep=before_sleep_log(logging.getLogger(__name__), logging.WARNING),
     )

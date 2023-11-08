@@ -108,7 +108,7 @@ class OpenAICompletionExperiment(Experiment):
         logit_bias: Optional[Dict] = [None],
         azure_openai_service_configs: Optional[dict] = None,
     ):
-        self.completion_fn = openai.Completion.create
+        self.completion_fn = openai.completions.create
         if os.getenv("DEBUG", default=False):
             self.completion_fn = mock_openai_completion_fn
 
@@ -161,8 +161,8 @@ class OpenAICompletionExperiment(Experiment):
         super().__init__()
 
     @staticmethod
-    def _extract_responses(output: Dict[str, object]) -> list[str]:
-        return [choice["text"] for choice in output["choices"]][0]
+    def _extract_responses(output: openai.types.Completion) -> list[str]:
+        return [choice.text for choice in output.choices][0]
 
     def _get_model_names(self):
         return [combo["model"] for combo in self.argument_combos]
