@@ -23,7 +23,6 @@ PROMPT: {{prompt}}
 RESPONSE: {{response}}
 ANSWER:
 """
-client = OpenAI()
 
 
 def _get_messages(prompt: str, response: str):
@@ -49,6 +48,7 @@ def compute(prompt: str, response: str, model: str = "gpt-4") -> float:
     """
     if not os.environ["OPENAI_API_KEY"]:
         raise PromptToolsUtilityError
+    client = OpenAI()
     evaluation = client.chat.completions.create(model=model, messages=_get_messages(prompt, response))
     return 1.0 if "RIGHT" in evaluation.choices[0].message.content else 0.0
 

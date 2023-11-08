@@ -14,9 +14,6 @@ from prompttools.utils import validate_json
 from prompttools.mock.mock import mock_openai_completion_fn
 
 
-client = OpenAI()
-
-
 if not (("OPENAI_API_KEY" in os.environ) or ("DEBUG" in os.environ)):
     print("Error: This example requires you to set either your OPENAI_API_KEY or DEBUG=1")
     exit(1)
@@ -48,6 +45,7 @@ def json_completion_fn(prompt: str):
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
+        client = OpenAI()
         response = client.completions.create(model="babbage-002", prompt=prompt)
     return response.choices[0].text
 
@@ -65,6 +63,7 @@ def completion_fn(prompt: str):
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
+        client = OpenAI()
         response = client.completions.create(prompt)
     return response.choices[0].text
 
