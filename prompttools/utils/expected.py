@@ -6,7 +6,7 @@
 
 
 import os
-from openai import OpenAI
+import openai
 import pandas.core.series
 from .error import PromptToolsUtilityError
 from . import similarity
@@ -24,8 +24,7 @@ def compute(prompt: str, model: str = "gpt-4") -> str:
     """
     if not os.environ["OPENAI_API_KEY"]:
         raise PromptToolsUtilityError
-    client = OpenAI()
-    response = client.chat.completions.create(
+    response = openai.chat.completions.create(
         model=model,
         messages=[
             {"role": "user", "content": prompt},

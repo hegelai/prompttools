@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-from openai import OpenAI
+import openai
 import jinja2
 from prompttools import prompttest
 from prompttools.prompttest.threshold_type import ThresholdType
@@ -41,12 +41,10 @@ def create_prompt():
     prompts=[create_json_prompt()],
 )
 def json_completion_fn(prompt: str):
-    response = None
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
-        client = OpenAI()
-        response = client.completions.create(model="babbage-002", prompt=prompt)
+        response = openai.completions.create(model="babbage-002", prompt=prompt)
     return response.choices[0].text
 
 
@@ -59,12 +57,10 @@ def json_completion_fn(prompt: str):
     threshold_type=ThresholdType.MAXIMUM,
 )
 def completion_fn(prompt: str):
-    response = None
     if os.getenv("DEBUG", default=False):
         response = mock_openai_completion_fn(**{"prompt": prompt})
     else:
-        client = OpenAI()
-        response = client.completions.create(prompt)
+        response = openai.completions.create(model="babbage-002", prompt=prompt)
     return response.choices[0].text
 
 
