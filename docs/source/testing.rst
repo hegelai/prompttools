@@ -24,8 +24,8 @@ so you can test prompts over time. For example:
         if os.getenv("DEBUG", default=False):
             response = mock_openai_completion_fn(**{"prompt": prompt})
         else:
-            response = openai.Completion.create(prompt)
-        return response["choices"][0]["text"]
+            response = openai.completions.create(prompt)
+        return response.choices[0].text
 
 
 In the file, be sure to call the ``main()`` method of ``prompttest`` like you would for ``unittest``.

@@ -27,17 +27,17 @@ evaluation function:
        pass
 
    prompt_templates = [
-       "Answer the following question: {{input}}", 
+       "Answer the following question: {{input}}",
        "Respond the following query: {{input}}"
    ]
 
    user_inputs = [
-       {"input": "Who was the first president?"}, 
+       {"input": "Who was the first president?"},
        {"input": "Who was the first president of India?"}
    ]
 
-   harness = PromptTemplateExperimentationHarness("text-davinci-003", 
-                                                  prompt_templates, 
+   harness = PromptTemplateExperimentationHarness("text-davinci-003",
+                                                  prompt_templates,
                                                   user_inputs)
 
 
@@ -93,8 +93,8 @@ so you can test prompts over time. For example:
         if os.getenv("DEBUG", default=False):
             response = mock_openai_completion_fn(**{"prompt": prompt})
         else:
-            response = openai.Completion.create(prompt)
-        return response["choices"][0]["text"]
+            response = openai.completions.create(prompt)
+        return response.choices[0].text
 
 
 The evaluation functions should accept one of the following as it's parameters:
