@@ -25,7 +25,12 @@ def compute(prompt: str, model: str = "gpt-4") -> str:
     if not os.environ["OPENAI_API_KEY"]:
         raise PromptToolsUtilityError
     client = OpenAI()
-    response = client.chat.completions.create(model=model, prompt=prompt)
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "user", "content": prompt},
+        ],
+    )
     return response.choices[0].message.content
 
 
