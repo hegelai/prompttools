@@ -12,9 +12,6 @@ from .error import PromptToolsUtilityError
 from . import similarity
 
 
-client = OpenAI()
-
-
 def compute(prompt: str, model: str = "gpt-4") -> str:
     r"""
     Computes the expected result of a given prompt by using a high
@@ -27,6 +24,7 @@ def compute(prompt: str, model: str = "gpt-4") -> str:
     """
     if not os.environ["OPENAI_API_KEY"]:
         raise PromptToolsUtilityError
+    client = OpenAI()
     response = client.chat.completions.create(model=model, prompt=prompt)
     return response.choices[0].message.content
 
