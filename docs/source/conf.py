@@ -11,7 +11,7 @@ from sphinx.builders.html import StandaloneHTMLBuilder
 project = "prompttools"
 copyright = "2023, Hegel AI"
 author = "Hegel AI"
-release = "0.0.42"
+release = "0.0.43"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
