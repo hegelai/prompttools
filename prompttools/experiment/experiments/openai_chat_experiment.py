@@ -177,7 +177,7 @@ class OpenAIChatExperiment(Experiment):
     @staticmethod
     def _extract_responses(output: openai.types.Completion) -> str:
         message = output.choices[0].message
-        if hasattr(message, "function_call"):
+        if hasattr(message, "function_call") and message.function_call is not None:
             return json.dumps(json.loads(message.function_call.arguments))
         else:
             return message.content
