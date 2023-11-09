@@ -117,6 +117,13 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
             return self.full_df
         else:
             table = self.full_df
+            columns_to_hide.extend(
+                [
+                    col
+                    for col in ["temperature", "top_p", "n", "presence_penalty", "frequency_penalty"]
+                    if col not in self.partial_df.columns
+                ]
+            )
             for col in columns_to_hide:
                 if col in table.columns:
                     table = table.drop(col, axis=1)

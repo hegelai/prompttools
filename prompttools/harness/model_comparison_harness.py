@@ -138,6 +138,13 @@ class ModelComparisonHarness(ExperimentationHarness):
             return self.full_df
         else:
             table = self.full_df
+            columns_to_hide.extend(
+                [
+                    col
+                    for col in ["temperature", "top_p", "n", "presence_penalty", "frequency_penalty"]
+                    if table[col].nunique() == 1  # Note this is checking for uniqueness
+                ]
+            )
             for col in columns_to_hide:
                 if col in table.columns:
                     table = table.drop(col, axis=1)

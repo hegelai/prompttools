@@ -428,6 +428,36 @@ class OpenAIChatExperiment(Experiment):
 
         self._construct_result_dfs(self.queue.get_input_args(), self.queue.get_results(), self.queue.get_latencies())
 
+    def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
+        columns_to_hide = [
+            "stream",
+            "response_id",
+            "response_choices",
+            "response_created",
+            "response_created",
+            "response_object",
+            "response_model",
+            "response_system_fingerprint",
+            "revision_id",
+            "log_id",
+        ]
+
+        if get_all_cols:
+            return self.full_df
+        else:
+            table = self.full_df
+            columns_to_hide.extend(
+                [
+                    col
+                    for col in ["temperature", "top_p", "n", "presence_penalty", "frequency_penalty"]
+                    if col not in self.partial_df.columns
+                ]
+            )
+            for col in columns_to_hide:
+                if col in table.columns:
+                    table = table.drop(col, axis=1)
+            return table
+
     # def _update_values_in_dataframe(self):
     #     r"""
     #     If, in the future, we wish to update existing values rather than appending to the end of the row.
