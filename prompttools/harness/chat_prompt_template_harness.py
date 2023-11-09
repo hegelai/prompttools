@@ -77,10 +77,10 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
         )
         super().prepare()
 
-    def run(self):
+    def run(self, clear_previous_results: bool = False):
         if not self.experiment:
             self.prepare()
-        super().run()
+        super().run(clear_previous_results=clear_previous_results)
 
         # Add user inputs to DataFrame
         if len(self.experiment.full_df) > 0:

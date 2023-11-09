@@ -74,10 +74,10 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         )
         super().prepare()
 
-    def run(self):
+    def run(self, clear_previous_results: bool = False):
         if not self.experiment:
             self.prepare()
-        super().run()
+        super().run(clear_previous_results=clear_previous_results)
 
     def _get_state(self):
         state_params = {

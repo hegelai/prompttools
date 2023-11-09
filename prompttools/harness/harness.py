@@ -39,11 +39,11 @@ class ExperimentationHarness:
         """
         self.experiment.prepare()
 
-    def run(self) -> None:
+    def run(self, clear_previous_results: bool = False) -> None:
         r"""
         Runs the underlying experiment.
         """
-        self.experiment.run(runs=self.runs)
+        self.experiment.run(runs=self.runs, clear_previous_results=clear_previous_results)
 
     def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, **eval_fn_kwargs) -> None:
         r"""

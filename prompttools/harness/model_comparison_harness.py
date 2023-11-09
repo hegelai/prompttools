@@ -103,11 +103,11 @@ class ModelComparisonHarness(ExperimentationHarness):
     def score_df(self):
         return self._score_df
 
-    def run(self):
+    def run(self, clear_previous_results: bool = False):
         if not self.experiments:
             self.prepare()
         for exp in self.experiments:
-            exp.run()
+            exp.run(clear_previous_results=clear_previous_results)
         self._update_dfs()
 
     def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, **eval_fn_kwargs) -> None:
