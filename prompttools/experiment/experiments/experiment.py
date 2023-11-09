@@ -250,6 +250,10 @@ class Experiment:
             result_df = response_df
         else:
             # Handle the case where `input_arg_df` has the same column names as `result_df`
+            try:
+                results = [r.model_dump() for r in results]  # For turing OpenAI response in to dict
+            except Exception:
+                pass
             result_df = pd.DataFrame(results)
             common_columns = set(input_arg_df.columns) & set(result_df.columns)
             result_df = result_df.add_prefix("response_") if common_columns else result_df
