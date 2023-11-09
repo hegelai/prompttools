@@ -6,6 +6,11 @@
 
 from typing import Dict, List, Optional, Type
 from .harness import ExperimentationHarness, Experiment
+import pandas as pd
+from .utility import is_interactive
+from IPython import display
+from tabulate import tabulate
+import logging
 
 
 class SystemPromptExperimentationHarness(ExperimentationHarness):
@@ -117,3 +122,34 @@ class SystemPromptExperimentationHarness(ExperimentationHarness):
         harness._revision_id = revision_id
         print("Loaded harness.")
         return harness
+
+    def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
+        columns_to_hide = [
+            "stream",
+            "response_id",
+            "response_choices",
+            "response_created",
+            "response_created",
+            "response_object",
+            "response_model",
+            "response_system_fingerprint",
+            "revision_id",
+            "log_id",
+        ]
+
+        if get_all_cols:
+            return self.full_df
+        else:
+            table = self.full_df
+            for col in columns_to_hide:
+                if col in table.columns:
+                    table = table.drop(col, axis=1)
+            return table
+
+    def visualize(self, get_all_cols: bool = False):
+        table = self.get_table(get_all_cols)
+        if is_interactive():
+            display.display(table)
+        else:
+            logging.getLogger().setLevel(logging.INFO)
+            logging.info(tabulate(table, headers="keys", tablefmt="psql"))
