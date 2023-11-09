@@ -177,7 +177,7 @@ class OpenAIChatExperiment(Experiment):
     @staticmethod
     def _extract_responses(output: openai.types.Completion) -> str:
         message = output.choices[0].message
-        if hasattr(message, "function_call"):
+        if hasattr(message, "function_call") and message.function_call is not None:
             return json.dumps(json.loads(message.function_call.arguments))
         else:
             return message.content
@@ -427,6 +427,36 @@ class OpenAIChatExperiment(Experiment):
             raise PromptExperimentException
 
         self._construct_result_dfs(self.queue.get_input_args(), self.queue.get_results(), self.queue.get_latencies())
+
+    def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
+        columns_to_hide = [
+            "stream",
+            "response_id",
+            "response_choices",
+            "response_created",
+            "response_created",
+            "response_object",
+            "response_model",
+            "response_system_fingerprint",
+            "revision_id",
+            "log_id",
+        ]
+
+        if get_all_cols:
+            return self.full_df
+        else:
+            table = self.full_df
+            columns_to_hide.extend(
+                [
+                    col
+                    for col in ["temperature", "top_p", "n", "presence_penalty", "frequency_penalty"]
+                    if col not in self.partial_df.columns
+                ]
+            )
+            for col in columns_to_hide:
+                if col in table.columns:
+                    table = table.drop(col, axis=1)
+            return table
 
     # def _update_values_in_dataframe(self):
     #     r"""

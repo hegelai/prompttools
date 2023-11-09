@@ -11,6 +11,10 @@ import pandas as pd
 from .harness import ExperimentationHarness, Experiment
 from typing import Optional
 from copy import deepcopy
+from .utility import is_interactive
+from IPython import display
+from tabulate import tabulate
+import logging
 
 
 def _render_messages_openai_chat(message_template: list[dict], user_input: dict, environment):
@@ -73,10 +77,10 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
         )
         super().prepare()
 
-    def run(self):
+    def run(self, clear_previous_results: bool = False):
         if not self.experiment:
             self.prepare()
-        super().run()
+        super().run(clear_previous_results=clear_previous_results)
 
         # Add user inputs to DataFrame
         if len(self.experiment.full_df) > 0:
@@ -94,6 +98,44 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
                 self.experiment.partial_df = self.experiment.partial_df.drop(user_inputs_col_name, axis=1)
             self.experiment.partial_df.reset_index(drop=True, inplace=True)
             self.experiment.partial_df = pd.concat([user_input_df, self.experiment.partial_df], axis=1)
+
+    def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
+        columns_to_hide = [
+            "stream",
+            "response_id",
+            "response_choices",
+            "response_created",
+            "response_created",
+            "response_object",
+            "response_model",
+            "response_system_fingerprint",
+            "revision_id",
+            "log_id",
+        ]
+
+        if get_all_cols:
+            return self.full_df
+        else:
+            table = self.full_df
+            columns_to_hide.extend(
+                [
+                    col
+                    for col in ["temperature", "top_p", "n", "presence_penalty", "frequency_penalty"]
+                    if col not in self.partial_df.columns
+                ]
+            )
+            for col in columns_to_hide:
+                if col in table.columns:
+                    table = table.drop(col, axis=1)
+            return table
+
+    def visualize(self, get_all_cols: bool = False):
+        table = self.get_table(get_all_cols)
+        if is_interactive():
+            display.display(table)
+        else:
+            logging.getLogger().setLevel(logging.INFO)
+            logging.info(tabulate(table, headers="keys", tablefmt="psql"))
 
     def _get_state(self):
         state_params = {

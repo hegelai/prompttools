@@ -103,11 +103,11 @@ class ModelComparisonHarness(ExperimentationHarness):
     def score_df(self):
         return self._score_df
 
-    def run(self):
+    def run(self, clear_previous_results: bool = False):
         if not self.experiments:
             self.prepare()
         for exp in self.experiments:
-            exp.run()
+            exp.run(clear_previous_results=clear_previous_results)
         self._update_dfs()
 
     def evaluate(self, metric_name: str, eval_fn: Callable, static_eval_fn_kwargs: dict = {}, **eval_fn_kwargs) -> None:
@@ -121,10 +121,34 @@ class ModelComparisonHarness(ExperimentationHarness):
         self._update_dfs()
 
     def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
+        columns_to_hide = [
+            "stream",
+            "response_id",
+            "response_choices",
+            "response_created",
+            "response_created",
+            "response_object",
+            "response_model",
+            "response_system_fingerprint",
+            "revision_id",
+            "log_id",
+        ]
+
         if get_all_cols:
             return self.full_df
         else:
-            return self.partial_df
+            table = self.full_df
+            columns_to_hide.extend(
+                [
+                    col
+                    for col in ["temperature", "top_p", "n", "presence_penalty", "frequency_penalty"]
+                    if table[col].nunique() == 1  # Note this is checking for uniqueness
+                ]
+            )
+            for col in columns_to_hide:
+                if col in table.columns:
+                    table = table.drop(col, axis=1)
+            return table
 
     def _update_dfs(self):
         self._full_df = pd.concat([exp.full_df for exp in self.experiments], axis=0, ignore_index=True)
@@ -171,11 +195,6 @@ class ModelComparisonHarness(ExperimentationHarness):
         user_messages = state_params["user_messages"]
         model_arguments = state_params["model_arguments"]
         child_experiment_states = state_params["child_experiment_states"]
-
-        for i, state in enumerate(child_experiment_states):
-            print(f"{i = }")
-            print(f"{state[0] = }")
-            print(f"{state[1] = }")
 
         harness = cls(model_names, system_prompts, user_messages, model_arguments)
         harness.experiments = [
