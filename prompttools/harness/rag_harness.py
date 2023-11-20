@@ -105,8 +105,6 @@ class RetrievalAugmentedGenerationExperimentationHarness(ExperimentationHarness)
 
         # Run the LLM experiment
         self.experiment.run()
-        self.partial_df = self.experiment.partial_df
-        self.full_df = self.experiment.full_df
 
         # Add "query text" (i.e. the prompt used to retrieve documents from the vector DB)
         # to the final results table here
