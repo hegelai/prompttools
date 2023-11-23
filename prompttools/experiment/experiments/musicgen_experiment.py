@@ -13,9 +13,10 @@ import logging
 
 try:
     from audiocraft.models import MusicGen
+    music_gen = MusicGen.get_pretrained
     from audiocraft.data.audio import audio_write
 except ImportError:
-    MusicGen = None
+    music_gen = None
 
 from prompttools.mock.mock import mock_musicgen_completion_fn
 
@@ -38,7 +39,7 @@ class MusicGenExperiment(Experiment):
         prompt: List[str],
         **kwargs: Dict[str, object],
     ):
-        if MusicGen is None:
+        if music_gen is None:
             raise ModuleNotFoundError(
                 "Package `audiocraft` is required to be installed to use this experiment."
                 "Please use `pip install audiocraft` to install the package"
@@ -94,32 +95,24 @@ class MusicGenExperiment(Experiment):
         for model_combo in self.model_argument_combos:
             for call_combo in self.call_argument_combos:
                 tta = model_combo["tta"]
-                tta = tta(temperature=call_combo["temperature"])
-                chain = []
-                for i, prompt_template in enumerate(call_combo["prompt_template"]):
-                    chain.append(
-                        LLMChain(
-                            llm=llm,
-                            prompt=prompt_template,
-                            output_key=call_combo["output_key"][i]
-                        )
-                    )
-                client = SequentialChain(
-                            chains=chain,
-                            input_variables=call_combo["input_variables"],
-                            output_variables=call_combo["output_variables"],
-                            verbose=True
-                        )
-                for _ in range(runs):
-                    call_combo["client"] = client
-                    start = perf_counter()
-                    res = self.completion_fn(**call_combo)
-                    self.scores["latency"].append(perf_counter() - start)
-                    self.results.append(res)
-                    self.argument_combos.append(model_combo | call_combo)
-        if len(self.results) == 0:
-            logging.error("No results. Something went wrong.")
-            raise PromptExperimentException
+                print("tta:", tta)
+        #         tta = tta(temperature=call_combo["temperature"])
+        #         client = SequentialChain(
+        #                     chains=chain,
+        #                     input_variables=call_combo["input_variables"],
+        #                     output_variables=call_combo["output_variables"],
+        #                     verbose=True
+        #                 )
+        #         for _ in range(runs):
+        #             call_combo["client"] = client
+        #             start = perf_counter()
+        #             res = self.completion_fn(**call_combo)
+        #             self.scores["latency"].append(perf_counter() - start)
+        #             self.results.append(res)
+        #             self.argument_combos.append(model_combo | call_combo)
+        # if len(self.results) == 0:
+        #     logging.error("No results. Something went wrong.")
+        #     raise PromptExperimentException
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> str:
