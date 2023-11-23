@@ -95,7 +95,7 @@ class MusicGenExperiment(Experiment):
         for model_combo in self.model_argument_combos:
             for call_combo in self.call_argument_combos:
                 tta = model_combo["tta"]
-                print("tta:", tta)
+                # TODO: swap llm process -> tta
         #         tta = tta(temperature=call_combo["temperature"])
         #         client = SequentialChain(
         #                     chains=chain,
@@ -103,16 +103,16 @@ class MusicGenExperiment(Experiment):
         #                     output_variables=call_combo["output_variables"],
         #                     verbose=True
         #                 )
-        #         for _ in range(runs):
-        #             call_combo["client"] = client
-        #             start = perf_counter()
-        #             res = self.completion_fn(**call_combo)
-        #             self.scores["latency"].append(perf_counter() - start)
-        #             self.results.append(res)
-        #             self.argument_combos.append(model_combo | call_combo)
-        # if len(self.results) == 0:
-        #     logging.error("No results. Something went wrong.")
-        #     raise PromptExperimentException
+                for _ in range(runs):
+                    call_combo["client"] = client
+                    start = perf_counter()
+                    res = self.completion_fn(**call_combo)
+                    self.scores["latency"].append(perf_counter() - start)
+                    self.results.append(res)
+                    self.argument_combos.append(model_combo | call_combo)
+        if len(self.results) == 0:
+            logging.error("No results. Something went wrong.")
+            raise PromptExperimentException
 
     @staticmethod
     def _extract_responses(output: List[Dict[str, object]]) -> str:
