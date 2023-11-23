@@ -17,6 +17,8 @@ try:
 except ImportError:
     MusicGen = None
 
+from prompttools.mock.mock import mock_musicgen_completion_fn
+
 from .experiment import Experiment
 from .error import PromptExperimentException
 
@@ -26,14 +28,13 @@ class MusicGenExperiment(Experiment):
     Testing MusicGen music generation.
     """
 
-    MODEL_PARAMETERS = ["llm"]
+    MODEL_PARAMETERS = ["tta"]
 
-    CALL_PARAMETERS = ["prompt_template", "prompt"]
+    CALL_PARAMETERS = ["prompt"]
 
     def __init__(
         self,
-        llm: List[Any],
-        prompt_template: List[List[Any]],
+        tta: List[Any],
         prompt: List[str],
         **kwargs: Dict[str, object],
     ):
@@ -42,12 +43,12 @@ class MusicGenExperiment(Experiment):
                 "Package `audiocraft` is required to be installed to use this experiment."
                 "Please use `pip install audiocraft` to install the package"
             )
-        self.completion_fn = self.lc_completion_fn
+        self.completion_fn = self.musicgen_completion_fn
         if os.getenv("DEBUG", default=False):
-            self.completion_fn = mock_lc_completion_fn
-        self.model_params = dict(llm=llm)  # placeholder for future
+            self.completion_fn = mock_musicgen_completion_fn
+        self.model_params = dict(tta=tta)  # placeholder for future
 
-        self.call_params = dict(prompt_template=prompt_template, prompt=prompt)
+        self.call_params = dict(prompt=prompt)
         for k, v in kwargs.items():
             self.CALL_PARAMETERS.append(k)
             self.call_params[k] = v
@@ -66,7 +67,7 @@ class MusicGenExperiment(Experiment):
             dict(zip(self.call_params, val, strict=False)) for val in itertools.product(*self.call_params.values())
         ]
 
-    def lc_completion_fn(
+    def musicgen_completion_fn(
         self,
         **params: Dict[str, Any],
     ):
@@ -92,8 +93,8 @@ class MusicGenExperiment(Experiment):
         self.results = []
         for model_combo in self.model_argument_combos:
             for call_combo in self.call_argument_combos:
-                llm = model_combo["llm"]
-                llm = llm(temperature=call_combo["temperature"])
+                tta = model_combo["tta"]
+                tta = tta(temperature=call_combo["temperature"])
                 chain = []
                 for i, prompt_template in enumerate(call_combo["prompt_template"]):
                     chain.append(
