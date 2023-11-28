@@ -66,7 +66,7 @@ def load_data(
         model_specific_kwargs = {model: {}}
         experiment = EXPERIMENTS[model_type]([model], input_kwargs, model_specific_kwargs)
 
-    return experiment.to_pandas_df()
+    return experiment.to_pandas_df(True, True)
 
 
 @st.cache_data
@@ -112,5 +112,5 @@ def run_multiple(
                 experiment = EXPERIMENTS[model_types[i]]([models[i]], input_kwargs, model_specific_kwargs)
             else:
                 experiment = EXPERIMENTS[model_types[i]]([models[i]], prompts)
-        dfs.append(experiment.to_pandas_df())
+        dfs.append(experiment.to_pandas_df(True, True))
     return dfs
