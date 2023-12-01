@@ -57,7 +57,7 @@ def init_sentry():
         sentry_sdk.init(
             dsn=SENTRY_DSN,
             release=__version__,
-            traces_sample_rate=1.0,
+            traces_sample_rate=0.01,
             include_local_variables=False,
             send_default_pii=False,
             attach_stacktrace=False,
