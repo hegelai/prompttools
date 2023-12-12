@@ -33,8 +33,13 @@ class Scribe:
         self.worker_thread.start()
 
     def execute_and_add_to_queue(self, callable_func, **kwargs):
+        if "hegel_model" in kwargs:
+            hegel_model = kwargs["hegel_model"]
+            del kwargs["hegel_model"]
+        else:
+            hegel_model = None
         result = callable_func(**kwargs)
-        self.data_queue.put(result.model_dump_json())
+        self.data_queue.put({"hegel_model": hegel_model, "data": result.model_dump_json()})
         return result
 
     def wrap(self, callable_func):

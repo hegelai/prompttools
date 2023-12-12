@@ -18,7 +18,7 @@ if __name__ == "__main__":
         messages = [
             {"role": "user", "content": f"What is 1 + {i}?"},
         ]
-        result = openai.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
+        result = openai.chat.completions.create(model="gpt-3.5-turbo", messages=messages, hegel_model="TEST_MODEL")
         print(f"{i} {result = }")
 
     print("End")
