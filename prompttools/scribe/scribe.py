@@ -12,16 +12,18 @@ from functools import partial
 import openai
 from dotenv import load_dotenv
 from os.path import join, dirname
+from prompttools.common import HEGEL_BACKEND_URL
 
 
 # Load "OPENAI_API_KEY" into `os.environ["OPENAI_API_KEY"]`
+# See `.env.example`
 dotenv_path = join(dirname(__file__), ".env")
 load_dotenv(dotenv_path)
 
 
 class Scribe:
     def __init__(self):
-        self.flask_api_url = "http://localhost:5000/"
+        self.backend_url = f"{HEGEL_BACKEND_URL}/sdk/log"
         self.data_queue = queue.Queue()
         self.worker_thread = threading.Thread(target=self.worker)
 
@@ -49,7 +51,7 @@ class Scribe:
 
     def log_data_to_remote(self, data):
         try:
-            response = requests.post(self.flask_api_url, json=data)
+            response = requests.post(self.backend_url, json=data)
             if response.status_code != 200:
                 print(f"Failed to send data to Flask API. Status code: {response.status_code} for {data}.")
         except requests.exceptions.RequestException as e:
