@@ -13,6 +13,7 @@ if __name__ == "__main__":
 
     os.environ["OPENAI_API_KEY"] = ""
 
+    # Launch server from `app.py` first
     # Example usage:
     for i in range(3):
         messages = [
