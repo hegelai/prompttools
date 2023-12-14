@@ -10,6 +10,7 @@ import threading
 import queue
 from functools import partial
 import openai
+import os
 from dotenv import load_dotenv
 from os.path import join, dirname
 from prompttools.common import HEGEL_BACKEND_URL
@@ -23,7 +24,7 @@ load_dotenv(dotenv_path)
 
 class Scribe:
     def __init__(self):
-        self.backend_url = f"{HEGEL_BACKEND_URL}/sdk/log"
+        self.backend_url = f"{HEGEL_BACKEND_URL}/sdk/scribe"
         self.data_queue = queue.Queue()
         self.worker_thread = threading.Thread(target=self.worker)
 
@@ -56,7 +57,12 @@ class Scribe:
 
     def log_data_to_remote(self, data):
         try:
-            response = requests.post(self.backend_url, json=data)
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": os.environ["HEGELAI_API_KEY"],
+            }
+
+            response = requests.post(self.backend_url, json=data, headers=headers)
             if response.status_code != 200:
                 print(f"Failed to send data to Flask API. Status code: {response.status_code} for {data}.")
         except requests.exceptions.RequestException as e:
