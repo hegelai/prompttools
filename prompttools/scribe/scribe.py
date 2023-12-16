@@ -3,7 +3,7 @@
 #
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
-
+import json
 
 import requests
 import threading
@@ -40,7 +40,9 @@ class Scribe:
         else:
             hegel_model = None
         result = callable_func(**kwargs)
-        self.data_queue.put({"hegel_model": hegel_model, "data": result.model_dump_json()})
+        self.data_queue.put(
+            {"hegel_model": hegel_model, "result": result.model_dump_json(), "input_parameters": json.dumps(kwargs)}
+        )
         return result
 
     def wrap(self, callable_func):
