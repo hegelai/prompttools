@@ -6,7 +6,7 @@
 
 
 r"""
-App for local testing of scribe
+App for local testing of logger
 """
 
 from flask import Flask, request

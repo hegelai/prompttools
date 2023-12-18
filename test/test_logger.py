@@ -7,16 +7,15 @@
 
 # import openai
 # import os
-
-# import prompttools.scribe  # noqa: F401 Importing this line will monkey-patch `openai.chat.completions.create`
-
-# if __name__ == "__main__":
 #
-#     os.environ["OPENAI_API_KEY"] = ""
+# import prompttools.logger  # noqa: F401 Importing this line will monkey-patch `openai.chat.completions.create`
+#
+#
+# if __name__ == "__main__":
 #
 #     # Launch server from `app.py` first
 #     # Example usage:
-#     for i in range(3):
+#     for i in range(1):
 #         messages = [
 #             {"role": "user", "content": f"What is 1 + {i}?"},
 #         ]

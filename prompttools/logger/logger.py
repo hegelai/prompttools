@@ -22,9 +22,9 @@ dotenv_path = join(dirname(__file__), ".env")
 load_dotenv(dotenv_path)
 
 
-class Scribe:
+class Logger:
     def __init__(self):
-        self.backend_url = f"{HEGEL_BACKEND_URL}/sdk/scribe"
+        self.backend_url = f"{HEGEL_BACKEND_URL}/sdk/logger"
         self.data_queue = queue.Queue()
         self.worker_thread = threading.Thread(target=self.worker)
 
@@ -71,7 +71,7 @@ class Scribe:
             print(f"Error sending data to Flask API: {e}")
 
 
-sender = Scribe()
+sender = Logger()
 # Monkey-patching
 try:
     openai.chat.completions.create = sender.wrap(openai.chat.completions.create)
