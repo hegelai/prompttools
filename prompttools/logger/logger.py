@@ -13,6 +13,7 @@ import openai
 import os
 from dotenv import load_dotenv
 from os.path import join, dirname
+from time import perf_counter
 from prompttools.common import HEGEL_BACKEND_URL
 
 
@@ -39,9 +40,16 @@ class Logger:
             del kwargs["hegel_model"]
         else:
             hegel_model = None
+        start = perf_counter()
         result = callable_func(**kwargs)
+        latency = perf_counter() - start
         self.data_queue.put(
-            {"hegel_model": hegel_model, "result": result.model_dump_json(), "input_parameters": json.dumps(kwargs)}
+            {
+                "hegel_model": hegel_model,
+                "result": result.model_dump_json(),
+                "input_parameters": json.dumps(kwargs),
+                "latency": latency,
+            }
         )
         return result
 
