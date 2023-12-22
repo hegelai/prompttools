@@ -5,8 +5,10 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import openai
-import prompttools.logger  # noqa: F401 Importing this line will monkey-patch `openai.chat.completions.create`
+if False:  # Skipping this in CI
+
+    import openai
+    import prompttools.logger  # noqa: F401 Importing this line will monkey-patch `openai.chat.completions.create`
 
 
 r"""
@@ -23,17 +25,18 @@ You should have "HEGELAI_API_KEY" and "OPENAI_API_KEY" loaded into `os.environ`.
 """
 
 if __name__ == "__main__":
-    for i in range(1):
-        messages = [
-            {"role": "user", "content": f"What is 1 + {i}?"},
-        ]
+    if False:  # Skipping this in CI
+        for i in range(1):
+            messages = [
+                {"role": "user", "content": f"What is 1 + {i}?"},
+            ]
 
-        # `hegel_model` is an optional argument that allows you to tag your call with a specific name
-        # Logging still works without this argument
-        # The rest of the OpenAI call happens as normal between your machine and OpenAI's server
-        openai_response = openai.chat.completions.create(
-            model="gpt-3.5-turbo", messages=messages, hegel_model="Math Model"
-        )
-        print(f"{openai_response = }")
+            # `hegel_model` is an optional argument that allows you to tag your call with a specific name
+            # Logging still works without this argument
+            # The rest of the OpenAI call happens as normal between your machine and OpenAI's server
+            openai_response = openai.chat.completions.create(
+                model="gpt-3.5-turbo", messages=messages, hegel_model="Math Model"
+            )
+            print(f"{openai_response = }")
 
-    print("End")
+        print("End")
