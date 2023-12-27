@@ -1,2 +1,2 @@
-__version__ = '0.0.44a0+7d36bb0'
-git_version = '7d36bb0922948f299ace033d0de58590ae4254f3'
+__version__ = '0.0.45a0+e77fcc5'
+git_version = 'e77fcc5bcd6fa7b123ae17fd660659bcb3e7c8bf'
