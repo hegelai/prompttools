@@ -12,6 +12,7 @@ from .autoeval_scoring import autoeval_scoring
 from .autoeval_with_docs import autoeval_with_documents
 from .chunk_text import chunk_text
 from .expected import compute_similarity_against_model
+from .moderation import apply_moderation
 from .ranking_correlation import ranking_correlation
 from .similarity import semantic_similarity
 from .validate_json import validate_json_response
@@ -26,11 +27,12 @@ __all__ = [
     "chunk_text",
     "compute_similarity_against_model",
     "expected",
+    "apply_moderation",
+    "ranking_correlation",
+    "semantic_similarity",
+    "similarity",
     "validate_json",
     "validate_json_response",
     "validate_python",
     "validate_python_response",
-    "ranking_correlation",
-    "semantic_similarity",
-    "similarity",
 ]
