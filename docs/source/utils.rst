@@ -16,6 +16,8 @@ They can also be used with ``prompttest`` for be part of your CI/CD system.
 
 .. autofunction:: prompttools.utils.compute_similarity_against_model
 
+.. autofunction:: prompttools.utils.apply_moderation
+
 .. autofunction:: prompttools.utils.ranking_correlation
 
 .. autofunction:: prompttools.utils.validate_json_response
