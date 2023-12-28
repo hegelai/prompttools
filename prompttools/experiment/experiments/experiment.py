@@ -461,12 +461,7 @@ class Experiment:
 
             # Define the custom colors
             custom_colors = [
-                "black",
-                "#7e1e9c",
-                "#15b01a",
-                "#448ee4",
-                "#ff7fa7",
-                "#029386",
+                "black", "#771541", "#EB8F4C", "#594F3B", "#A8B7AB", "#9C92A3"
             ]
 
             plt.ylabel("Latency (s)")
