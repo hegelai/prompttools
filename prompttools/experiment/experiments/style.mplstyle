@@ -40,11 +40,11 @@ legend.frameon : False
 savefig.bbox : tight
 savefig.dpi : 100
 
-# Rainbow color cycle
-#axes.prop_cycle: cycler('color', ["black", "332288","88CCEE","44AA99","117733","999933","DDCC77","CC6677","882255","AA4499","brown","fd3c06","gray"])
+# Hegel AI color cycle
+axes.prop_cycle: cycler('color', ["black", "771541", "EB8F4C","594F3B","A8B7AB","9C92A3"])
 
 # Not good for colorblind people
-axes.prop_cycle: cycler('color', ['black', '7e1e9c', '15b01a', '448ee4', 'ff7fa7', '029386',   'ed872d',   'ae1717',   'gray', 'e03fd8', '011288', '0b4008'])
+#axes.prop_cycle: cycler('color', ['black', '7e1e9c', '15b01a', '448ee4', 'ff7fa7', '029386',   'ed872d',   'ae1717',   'gray', 'e03fd8', '011288', '0b4008'])
 
 #font.family : serif
 #text.usetex : True
