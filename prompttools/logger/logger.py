@@ -39,7 +39,7 @@ class Logger:
     def add_feedback(self, log_id, metric_name, value):
         self.feedback_queue.put({
             "log_id": log_id,
-            "metric_name": metric_name,
+            "key": metric_name,
             "value": value
         })
     
@@ -62,7 +62,7 @@ class Logger:
                 "log_id": log_id,
             }
         )
-        result['log_id'] = log_id
+        result.log_id = log_id
         return result
 
     def wrap(self, callable_func):
@@ -100,7 +100,7 @@ class Logger:
             print(f"Error sending data to Flask API: {e}")
 
     def send_feedback_to_remote(self, feedback_data):
-        feedback_url = f"{HEGEL_BACKEND_URL}/add_feedback/"
+        feedback_url = f"{HEGEL_BACKEND_URL}/sdk/add_feedback/"
         try:
             headers = {
                 "Content-Type": "application/json",
@@ -121,4 +121,5 @@ except Exception:
     print("You may need to add `OPENAI_API_KEY=''` to your `.env` file.")
     raise
 
-add_feedback = sender.add_feedback
+def add_feedback(*args):
+    sender.add_feedback(*args)
