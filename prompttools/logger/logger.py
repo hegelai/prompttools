@@ -120,3 +120,5 @@ try:
 except Exception:
     print("You may need to add `OPENAI_API_KEY=''` to your `.env` file.")
     raise
+
+add_feedback = sender.add_feedback
