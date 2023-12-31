@@ -5,9 +5,10 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from .logger import Logger
+from .logger import Logger, add_feedback
 
 
 __all__ = [
     "Logger",
+    "add_feedback",
 ]
