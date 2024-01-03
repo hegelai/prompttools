@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Type
+from typing import Type, Union
 import jinja2
 import pandas as pd
 
@@ -159,6 +159,28 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
+
+    def aggregate(self, groupby_column: str, aggregate_columns: Union[str, list[str]], method: str) -> pd.DataFrame:
+        """
+        Aggregate data based on the specified column, method.
+
+        Args:
+            groupby_column (str):
+            aggregate_columns (Union[str, list[str]]):
+            method (str): aggregation method (e.g., 'mean', 'sum', 'count', 'min', 'max', 'median', 'std', etc.)
+        """
+        if groupby_column == "user_inputs":
+            df = self.full_df.copy()
+            df["user_inputs"] = [tuple(d.items()) for d in self.full_df["user_inputs"]]
+        else:
+            df = self.full_df
+
+        if groupby_column == "templates":
+            result = super().aggregate("template_index", aggregate_columns, method)
+            result["templates"] = [self.message_templates[i] for i in result["template_index"]]
+            return result
+        else:
+            return super().aggregate(groupby_column, aggregate_columns, method, custom_df=df)
 
     def _get_state(self):
         state_params = {
