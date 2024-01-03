@@ -104,6 +104,9 @@ class ExperimentationHarness:
             groupby_column (str):
             aggregate_columns (Union[str, list[str]]):
             method (str): aggregation method (e.g., 'mean', 'sum', 'count', 'min', 'max', 'median', 'std', etc.)
+            custom_df (Optional[pd.DataFrame]): By default, this method uses `self.full_df`, however, a specific
+                subclass implementation can chooses to override this (mainly to make modification before or after
+                group by)
         """
         if method not in ["mean", "sum", "count", "min", "max", "median", "std"]:
             raise ValueError(f"Unsupported aggregation method: {method}")
