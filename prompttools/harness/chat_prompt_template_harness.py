@@ -82,22 +82,45 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
             self.prepare()
         super().run(clear_previous_results=clear_previous_results)
 
-        # Add user inputs to DataFrame
         if len(self.experiment.full_df) > 0:
+            # Add user inputs to DataFrame
             repeat = len(self.experiment.full_df) // len(self.user_inputs)
             user_inputs = deepcopy(self.user_inputs)
             user_inputs_col_name = "user_inputs"
             user_input_df = pd.DataFrame({user_inputs_col_name: user_inputs * repeat})
 
+            # Full DF
             if user_inputs_col_name in self.experiment.full_df.columns:
                 self.experiment.full_df = self.experiment.full_df.drop(user_inputs_col_name, axis=1)
             self.experiment.full_df.reset_index(drop=True, inplace=True)
-
             self.experiment.full_df = pd.concat([user_input_df, self.experiment.full_df], axis=1)
+            # Partial DF
             if user_inputs_col_name in self.experiment.partial_df.columns:
                 self.experiment.partial_df = self.experiment.partial_df.drop(user_inputs_col_name, axis=1)
             self.experiment.partial_df.reset_index(drop=True, inplace=True)
             self.experiment.partial_df = pd.concat([user_input_df, self.experiment.partial_df], axis=1)
+
+            # Add prompt template to DataFrame
+            repeat = len(self.experiment.full_df) // len(self.message_templates)
+            templates = deepcopy(self.message_templates)
+            template_indices = list(range(len(templates)))
+            template_col_name = "templates"
+            template_index_col_name = "template_index"
+            template_df = pd.DataFrame(
+                {template_index_col_name: template_indices * repeat, template_col_name: templates * repeat}
+            )
+            # Full DF
+            if template_col_name in self.experiment.full_df.columns:
+                self.experiment.full_df = self.experiment.full_df.drop(template_col_name, axis=1)
+                self.experiment.full_df = self.experiment.full_df.drop(template_index_col_name, axis=1)
+            self.experiment.full_df.reset_index(drop=True, inplace=True)
+            self.experiment.full_df = pd.concat([template_df, self.experiment.full_df], axis=1)
+            # Partial DF
+            if template_col_name in self.experiment.partial_df.columns:
+                self.experiment.partial_df = self.experiment.partial_df.drop(template_col_name, axis=1)
+                self.experiment.partial_df = self.experiment.partial_df.drop(template_index_col_name, axis=1)
+            self.experiment.partial_df.reset_index(drop=True, inplace=True)
+            self.experiment.partial_df = pd.concat([template_df, self.experiment.partial_df], axis=1)
 
     def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
         columns_to_hide = [
