@@ -22,6 +22,7 @@ from .experiments.stablediffusion_experiment import StableDiffusionExperiment
 from .experiments.replicate_experiment import ReplicateExperiment
 from .experiments.qdrant_experiment import QdrantExperiment
 from .experiments.pinecone_experiment import PineconeExperiment
+from .experiments.musicgen_experiment import MusicGenExperiment
 
 __all__ = [
     "AnthropicCompletionExperiment",
@@ -33,6 +34,7 @@ __all__ = [
     "LlamaCppExperiment",
     "HuggingFaceHubExperiment",
     "MindsDBExperiment",
+    "MusicGenExperiment",
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
     "PineconeExperiment",
