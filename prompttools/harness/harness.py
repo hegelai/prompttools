@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 from prompttools.experiment import Experiment
 
 
@@ -12,6 +12,7 @@ from prompttools.common import HEGEL_BACKEND_URL
 import os
 import pickle
 import requests
+import pandas as pd
 
 
 class ExperimentationHarness:
@@ -88,6 +89,30 @@ class ExperimentationHarness:
     @classmethod
     def _load_state(cls, state, experiment_id: str, revision_id: str, experiment_type_str: str):
         raise NotImplementedError("Should be implemented by specific harness class.")
+
+    def aggregate(
+        self,
+        groupby_column: str,
+        aggregate_columns: Union[str, list[str]],
+        method: str,
+        custom_df: Optional[pd.DataFrame] = None,
+    ) -> pd.DataFrame:
+        """
+        Aggregate data based on the specified column, method.
+
+        Args:
+            groupby_column (str):
+            aggregate_columns (Union[str, list[str]]):
+            method (str): aggregation method (e.g., 'mean', 'sum', 'count', 'min', 'max', 'median', 'std', etc.)
+        """
+        if method not in ["mean", "sum", "count", "min", "max", "median", "std"]:
+            raise ValueError(f"Unsupported aggregation method: {method}")
+
+        if custom_df is None:
+            custom_df = self.full_df
+
+        result_df = custom_df.groupby(groupby_column)[aggregate_columns].agg(method).reset_index()
+        return result_df
 
     def save_experiment(self, name: Optional[str] = None):
         r"""
