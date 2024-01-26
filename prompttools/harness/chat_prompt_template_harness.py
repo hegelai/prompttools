@@ -107,7 +107,10 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
             template_col_name = "templates"
             template_index_col_name = "template_index"
             template_df = pd.DataFrame(
-                {template_index_col_name: template_indices * repeat, template_col_name: templates * repeat}
+                {
+                    template_index_col_name: [i for i in template_indices for _ in range(repeat)],
+                    template_col_name: [s for s in templates for _ in range(repeat)],
+                }
             )
             # Full DF
             if template_col_name in self.experiment.full_df.columns:
