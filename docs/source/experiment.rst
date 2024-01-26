@@ -41,6 +41,8 @@ LLMs
 
 .. autoclass:: GoogleVertexChatCompletionExperiment
 
+.. autoclass:: MistralChatCompletionExperiment
+
 .. autoclass:: LlamaCppExperiment
 
 .. autoclass:: ReplicateExperiment
