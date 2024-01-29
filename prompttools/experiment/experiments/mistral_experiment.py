@@ -5,13 +5,21 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
-import requests
-import json
 
 from typing import Optional
 
 
 from .experiment import Experiment
+
+
+try:
+    import mistralai
+    from mistralai.client import MistralClient
+    from mistralai.models.chat_completion import ChatMessage
+except ImportError:
+    mistralai = None
+    MistralClient = None
+    ChatMessage = None
 
 
 class MistralChatCompletionExperiment(Experiment):
@@ -29,9 +37,8 @@ class MistralChatCompletionExperiment(Experiment):
         model (list[str]):
             the model(s) that will complete your prompt (e.g. "mistral-tiny")
 
-        messages (list[str]):
-            Input prompts, encoded as a list of dict with role and content.
-            The first prompt role should be `user` or `system`.
+        messages (list[ChatMessage]):
+            Input prompts (using Mistral's Python library). The first prompt role should be `user` or `system`.
 
         temperature (list[float], optional):
              The amount of randomness injected into the response
@@ -40,10 +47,7 @@ class MistralChatCompletionExperiment(Experiment):
             use nucleus sampling.
 
         max_tokens (list[int]):
-            The maximum number of tokens to generate in the completion..
-
-        stream (list[bool], optional):
-            Whether to incrementally stream the response using server-sent events.
+            The maximum number of tokens to generate in the completion.
 
         safe_prompt (list[bool]):
             Whether to inject a safety prompt before all conversations.
@@ -61,10 +65,15 @@ class MistralChatCompletionExperiment(Experiment):
         temperature: list[float] = [None],
         top_p: list[float] = [None],
         max_tokens: list[Optional[int]] = [None],
-        stream: list[bool] = [False],
         safe_prompt: list[bool] = [False],
         random_seed: list[Optional[int]] = [None],
     ):
+        if mistralai is None:
+            raise ModuleNotFoundError(
+                "Package `mistralai` is required to be installed to use this experiment."
+                "Please use `pip install mistralai` to install the package"
+            )
+        self.client = MistralClient(api_key=os.environ["MISTRAL_API_KEY"])
         self.completion_fn = self.mistral_completion_fn
 
         self.all_args = dict(
@@ -73,19 +82,18 @@ class MistralChatCompletionExperiment(Experiment):
             temperature=temperature,
             top_p=top_p,
             max_tokens=max_tokens,
-            stream=stream,
             safe_prompt=safe_prompt,
             random_seed=random_seed,
         )
         super().__init__()
 
     def mistral_completion_fn(self, **input_args):
-        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {os['MISTRAL_API_KEY']}"}
-        return requests.post(self.url, headers=headers, data=json.dumps(input_args))
+        response = self.client.chat(**input_args)
+        return response
 
     @staticmethod
-    def _extract_responses(response: dict) -> list[str]:
-        return response["choices"][0]["message"]["content"]
+    def _extract_responses(response) -> list[str]:
+        return response.choices[0].message.content
 
     def _get_model_names(self):
         return [combo["model"] for combo in self.argument_combos]
