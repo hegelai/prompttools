@@ -40,30 +40,34 @@ class Logger:
         self.feedback_queue.put({"log_id": log_id, "key": metric_name, "value": value})
 
     def add_to_queue(
-        self, hegel_model: str, result: dict, input_parameters: dict, latency: float, log_id: str, other_args
+        self,
+        hegel_model: str,
+        result: dict,
+        input_parameters: dict,
+        latency: float,
+        log_id: str,
     ):
-        # TODO: Deal with other_args
         self.data_queue.put(
             {
                 "hegel_model": hegel_model,
                 "result": result,
-                "input_parameters": input_parameters,  # TODO: Need to record `*args`
+                "input_parameters": input_parameters,
                 "latency": latency,
                 "log_id": log_id,
             }
         )
 
-    def execute_and_add_to_queue(self, callable_func, *args, **kwargs):
+    def execute_and_add_to_queue(self, callable_func, **kwargs):
         if "hegel_model" in kwargs:
             hegel_model = kwargs["hegel_model"]
             del kwargs["hegel_model"]
         else:
             hegel_model = None
         start = perf_counter()
-        result = callable_func(*args, **kwargs)
+        result = callable_func(**kwargs)
         latency = perf_counter() - start
         log_id = str(uuid.uuid4())
-        self.add_to_queue(hegel_model, result.model_dump_json(), json.dumps(kwargs), latency, log_id, args)
+        self.add_to_queue(hegel_model, result.model_dump_json(), json.dumps(kwargs), latency, log_id)
         result.log_id = log_id
         return result
 
@@ -120,7 +124,7 @@ sender = Logger()
 
 
 def logging_wrapper(original_fn):
-    def wrapped_function(*args, **kwargs):
+    def wrapped_function(**kwargs):
         # Call the original function with the provided arguments
 
         if "hegel_model" in kwargs:
@@ -129,10 +133,10 @@ def logging_wrapper(original_fn):
         else:
             hegel_model = None
         start = perf_counter()
-        result = original_fn(*args, **kwargs)
+        result = original_fn(**kwargs)
         latency = perf_counter() - start
         log_id = str(uuid.uuid4())
-        sender.add_to_queue(hegel_model, result.model_dump_json(), json.dumps(kwargs), latency, log_id, args)
+        sender.add_to_queue(hegel_model, result.model_dump_json(), json.dumps(kwargs), latency, log_id)
         result.log_id = log_id
         return result
 
