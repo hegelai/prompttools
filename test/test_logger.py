@@ -6,7 +6,6 @@
 
 
 if False:  # Skipping this in CI
-
     import openai
     import prompttools.logger  # noqa: F401 Importing this line will monkey-patch `openai.chat.completions.create`
 
