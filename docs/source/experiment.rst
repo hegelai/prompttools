@@ -37,6 +37,8 @@ LLMs
 
 .. autoclass:: HuggingFaceHubExperiment
 
+.. autoclass:: GoogleGeminiChatCompletionExperiment
+
 .. autoclass:: GooglePaLMCompletionExperiment
 
 .. autoclass:: GoogleVertexChatCompletionExperiment
