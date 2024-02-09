@@ -37,12 +37,20 @@ class Logger:
         self.worker_thread.start()
 
     def add_feedback(self, log_id, metric_name, value):
-        self.feedback_queue.put({
-            "log_id": log_id,
-            "key": metric_name,
-            "value": value
-        })
-    
+        self.feedback_queue.put({"log_id": log_id, "key": metric_name, "value": value})
+
+    def add_to_queue(self, hegel_model: str, result: dict, input_parameters: dict, latency: float, log_id: str):
+        # TODO: Deal with other_args
+        self.data_queue.put(
+            {
+                "hegel_model": hegel_model,
+                "result": result,
+                "input_parameters": input_parameters,  # TODO: Need to record `*args`
+                "latency": latency,
+                "log_id": log_id,
+            }
+        )
+
     def execute_and_add_to_queue(self, callable_func, **kwargs):
         if "hegel_model" in kwargs:
             hegel_model = kwargs["hegel_model"]
@@ -53,15 +61,7 @@ class Logger:
         result = callable_func(**kwargs)
         latency = perf_counter() - start
         log_id = str(uuid.uuid4())
-        self.data_queue.put(
-            {
-                "hegel_model": hegel_model,
-                "result": result.model_dump_json(),
-                "input_parameters": json.dumps(kwargs),
-                "latency": latency,
-                "log_id": log_id,
-            }
-        )
+        self.add_to_queue(hegel_model, result.model_dump_json(), json.dumps(kwargs), latency, log_id)
         result.log_id = log_id
         return result
 
