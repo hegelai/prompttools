@@ -100,7 +100,9 @@ LLMs
 - LLaMA.Cpp (LLaMA 1, LLaMA 2) - **Supported**
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
-- Google PaLM - **Supported**
+- Mistral AI - **Supported**
+- Google Gemini - **Supported**
+- Google PaLM (legacy) - **Supported**
 - Google Vertex AI - **Supported**
 - Azure OpenAI Service - **Supported**
 - Replicate - **Supported**
