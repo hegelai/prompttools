@@ -44,9 +44,9 @@ class GoogleGeminiChatCompletionExperiment(Experiment):
     def __init__(
         self,
         model: list[str],
-        contents: list[content_types.ContentsType],
-        generation_config: list[Optional[generation_types.GenerationConfigType]] = [None],
-        safety_settings: list[Optional[safety_types.SafetySettingOptions]] = [None],
+        contents: list["content_types.ContentsType"],
+        generation_config: list[Optional["generation_types.GenerationConfigType"]] = [None],
+        safety_settings: list[Optional["safety_types.SafetySettingOptions"]] = [None],
     ):
         if genai is None:
             raise ModuleNotFoundError(
