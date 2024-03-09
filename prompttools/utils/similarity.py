@@ -8,7 +8,7 @@ r"""
 Use a list to optionally hold a reference to the embedding model and client,
 allowing for lazy initialization.
 """
-from typing import Any, Dict
+from typing import Dict
 import pandas.core.series
 import logging
 
@@ -26,7 +26,10 @@ try:
 except ImportError:
     cosine_similarity = None
 
-import librosa
+try:
+    import librosa
+except ImportError:
+    librosa = None
 
 
 EMBEDDING_MODEL = []
@@ -160,6 +163,11 @@ def cos_similarity(
         raise ModuleNotFoundError(
             "Package `sklearn` is required to be installed to use this evaluation method."
             "Please use `pip install scikit-learn` to install the package"
+        )
+    if librosa is None:
+        raise ModuleNotFoundError(
+            "Package `librosa` is required to be installed to use this evaluation method."
+            "Please use `pip install librosa` to install the package"
         )
     expected_audio_signal, sr = librosa.load(expected)
     # Extract relevant features, for example, Mel-frequency cepstral coefficients (MFCCs)
