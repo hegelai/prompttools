@@ -14,16 +14,14 @@
   <a href="http://prompttools.readthedocs.io/"><img src="https://img.shields.io/badge/View%20Documentation-Docs-yellow"></a>
   <a href="https://discord.gg/7KeRPNHGdJ"><img src="https://img.shields.io/badge/Join%20our%20community-Discord-blue"></a>
   <a href="https://pepy.tech/project/prompttools" target="_blank"><img src="https://static.pepy.tech/badge/prompttools" alt="Total Downloads"/></a>
-  <a href="https://github.com/hegelai/prompttools">
-      <img src="https://img.shields.io/github/stars/hegelai/prompttools" />
-  </a>
+  <a href="https://github.com/hegelai/prompttools"><img src="https://img.shields.io/github/stars/hegelai/prompttools" /></a>
   <a href="https://twitter.com/hegel_ai"><img src="https://img.shields.io/twitter/follow/Hegel_AI?style=social"></a>
 </p>
 
 
 Welcome to `prompttools` created by [Hegel AI](https://hegel-ai.com/)! This repo offers a set of open-source, self-hostable tools for experimenting with, testing, and evaluating LLMs, vector databases, and prompts. The core idea is to enable developers to evaluate using familiar interfaces like _code_, _notebooks_, and a local _playground_.
 
-In just a few lines of codes, you can test your prompts and parameters across different models (whether you are using
+In just a few lines of code, you can test your prompts and parameters across different models (whether you are using
 OpenAI, Anthropic, or LLaMA models). You can even evaluate the retrieval accuracy of vector databases.
 
 ```python
@@ -102,7 +100,9 @@ LLMs
 - LLaMA.Cpp (LLaMA 1, LLaMA 2) - **Supported**
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
-- Google PaLM - **Supported**
+- Mistral AI - **Supported**
+- Google Gemini - **Supported**
+- Google PaLM (legacy) - **Supported**
 - Google Vertex AI - **Supported**
 - Azure OpenAI Service - **Supported**
 - Replicate - **Supported**

@@ -4,7 +4,7 @@
 # This source code's license can be found in the
 # LICENSE file in the root directory of this source tree.
 
-from typing import Type
+from typing import Type, Union
 import jinja2
 import pandas as pd
 
@@ -82,22 +82,48 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
             self.prepare()
         super().run(clear_previous_results=clear_previous_results)
 
-        # Add user inputs to DataFrame
         if len(self.experiment.full_df) > 0:
+            # Add user inputs to DataFrame
             repeat = len(self.experiment.full_df) // len(self.user_inputs)
             user_inputs = deepcopy(self.user_inputs)
             user_inputs_col_name = "user_inputs"
             user_input_df = pd.DataFrame({user_inputs_col_name: user_inputs * repeat})
 
+            # Full DF
             if user_inputs_col_name in self.experiment.full_df.columns:
                 self.experiment.full_df = self.experiment.full_df.drop(user_inputs_col_name, axis=1)
             self.experiment.full_df.reset_index(drop=True, inplace=True)
-
             self.experiment.full_df = pd.concat([user_input_df, self.experiment.full_df], axis=1)
+            # Partial DF
             if user_inputs_col_name in self.experiment.partial_df.columns:
                 self.experiment.partial_df = self.experiment.partial_df.drop(user_inputs_col_name, axis=1)
             self.experiment.partial_df.reset_index(drop=True, inplace=True)
             self.experiment.partial_df = pd.concat([user_input_df, self.experiment.partial_df], axis=1)
+
+            # Add prompt template to DataFrame
+            repeat = len(self.experiment.full_df) // len(self.message_templates)
+            templates = deepcopy(self.message_templates)
+            template_indices = list(range(len(templates)))
+            template_col_name = "templates"
+            template_index_col_name = "template_index"
+            template_df = pd.DataFrame(
+                {
+                    template_index_col_name: [i for i in template_indices for _ in range(repeat)],
+                    template_col_name: [s for s in templates for _ in range(repeat)],
+                }
+            )
+            # Full DF
+            if template_col_name in self.experiment.full_df.columns:
+                self.experiment.full_df = self.experiment.full_df.drop(template_col_name, axis=1)
+                self.experiment.full_df = self.experiment.full_df.drop(template_index_col_name, axis=1)
+            self.experiment.full_df.reset_index(drop=True, inplace=True)
+            self.experiment.full_df = pd.concat([template_df, self.experiment.full_df], axis=1)
+            # Partial DF
+            if template_col_name in self.experiment.partial_df.columns:
+                self.experiment.partial_df = self.experiment.partial_df.drop(template_col_name, axis=1)
+                self.experiment.partial_df = self.experiment.partial_df.drop(template_index_col_name, axis=1)
+            self.experiment.partial_df.reset_index(drop=True, inplace=True)
+            self.experiment.partial_df = pd.concat([template_df, self.experiment.partial_df], axis=1)
 
     def get_table(self, get_all_cols: bool = False) -> pd.DataFrame:
         columns_to_hide = [
@@ -136,6 +162,28 @@ class ChatPromptTemplateExperimentationHarness(ExperimentationHarness):
         else:
             logging.getLogger().setLevel(logging.INFO)
             logging.info(tabulate(table, headers="keys", tablefmt="psql"))
+
+    def aggregate(self, groupby_column: str, aggregate_columns: Union[str, list[str]], method: str) -> pd.DataFrame:
+        """
+        Aggregate data based on the specified column, method.
+
+        Args:
+            groupby_column (str):
+            aggregate_columns (Union[str, list[str]]):
+            method (str): aggregation method (e.g., 'mean', 'sum', 'count', 'min', 'max', 'median', 'std', etc.)
+        """
+        if groupby_column == "user_inputs":
+            df = self.full_df.copy()
+            df["user_inputs"] = [tuple(d.items()) for d in self.full_df["user_inputs"]]
+        else:
+            df = self.full_df
+
+        if groupby_column == "templates":
+            result = super().aggregate("template_index", aggregate_columns, method)
+            result["templates"] = [self.message_templates[i] for i in result["template_index"]]
+            return result
+        else:
+            return super().aggregate(groupby_column, aggregate_columns, method, custom_df=df)
 
     def _get_state(self):
         state_params = {

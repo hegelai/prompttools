@@ -467,12 +467,7 @@ class Experiment:
 
             # Define the custom colors
             custom_colors = [
-                "black",
-                "#7e1e9c",
-                "#15b01a",
-                "#448ee4",
-                "#ff7fa7",
-                "#029386",
+                "black", "#771541", "#EB8F4C", "#594F3B", "#A8B7AB", "#9C92A3"
             ]
 
             plt.ylabel("Latency (s)")
@@ -533,7 +528,7 @@ class Experiment:
         table = self.get_table(get_all_cols=get_all_cols)
         table.to_csv(path, **kwargs)
 
-    def to_pandas_df(self, get_all_cols: bool = True):
+    def to_pandas_df(self, get_all_cols: bool = True, from_streamlit: bool = False):
         r"""
         Return the results as a ``pandas.DataFrame``. If the experiment has not been executed, it will run.
 
@@ -541,6 +536,8 @@ class Experiment:
             get_all_cols (bool): defaults to ``False``. If ``True``, it will return the full data with all
                 input arguments (including frozen ones), full model response (not just the text response), and scores.
         """
+        if from_streamlit:
+            self.run()
         return self.get_table(get_all_cols=get_all_cols)
 
     def to_json(

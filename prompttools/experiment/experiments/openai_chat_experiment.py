@@ -97,9 +97,8 @@ class OpenAIChatExperiment(Experiment):
 
         azure_openai_service_configs (Optional[dict]):
             Defaults to ``None``. If it is set, the experiment will use Azure OpenAI Service. The input dict should
-            contain these 3 keys (but with values based on your use case and configuration):
-            ``{"AZURE_OPENAI_ENDPOINT": "https://YOUR_RESOURCE_NAME.openai.azure.com/",
-               "API_TYPE": "azure", "API_VERSION": "2023-05-15"``
+            contain these 2 keys (but with values based on your use case and configuration):
+            ``{"AZURE_OPENAI_ENDPOINT": "https://YOUR_RESOURCE_NAME.openai.azure.com/", "API_VERSION": "2023-05-15"}``
     """
 
     _experiment_type = "RawExperiment"
@@ -123,7 +122,15 @@ class OpenAIChatExperiment(Experiment):
         function_call: Optional[List[Dict[str, str]]] = [None],
         azure_openai_service_configs: Optional[dict] = None,
     ):
-        self.completion_fn = openai.chat.completions.create
+        if azure_openai_service_configs is None:
+            self.completion_fn = openai.chat.completions.create
+        else:
+            client = openai.AzureOpenAI(
+                api_key=os.environ["AZURE_OPENAI_KEY"],
+                api_version=azure_openai_service_configs["API_VERSION"],
+                azure_endpoint=azure_openai_service_configs["AZURE_OPENAI_ENDPOINT"],
+            )
+            self.completion_fn = client.chat.completions.create
         if os.getenv("DEBUG", default=False):
             if functions[0] is not None:
                 self.completion_fn = mock_openai_chat_function_completion_fn
@@ -163,14 +170,6 @@ class OpenAIChatExperiment(Experiment):
         # This has no impact on the default case
         if self.all_args["logit_bias"] == [None]:
             del self.all_args["logit_bias"]
-
-        if azure_openai_service_configs:
-            openai.api_key = os.environ["AZURE_OPENAI_KEY"]
-            openai.api_base = azure_openai_service_configs["AZURE_OPENAI_ENDPOINT"]
-            openai.api_type = azure_openai_service_configs["API_TYPE"]
-            openai.api_version = azure_openai_service_configs["API_VERSION"]
-            del self.all_args["model"]
-            self.all_args["engine"] = model
 
         super().__init__()
 
