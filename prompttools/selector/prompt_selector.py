@@ -66,3 +66,6 @@ class PromptSelector:
 
     def for_palm(self):
         return PALM_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)
+
+    def for_music_gen(self):
+        return GENERIC_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)

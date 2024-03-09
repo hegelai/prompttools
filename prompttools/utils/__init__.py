@@ -13,7 +13,7 @@ from .autoeval_with_docs import autoeval_with_documents
 from .chunk_text import chunk_text
 from .expected import compute_similarity_against_model
 from .ranking_correlation import ranking_correlation
-from .similarity import semantic_similarity
+from .similarity import cos_similarity, semantic_similarity, structural_similarity
 from .validate_json import validate_json_response
 from .validate_python import validate_python_response
 
@@ -31,6 +31,8 @@ __all__ = [
     "validate_python",
     "validate_python_response",
     "ranking_correlation",
+    "cos_similarity",
     "semantic_similarity",
+    "structural_similarity",
     "similarity",
 ]

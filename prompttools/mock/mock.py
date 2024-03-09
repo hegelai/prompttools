@@ -201,7 +201,7 @@ def mock_qdrant_fn(**kwargs):
     ]
 
 
-def mock_musicgen_completion_fn(**kwargs):
+def mock_music_gen_completion_fn(**kwargs):
     y, sr = librosa.load("../../examples/notebooks/audio_experiments/sample_audio_files/80s_billy_joel.wav")
     # Extract relevant features, for example, Mel-frequency cepstral coefficients (MFCCs)
     mfccs = librosa.feature.mfcc(y=y, sr=sr)
