@@ -14,7 +14,7 @@ from .chunk_text import chunk_text
 from .expected import compute_similarity_against_model
 from .moderation import apply_moderation
 from .ranking_correlation import ranking_correlation
-from .similarity import semantic_similarity
+from .similarity import semantic_similarity, cos_similarity
 from .validate_json import validate_json_response
 from .validate_python import validate_python_response
 
@@ -30,6 +30,7 @@ __all__ = [
     "apply_moderation",
     "ranking_correlation",
     "semantic_similarity",
+    "cos_similarity",
     "similarity",
     "validate_json",
     "validate_json_response",

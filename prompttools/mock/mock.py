@@ -14,6 +14,11 @@ try:
 except ImportError:
     cv2 = None
 
+try:
+    import librosa
+except ImportError:
+    librosa = None
+
 
 class DotDict(dict):
     r"""
@@ -194,3 +199,10 @@ def mock_qdrant_fn(**kwargs):
             vector=[0.1, 0.2, 0.3],
         )
     ]
+
+
+def mock_music_gen_completion_fn(**kwargs):
+    y, sr = librosa.load("../../examples/notebooks/audio_experiments/sample_audio_files/80s_billy_joel.wav")
+    # Extract relevant features, for example, Mel-frequency cepstral coefficients (MFCCs)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr)
+    return mfccs.flatten()

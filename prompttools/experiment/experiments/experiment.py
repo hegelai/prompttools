@@ -50,6 +50,7 @@ class Experiment:
         self.argument_combos: list[dict] = []
         self.full_df, self.partial_df, self.score_df = None, None, None
         self.image_experiment = False
+        self.audio_experiment = False
         self._experiment_id = None
         self._revision_id = None
         try:
@@ -314,6 +315,9 @@ class Experiment:
             table["response"] = table["response"].map(lambda x: self.cv2_image_to_base64(x))
             table["response"] = table["response"].apply(self.display_image_html)
             display.display(display.HTML(table.to_html(escape=False)))
+        elif is_interactive() and self.audio_experiment:
+            table["response"] = "audio file generated"
+            display.display(display.HTML(table.to_html(escape=False)))
         elif is_interactive():
             display.display(table)
         else:
@@ -338,6 +342,7 @@ class Experiment:
         eval_fn: Callable,
         static_eval_fn_kwargs: dict = {},
         image_experiment: bool = False,
+        audio_experiment: bool = False,
         **eval_fn_kwargs,
     ) -> None:
         """
@@ -360,6 +365,7 @@ class Experiment:
             >>>                     static_eval_fn_kwargs={"response_column_name": "response"})
         """
         self.image_experiment = image_experiment
+        self.audio_experiment = audio_experiment
         if metric_name in self.score_df.columns:
             logging.warning(metric_name + " is already present, skipping.")
             return

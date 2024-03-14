@@ -21,6 +21,16 @@ try:
 except ImportError:
     skimage_structural_similarity = None
 
+try:
+    from sklearn.metrics.pairwise import cosine_similarity
+except ImportError:
+    cosine_similarity = None
+
+try:
+    import librosa
+except ImportError:
+    librosa = None
+
 
 EMBEDDING_MODEL = []
 CHROMA_CLIENT = []
@@ -135,3 +145,32 @@ def semantic_similarity(row: pandas.core.series.Series, expected: str, response_
     if len(expected) == 1:
         logging.warn("Expected should be a list of strings." + "You may have passed in a single string")
     return compute(expected, row[response_column_name])
+
+
+def cos_similarity(
+    row: pandas.core.series.Series, expected: str, response_column_name: str = "response"
+) -> float:
+    r"""
+    Compute the cosine similarity between two tensors.
+
+    Args:
+        row (pandas.core.series.Series): A row of data from the full DataFrame (including input, model response, other
+            metrics, etc).
+        expected (Any): the column name of the expected audio signal responses in each row
+        response_column_name (str): the column name that contains the model's response, defaults to ``"response"``
+    """
+    if cosine_similarity is None:
+        raise ModuleNotFoundError(
+            "Package `sklearn` is required to be installed to use this evaluation method."
+            "Please use `pip install scikit-learn` to install the package"
+        )
+    if librosa is None:
+        raise ModuleNotFoundError(
+            "Package `librosa` is required to be installed to use this evaluation method."
+            "Please use `pip install librosa` to install the package"
+        )
+    expected_audio_signal, sr = librosa.load(expected)
+    # Extract relevant features, for example, Mel-frequency cepstral coefficients (MFCCs)
+    mfccs = librosa.feature.mfcc(y=expected_audio_signal, sr=sr)
+    similarity = cosine_similarity([row[response_column_name]], [mfccs.flatten()])[0][0]
+    return similarity
