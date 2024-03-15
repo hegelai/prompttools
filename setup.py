@@ -26,8 +26,9 @@ def _get_requirements():
 
 def _get_version():
     """Get package version."""
-    with open(os.path.join(ROOT_DIR, "version.txt")) as f:
-        version = f.readline().strip()
+    # with open(os.path.join(ROOT_DIR, "version.txt")) as f:
+    #     version = f.readline().strip()
+    version = "0.0.46a0"
 
     sha = "Unknown"
     try:
@@ -82,7 +83,7 @@ class Clean(distutils.command.clean.clean):
 if __name__ == "__main__":
     VERSION, SHA = _get_version()
     # TODO: Exporting the version here breaks `python -m build`
-    _export_version(VERSION, SHA)
+    # _export_version(VERSION, SHA)
 
     print("-- Building version " + VERSION)
 
