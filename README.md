@@ -110,6 +110,7 @@ LLMs
 
 Vector Databases and Data Utility
 - Chroma - **Supported**
+- Epsilla - _In Progress_
 - Weaviate - **Supported**
 - Qdrant - **Supported**
 - LanceDB - **Supported**
