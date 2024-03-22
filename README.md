@@ -69,13 +69,7 @@ You can also run the notebook in [Google Colab](https://colab.research.google.co
 
 If you want to interact with `prompttools` using our playground interface, you can launch it with the following commands.
 
-First, install Jupyter Notebook:
-
-```
-pip install notebook
-```
-
-And, install prompttools:
+First, install prompttools:
 
 ```
 pip install prompttools
