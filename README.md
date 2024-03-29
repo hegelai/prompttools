@@ -72,6 +72,10 @@ If you want to interact with `prompttools` using our playground interface, you c
 You can run a simple example of a `prompttools` locally with the following
 
 ```
+pip install notebook
+```
+
+```
 pip install prompttools
 ```
 
