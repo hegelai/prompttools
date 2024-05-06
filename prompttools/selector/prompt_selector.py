@@ -59,6 +59,9 @@ class PromptSelector:
     def for_llama(self):
         return LLAMA_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)
 
+    def for_llama38b(self):
+        return LLAMA_TEMPLATE.format(instruction=self.instruction, user_input=self.user_input)
+
     def for_anthropic(self):
         return ANTHROPIC_TEMPLATE.format(
             HUMAN_PROMPT=HUMAN_PROMPT, instruction=self.instruction, user_input=self.user_input, AI_PROMPT=AI_PROMPT
