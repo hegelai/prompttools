@@ -6,6 +6,7 @@
 
 
 from prompttools.experiment import LlamaCppExperiment
+from prompttools.experiment import Llama38bExperiment
 from prompttools.experiment import OpenAIChatExperiment
 from prompttools.experiment import OpenAICompletionExperiment
 from prompttools.experiment import AnthropicCompletionExperiment
@@ -24,6 +25,7 @@ ENVIRONMENT_VARIABLE = {
 
 EXPERIMENTS = {
     "LlamaCpp Chat": LlamaCppExperiment,
+    "Llama38b Chat": Llama38bExperiment,
     "OpenAI Chat": OpenAIChatExperiment,
     "OpenAI Completion": OpenAICompletionExperiment,
     "Anthropic": AnthropicCompletionExperiment,
@@ -40,6 +42,7 @@ MODEL_TYPES = (
     "Anthropic",
     "Google PaLM",
     "LlamaCpp Chat",
+    "Llama38b Chat",
     "LlamaCpp Completion",
     "HuggingFace Hub",
     "Replicate",
