@@ -43,7 +43,7 @@ with st.sidebar:
         model, api_key = None, None
         if "model" not in st.session_state and "model" in params:
             st.session_state.model = unquote(params["model"][0])
-        if model_type in {"LlamaCpp Chat", "LlamaCpp Completion"}:
+        if model_type in {"LlamaCpp Chat", "LlamaCpp Completion", "Llama38b Chat"}:
             model = st.text_input("Local Model Path", key="model")
         elif model_type == "HuggingFace Hub":
             model = st.text_input("Repo ID", key="model")
@@ -303,6 +303,7 @@ elif mode == "Model Comparison":
                         "Anthropic",
                         "Google PaLM",
                         "LlamaCpp Chat",
+                        "Llama38b Chat",
                         "LlamaCpp Completion",
                         "HuggingFace Hub",
                         "Replicate",
@@ -312,6 +313,9 @@ elif mode == "Model Comparison":
             )
             model = None
             if model_types[j - 1] == "LlamaCpp Chat":
+                models.append(st.text_input("Local Model Path", key=f"path_{j}"))
+                instructions[j] = st.text_area("Instruction", key=f"instruction_{j}")
+            elif model_types[j - 1] == "Llama38b Chat":
                 models.append(st.text_input("Local Model Path", key=f"path_{j}"))
                 instructions[j] = st.text_area("Instruction", key=f"instruction_{j}")
             elif model_types[j - 1] == "LlamaCpp Completion":
