@@ -28,7 +28,7 @@ from prompttools.playground.data_loader import render_prompts, load_data, run_mu
 
 params = st.query_params.get_all(key="params")
 
-# DESIGN
+# DESIGN Hegel AI Logo
 st.image("img/hegel_ai_logo_dark.png")
 
 # DESIGN Header for Playground with divider
