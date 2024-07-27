@@ -26,11 +26,13 @@ from prompttools.playground.constants import MODES, MODEL_TYPES, OPENAI_CHAT_MOD
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 
-params = st.experimental_get_query_params()
-st.experimental_set_query_params()
+params = st.query_params.get_all(key="params")
 
-st.header("PromptTools Playground")
-st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
+# DESIGN Hegel AI Logo
+st.image("img/hegel_ai_logo_dark.png")
+
+# DESIGN Header for Playground with divider
+st.header("PromptTools Playground", divider="red", anchor=False)
 
 with st.sidebar:
     if "mode" not in st.session_state and "mode" in params:
@@ -396,3 +398,9 @@ if share:
     except pyperclip.PyperclipException:
         st.write("Please copy the following link:")
         st.code(link)
+
+# DESIGN Hegal AI Footer
+st.markdown("---")
+st.markdown(
+    "Give us a :star: at [GitHub](https://github.com/hegelai/prompttools)"
+)
