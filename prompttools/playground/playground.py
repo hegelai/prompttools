@@ -22,12 +22,12 @@ try:
 except Exception:
     pass
 
-from prompttools.playground.constants import MODES, MODEL_TYPES, OPENAI_CHAT_MODELS, OPENAI_COMPLETION_MODELS
+from prompttools.playground.constants import MODES, MODEL_TYPES, OPENAI_CHAT_MODELS, OPENAI_COMPLETION_MODELS, OLLAMA_CHAT_MODELS
+
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
-
-params = st.experimental_get_query_params()
-st.experimental_set_query_params()
+params = st.query_params.to_dict()
+st.query_params.from_dict(params)
 
 st.header("PromptTools Playground")
 st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
@@ -65,6 +65,10 @@ with st.sidebar:
         elif model_type == "Replicate":
             model = st.text_input("Model", key="model")
             api_key = st.text_input("Replicate API Key", type="password")
+        elif model_type == "Ollama Chat":
+            if "model" not in st.session_state and "model" in params:
+                st.session_state.model = unquote(params["model"][0])
+            model = st.selectbox("Model", OLLAMA_CHAT_MODELS, key="model")
 
         variable_count = 0
         if mode == "Prompt Template":
@@ -72,7 +76,7 @@ with st.sidebar:
             prompt_count = st.number_input("Add User Input", step=1, min_value=1, max_value=10)
             variable_count = len(params["var_names"][0].split(",")) if "var_names" in params else 1
             variable_count = st.number_input("Add Variable", step=1, min_value=1, max_value=10, value=variable_count)
-        elif model_type == "OpenAI Chat":
+        elif model_type == "OpenAI Chat" or model_type == "Ollama Chat":
             instruction_count = st.number_input("Add System Message", step=1, min_value=1, max_value=5)
             prompt_count = st.number_input("Add User Message", step=1, min_value=1, max_value=10)
         else:
@@ -101,7 +105,7 @@ with st.sidebar:
         max_tokens = None
         presence_penalty = None
         frequency_penalty = None
-        if model_type == "OpenAI Chat" or model_type == "OpenAI Completion":
+        if model_type == "OpenAI Chat" or model_type == "OpenAI Completion" or model_type == "Ollama Chat":
             # top_p = st.slider("Top P", min_value=0.0, max_value=1.0, value=1.0, step=0.01, key="top_p")
             # max_tokens = st.number_input("Max Tokens", min_value=0, value=, step=1, key="max_tokens")
             presence_penalty = st.slider(
@@ -138,7 +142,7 @@ if mode == "Instruction":
         with cols[j]:
             instructions.append(
                 st.text_area(
-                    "System Message" if model_type == "OpenAI Chat" else "Instruction",
+                    "System Message" if model_type == "OpenAI Chat" or model_type == "Ollama Chat" else "Instruction",
                     key=f"instruction_{j-1}",
                 )
             )
@@ -151,7 +155,7 @@ if mode == "Instruction":
         with cols[0]:
             prompts.append(
                 st.text_area(
-                    "User Message" if model_type == "OpenAI Chat" else "Prompt",
+                    "User Message" if model_type == "OpenAI Chat" or model_type == "Ollama Chat" else "Prompt",
                     key=f"prompt_{i}",
                 )
             )
@@ -208,6 +212,12 @@ elif mode == "Prompt Template":
             value=params["instruction"][0] if "instruction" in params else "You are a helpful AI assistant.",
         )
     elif model_type == "OpenAI Chat":
+        instruction = st.text_area(
+            "System Message",
+            key="instruction",
+            value=params["instruction"][0] if "instruction" in params else "You are a helpful AI assistant.",
+        )
+    elif model_type == "Ollama Chat":
         instruction = st.text_area(
             "System Message",
             key="instruction",
@@ -298,6 +308,7 @@ elif mode == "Model Comparison":
                 st.selectbox(
                     "Model Type",
                     (
+                        "Ollama Chat",
                         "OpenAI Chat",
                         "OpenAI Completion",
                         "Anthropic",
@@ -348,7 +359,11 @@ elif mode == "Model Comparison":
                 instructions[j] = st.text_area(
                     "System Message", value="You are a helpful AI assistant.", key=f"instruction_{j}"
                 )
-
+            elif model_types[j - 1] == "Ollama Chat":
+                models.append(st.selectbox("Model", OLLAMA_CHAT_MODELS, key=f"ollama_model_{j}"))
+                instructions[j] = st.text_area(
+                    "System Message", value="You are a helpful AI assistant.", key=f"instruction_{j}"
+                )
     prompts = []
     for i in range(prompt_count):
         cols = st.columns(model_count + 1)

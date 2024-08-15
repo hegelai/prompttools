@@ -1,4 +1,5 @@
 openai
+ollama
 tenacity
 tabulate
 pandas
