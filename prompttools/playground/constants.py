@@ -12,6 +12,7 @@ from prompttools.experiment import AnthropicCompletionExperiment
 from prompttools.experiment import GooglePaLMCompletionExperiment
 from prompttools.experiment import HuggingFaceHubExperiment
 from prompttools.experiment import ReplicateExperiment
+from prompttools.experiment import OllamaChatExperiment, OllamaModels
 
 ENVIRONMENT_VARIABLE = {
     "Replicate": "REPLICATE_API_TOKEN",
@@ -23,6 +24,7 @@ ENVIRONMENT_VARIABLE = {
 }
 
 EXPERIMENTS = {
+    "Ollama Chat": OllamaChatExperiment,
     "LlamaCpp Chat": LlamaCppExperiment,
     "OpenAI Chat": OpenAIChatExperiment,
     "OpenAI Completion": OpenAICompletionExperiment,
@@ -35,6 +37,7 @@ EXPERIMENTS = {
 MODES = ("Instruction", "Prompt Template", "Model Comparison")
 
 MODEL_TYPES = (
+    "Ollama Chat",
     "OpenAI Chat",
     "OpenAI Completion",
     "Anthropic",
@@ -60,3 +63,5 @@ OPENAI_CHAT_MODELS = (
 )
 
 OPENAI_COMPLETION_MODELS = ("text-davinci-003", "text-davinci-002", "code-davinci-002")
+
+OLLAMA_CHAT_MODELS = OllamaModels.list()

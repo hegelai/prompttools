@@ -6,6 +6,7 @@
 
 
 import os
+import sys
 import jinja2
 import streamlit as st
 
@@ -44,7 +45,7 @@ def load_data(
     if model_type == "LlamaCpp Chat":
         call_params = dict(temperature=[temperature])
         experiment = EXPERIMENTS[model_type]([model], selectors, call_params=call_params)
-    elif model_type in {"OpenAI Chat", "OpenAI Completion"}:
+    elif model_type in {"OpenAI Chat", "OpenAI Completion", "Ollama Chat"}:
         experiment = EXPERIMENTS[model_type](
             [model],
             selectors,
