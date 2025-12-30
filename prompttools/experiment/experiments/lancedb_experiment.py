@@ -11,10 +11,13 @@ from typing import Callable, Optional
 
 try:
     import lancedb
-    from lancedb.embeddings import with_embeddings
-
 except ImportError:
     lancedb = None
+
+try:
+    from lancedb.embeddings import with_embeddings
+except (ImportError, AttributeError):
+    with_embeddings = None
 
 import logging
 from time import perf_counter
@@ -81,6 +84,13 @@ class LanceDBExperiment(Experiment):
             raise ModuleNotFoundError(
                 "Package `lancedb` is required to be installed to use this experiment."
                 "Please use `pip install lancedb` to install the package"
+            )
+        if not use_existing_table and with_embeddings is None:
+            raise ModuleNotFoundError(
+                "The `with_embeddings` function is not available in your version of lancedb. "
+                "This may be due to API changes in newer versions. "
+                "Please use `use_existing_table=True` with a pre-embedded table, "
+                "or install an older version of lancedb (e.g., `pip install lancedb<0.4.0`)."
             )
         self.table_name = table_name
         self.use_existing_table = use_existing_table

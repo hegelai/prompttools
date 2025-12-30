@@ -26,8 +26,8 @@ from prompttools.playground.constants import MODES, MODEL_TYPES, OPENAI_CHAT_MOD
 from prompttools.playground.data_loader import render_prompts, load_data, run_multiple
 
 
-params = st.experimental_get_query_params()
-st.experimental_set_query_params()
+params = {k: [v] for k, v in st.query_params.items()}
+st.query_params.clear()
 
 st.header("PromptTools Playground")
 st.write("Give us a \U00002B50 on [GitHub](https://github.com/hegelai/prompttools)")
