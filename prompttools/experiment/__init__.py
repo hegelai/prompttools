@@ -8,6 +8,8 @@
 from .experiments.experiment import Experiment
 from .experiments.openai_chat_experiment import OpenAIChatExperiment
 from .experiments.openai_completion_experiment import OpenAICompletionExperiment
+from .experiments.openai_completion_experiment import OpenAICompletionExperiment
+from .experiments.openai_like_chat_completion import OpenAICompatibleChatExperiment
 from .experiments.anthropic_completion_experiment import AnthropicCompletionExperiment
 from .experiments.huggingface_hub_experiment import HuggingFaceHubExperiment
 from .experiments.google_gemini_chat_experiment import GoogleGeminiChatCompletionExperiment
@@ -41,6 +43,7 @@ __all__ = [
     "MusicGenExperiment",
     "OpenAIChatExperiment",
     "OpenAICompletionExperiment",
+    "OpenAICompatibleChatExperiment",
     "PineconeExperiment",
     "QdrantExperiment",
     "ReplicateExperiment",
