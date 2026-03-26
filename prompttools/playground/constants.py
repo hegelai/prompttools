@@ -12,6 +12,7 @@ from prompttools.experiment import AnthropicCompletionExperiment
 from prompttools.experiment import GooglePaLMCompletionExperiment
 from prompttools.experiment import HuggingFaceHubExperiment
 from prompttools.experiment import ReplicateExperiment
+from prompttools.experiment import MiniMaxChatExperiment
 
 ENVIRONMENT_VARIABLE = {
     "Replicate": "REPLICATE_API_TOKEN",
@@ -20,6 +21,7 @@ ENVIRONMENT_VARIABLE = {
     "Anthropic": "ANTHROPIC_API_KEY",
     "Google PaLM": "GOOGLE_PALM_API_KEY",
     "HuggingFace Hub": "HUGGINGFACEHUB_API_TOKEN",
+    "MiniMax Chat": "MINIMAX_API_KEY",
 }
 
 EXPERIMENTS = {
@@ -30,6 +32,7 @@ EXPERIMENTS = {
     "Google PaLM": GooglePaLMCompletionExperiment,
     "HuggingFace Hub": HuggingFaceHubExperiment,
     "Replicate": ReplicateExperiment,
+    "MiniMax Chat": MiniMaxChatExperiment,
 }
 
 MODES = ("Instruction", "Prompt Template", "Model Comparison")
@@ -43,6 +46,7 @@ MODEL_TYPES = (
     "LlamaCpp Completion",
     "HuggingFace Hub",
     "Replicate",
+    "MiniMax Chat",
 )
 
 OPENAI_CHAT_MODELS = (
@@ -60,3 +64,10 @@ OPENAI_CHAT_MODELS = (
 )
 
 OPENAI_COMPLETION_MODELS = ("text-davinci-003", "text-davinci-002", "code-davinci-002")
+
+MINIMAX_CHAT_MODELS = (
+    "MiniMax-M2.7",
+    "MiniMax-M2.7-highspeed",
+    "MiniMax-M2.5",
+    "MiniMax-M2.5-highspeed",
+)
