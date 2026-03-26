@@ -102,6 +102,7 @@ LLMs
 - HuggingFace (Hub API, Inference Endpoints) - **Supported**
 - Anthropic - **Supported**
 - Mistral AI - **Supported**
+- MiniMax - **Supported**
 - Google Gemini - **Supported**
 - Google PaLM (legacy) - **Supported**
 - Google Vertex AI - **Supported**

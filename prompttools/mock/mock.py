@@ -201,6 +201,32 @@ def mock_qdrant_fn(**kwargs):
     ]
 
 
+def mock_minimax_chat_completion_fn(**kwargs):
+    return DotDict(
+        {
+            "choices": [
+                DotDict(
+                    {
+                        "finish_reason": "stop",
+                        "index": 0,
+                        "message": DotDict(
+                            {
+                                "content": "George Washington",
+                                "role": "assistant",
+                            }
+                        ),
+                    }
+                )
+            ],
+            "created": 1687839008,
+            "id": "",
+            "model": "MiniMax-M2.5",
+            "object": "chat.completion",
+            "usage": DotDict({"completion_tokens": 18, "prompt_tokens": 57, "total_tokens": 75}),
+        }
+    )
+
+
 def mock_music_gen_completion_fn(**kwargs):
     y, sr = librosa.load("../../examples/notebooks/audio_experiments/sample_audio_files/80s_billy_joel.wav")
     # Extract relevant features, for example, Mel-frequency cepstral coefficients (MFCCs)
