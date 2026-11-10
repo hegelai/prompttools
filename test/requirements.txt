@@ -1,1 +1,2 @@
 sentence_transformers
+sqlvalidator==0.0.20
