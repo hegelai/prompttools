@@ -348,6 +348,8 @@ class Experiment:
         """
         Using the given evaluation function that accepts a row of data, compute a new column with the evaluation
         result. Each row of data generally contain inputs, model response, and other previously computed metrics.
+        Reusing a metric name recomputes and replaces that metric using the existing model responses;
+        it does not rerun the experiment. If evaluation fails, the previous metric values are preserved.
 
         Args:
             metric_name (str): name of the metric being computed
@@ -366,9 +368,6 @@ class Experiment:
         """
         self.image_experiment = image_experiment
         self.audio_experiment = audio_experiment
-        if metric_name in self.score_df.columns:
-            logging.warning(metric_name + " is already present, skipping.")
-            return
         res = []
         table = self.get_table(get_all_cols=True)
         for i, row in table.iterrows():
