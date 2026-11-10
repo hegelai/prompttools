@@ -19,6 +19,9 @@ classifiers = [
 
 dynamic = ["dependencies", "license"]
 
+[project.optional-dependencies]
+sql = ["sqlvalidator==0.0.20"]
+
 [project.urls]
 "Homepage" = "https://github.com/hegelai/prompttools"
 "Bug Tracker" = "https://github.com/hegelai/prompttools"

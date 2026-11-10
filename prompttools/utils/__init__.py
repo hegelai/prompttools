@@ -17,6 +17,7 @@ from .ranking_correlation import ranking_correlation
 from .similarity import semantic_similarity, cos_similarity
 from .validate_json import validate_json_response
 from .validate_python import validate_python_response
+from .validate_sql import validate_sql_response
 
 __all__ = [
     "autoeval",
@@ -36,4 +37,5 @@ __all__ = [
     "validate_json_response",
     "validate_python",
     "validate_python_response",
+    "validate_sql_response",
 ]
