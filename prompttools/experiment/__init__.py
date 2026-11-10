@@ -6,6 +6,7 @@
 
 
 from .experiments.experiment import Experiment
+from .experiments.generic_experiment import ChatCompletionExperiment, CompletionExperiment
 from .experiments.openai_chat_experiment import OpenAIChatExperiment
 from .experiments.openai_completion_experiment import OpenAICompletionExperiment
 from .experiments.anthropic_completion_experiment import AnthropicCompletionExperiment
@@ -29,6 +30,8 @@ from .experiments.musicgen_experiment import MusicGenExperiment
 __all__ = [
     "AnthropicCompletionExperiment",
     "ChromaDBExperiment",
+    "ChatCompletionExperiment",
+    "CompletionExperiment",
     "Experiment",
     "GoogleGeminiChatCompletionExperiment",
     "GooglePaLMCompletionExperiment",

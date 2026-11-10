@@ -29,6 +29,15 @@ Integrated Experiment APIs
 LLMs
 +++++++++++++++++++++++++++++++++++++++++
 
+For an OpenAI-compatible API with your own configured client, pass its
+completion method to one of these experiments. They accept a Cartesian grid
+of API arguments and preserve the shared experiment evaluation and result APIs.
+Authentication and endpoint configuration remain on your client.
+
+.. autoclass:: CompletionExperiment
+
+.. autoclass:: ChatCompletionExperiment
+
 .. autoclass:: OpenAIChatExperiment
 
 .. autoclass:: OpenAICompletionExperiment
