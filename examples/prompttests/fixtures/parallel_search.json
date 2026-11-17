@@ -1,0 +1,12 @@
+{
+  "captured_at": "2026-11-17",
+  "tool": "web_search",
+  "results": [
+    {
+      "url": "https://docs.python.org/3/library/asyncio-runner.html",
+      "excerpts": [
+        "Execute coro in an asyncio event loop and return the result."
+      ]
+    }
+  ]
+}
