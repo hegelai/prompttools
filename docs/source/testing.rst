@@ -34,3 +34,8 @@ In the file, be sure to call the ``main()`` method of ``prompttest`` like you wo
 
     if __name__ == "__main__":
         prompttest.main()
+
+For a complete example comparing prompt variants against captured web evidence,
+see the `citation preservation prompt test
+<https://github.com/hegelai/prompttools/tree/main/examples/prompttests#citation-preservation-with-captured-search-evidence>`__.
+It checks exact source URLs and supporting quotations, with an optional live search.
